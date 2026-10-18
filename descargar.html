@@ -79,8 +79,6 @@
 </head>
 <body>
 
-
-
   <main>
     <section id="fotos">
       <div class="wrap">
@@ -100,8 +98,7 @@
           <div class="bar">
             <h3 id="evName"></h3>
             <div class="bar-actions">
-              <button class="btn ghost" id="dlAll" type="button"></button>
-              <button class="btn ghost" id="btnSalir" type="button" style="border-color: #b3261e; color: #b3261e;"></button>
+              <a class="btn" href="index.html#cotizar" id="btnReservar">Reservar evento</a>
             </div>
           </div>
           <div class="items" id="items"></div>
@@ -166,7 +163,6 @@
         if(!d.ok){ 
           msg.className="err"; 
           msg.textContent = d.error || "No encontramos ese código. Revisa que esté bien escrito."; 
-          // Si falló y había datos guardados viejos, los limpiamos
           localStorage.removeItem("aj_codigo");
           localStorage.removeItem("aj_tiempo");
           return; 
@@ -176,7 +172,6 @@
         msg.textContent = "";
         codigoActual = codigo;
 
-        // Guardar sesión por 1 hora
         if(guardarSesion) {
           localStorage.setItem("aj_codigo", codigo);
           localStorage.setItem("aj_tiempo", new Date().getTime());
@@ -208,20 +203,6 @@
     $("codeForm").onsubmit = e => { e.preventDefault(); buscar($("codigo").value, true); };
     $("dlgX").onclick = () => $("dlg").close();
     $("dlg").addEventListener("close", () => $("dlgF").src = "about:blank");
-    
-    $("dlAll").onclick = () => {
-      if(!confirm("Se descargarán " + archivos.length + " archivos. Si tu navegador pregunta, permite las descargas múltiples. ¿Continuar?")) return;
-      archivos.forEach((a,i)=>setTimeout(()=>{ const l=document.createElement("a"); l.href=a.descargar; l.download=""; document.body.appendChild(l); l.click(); l.remove(); }, i*900));
-    };
-
-    // Botón para salir o cambiar de código manualmente
-    $("btnSalir").onclick = () => {
-      localStorage.removeItem("aj_codigo");
-      localStorage.removeItem("aj_tiempo");
-      $("result").hidden = true;
-      $("codigo").value = "";
-      $("codigo").focus();
-    };
 
     // 1. Verificar si viene por URL (ej: código QR)
     const urlParams = new URLSearchParams(location.search);
@@ -238,10 +219,8 @@
       const now = new Date().getTime();
 
       if(savedCode && savedTime && (now - savedTime < EXPIRATION_TIME)){
-        // Carga automática manteniendo el código guardado
         buscar(savedCode, false);
       } else {
-        // Expiró o no hay datos, limpiamos por si acaso
         localStorage.removeItem("aj_codigo");
         localStorage.removeItem("aj_tiempo");
       }
