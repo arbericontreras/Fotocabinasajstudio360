@@ -159,7 +159,7 @@
       const msg = $("msg"); msg.className = ""; $("result").hidden = true;
       codigo = codigo.trim().toUpperCase();
       if(!codigo){ msg.textContent = "Escribe el código de tu evento."; return; }
-      msg.textContent = "Buscando tu galería...";
+      msg.textContent = "Espera un momento...";
       try{
         const r = await fetch(API + "?codigo=" + encodeURIComponent(codigo));
         const d = await r.json();
