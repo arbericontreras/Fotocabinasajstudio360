@@ -1,10 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AJ Studio </title>
+<link rel="icon" type="image/x-icon" href="img/logo aj studio copia.png">
 <meta name="description" content="Alquiler de Cabina 360 y fotocabina con impresión para eventos en Bogotá. Cotiza al instante.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,7 +24,7 @@ h1,h2,h3{font-family:var(--head);line-height:1.1;font-weight:800;letter-spacing:
 .wrap{max-width:1100px;margin:0 auto;padding:0 20px}
 section{padding:80px 0}
 :focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
- 
+
 /* nav */
 header{position:sticky;top:0;z-index:20;background:rgba(251,250,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
 nav{display:flex;align-items:center;justify-content:space-between;height:68px;gap:16px}
@@ -38,8 +38,8 @@ nav{display:flex;align-items:center;justify-content:space-between;height:68px;ga
 .btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--ink)}
 .btn.ghost:hover{background:var(--ink);color:#fff}
 @media(max-width:760px){.links a:not(.btn){display:none}}
- 
-/* hero: la cabina gira, el aro también */
+
+/* hero */
 .hero{padding:64px 0 72px}
 .hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
 .hero h1{font-size:clamp(2.3rem,5.5vw,4rem);margin-bottom:18px}
@@ -53,14 +53,14 @@ nav{display:flex;align-items:center;justify-content:space-between;height:68px;ga
 @keyframes spin{to{transform:rotate(360deg)}}
 @media(max-width:820px){.hero .wrap{grid-template-columns:1fr}.stage{max-width:320px}}
 @media(prefers-reduced-motion:reduce){.ring{animation:none}html{scroll-behavior:auto}}
- 
+
 /* características */
 .feats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:28px}
 .feats h3{font-size:1.25rem;margin-bottom:6px}
 .feats p{color:var(--muted);font-size:.98rem}
 .feats div{border-top:3px solid var(--cyan);padding-top:16px}
 .feats div:nth-child(even){border-color:var(--pink)}
- 
+
 /* cotizador */
 .band{background:var(--soft)}
 .sec-head{margin-bottom:36px;max-width:60ch}
@@ -92,12 +92,10 @@ nav{display:flex;align-items:center;justify-content:space-between;height:68px;ga
 .sum li{padding:6px 0;border-bottom:1px solid var(--line)}
 .sum .btn{width:100%;text-align:center}
 .note{font-size:.85rem;color:var(--muted);margin-top:12px}
- 
+
 /* experiencias */
-.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
-.gal img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:14px;background:var(--soft)}
 video{width:100%;max-height:460px;border-radius:18px;background:#000;margin-bottom:16px}
- 
+
 /* contacto */
 .contact{display:grid;grid-template-columns:1fr 1fr;gap:32px}
 @media(max-width:780px){.contact{grid-template-columns:1fr}}
@@ -108,26 +106,7 @@ iframe{width:100%;height:340px;border:0;border-radius:18px}
 footer{padding:28px 0;text-align:center;color:var(--muted);font-size:.9rem;border-top:1px solid var(--line)}
 .wa{position:fixed;right:18px;bottom:18px;z-index:30;background:#25d366;color:#fff;width:58px;height:58px;border-radius:50%;display:grid;place-items:center;box-shadow:0 6px 18px rgba(0,0,0,.2);text-decoration:none}
 .wa svg{width:30px;height:30px;fill:#fff}
- 
-/* portal de fotos */
-.codebox{display:flex;gap:10px;flex-wrap:wrap;max-width:520px}
-.codebox input{flex:1;min-width:200px;border:2px solid var(--line);border-radius:999px;padding:13px 20px;font:1rem var(--body);text-transform:uppercase;background:#fff;color:var(--ink)}
-#msg{margin:14px 0;color:var(--muted);min-height:1.5em}
-#msg.err{color:#b3261e}
-.bar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:26px 0 14px}
-.bar h3{font-size:1.4rem}
-.items{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
-.item{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden}
-.thumb{position:relative;display:block;width:100%;border:0;padding:0;cursor:pointer;background:var(--soft)}
-.thumb img{width:100%;aspect-ratio:4/5;object-fit:cover}
-.thumb b{position:absolute;left:10px;bottom:10px;background:var(--ink);color:#fff;border-radius:999px;font-size:.75rem;padding:3px 10px}
-.item .acts{display:flex;gap:8px;padding:10px}
-.item .acts a,.item .acts button{flex:1;text-align:center;font:600 .9rem var(--body);padding:9px;border-radius:10px;text-decoration:none;cursor:pointer;border:2px solid var(--line);background:#fff;color:var(--ink)}
-.item .acts a{background:var(--ink);border-color:var(--ink);color:#fff}
-dialog{border:0;border-radius:18px;padding:0;width:min(900px,94vw);overflow:hidden}
-dialog::backdrop{background:rgba(27,23,64,.7)}
-dialog iframe{height:min(70vh,560px);border-radius:0}
-dialog .x{display:block;margin:10px 10px 10px auto;border:0;background:var(--soft);border-radius:999px;padding:8px 18px;font:600 .9rem var(--body);cursor:pointer;color:var(--ink)}
+
 /* chatbot */
 .bot-btn{position:fixed;right:18px;bottom:18px;z-index:30;background:var(--ink);color:#fff;border:0;border-radius:999px;padding:14px 22px;font:600 1rem var(--body);cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.2)}
 .bot{position:fixed;right:18px;bottom:78px;z-index:31;width:min(360px,calc(100vw - 36px));height:min(520px,70vh);background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:0 12px 40px rgba(27,23,64,.25);display:none;flex-direction:column;overflow:hidden}
@@ -198,9 +177,9 @@ dialog .x{display:block;margin:10px 10px 10px auto;border:0;background:var(--sof
       </div>
     </div>
     <div class="stage" aria-hidden="true">
-  <div class="ring"></div>
-  <div class="disc" id="disc"></div>
-</div>
+      <div class="ring"></div>
+      <div class="disc" id="disc"></div>
+    </div>
   </div>
 </section>
 
@@ -264,26 +243,8 @@ dialog .x{display:block;margin:10px 10px 10px auto;border:0;background:var(--sof
       <p>Algunos momentos de nuestros clientes con la Cabina 360 y la fotocabina.</p>
     </div>
     <div class="exp">
-  <video controls preload="metadata" playsinline><source src="img/videos/Reserva Ahora.mp4" type="video/mp4"></video>
-  <div class="show" id="show" aria-label="Fotos de eventos con la cabina"><div class="dots" id="dots"></div></div>
-</div>
-  </div>
-</section>
-
-<section id="fotos">
-  <div class="wrap">
-    <div class="sec-head">
-      <h2></h2>
-      <p></p>
-    </div>
-    <form class="codebox" id="codeForm">
-      <input id="codigo" placeholder="" autocomplete="off" aria-label="Código del evento">
-      <button class="btn" type="submit"></button>
-    </form>
-    <p id="msg" role="status"></p>
-    <div id="result" hidden>
-      <div class="bar"><h3 id="evName"></h3><button class="btn ghost" id="dlAll" type="button"></button></div>
-      <div class="items" id="items"></div>
+      <video controls preload="metadata" playsinline><source src="img/videos/Reserva Ahora.mp4" type="video/mp4"></video>
+      <div class="show" id="show" aria-label="Fotos de eventos con la cabina"><div class="dots" id="dots"></div></div>
     </div>
   </div>
 </section>
@@ -308,63 +269,61 @@ dialog .x{display:block;margin:10px 10px 10px auto;border:0;background:var(--sof
 
 <footer>AJ Studio / Geek Studio · © 2026 Todos los derechos reservados</footer>
 
-
 <script>
-  const HERO = ["fusion.png","cabinas.jpeg","foto1.jpg","foto2.jpg","5.jpeg","21.jpeg","11.jpeg"];
+const HERO = ["2.jpeg","cabinas.jpeg","foto1.jpg","whatsapp 6.jpeg","21.jpeg","foto3.jpeg","WhatsApp 1.jpeg"];
 const disc = document.getElementById("disc"); let h = 0;
 function hero(n){ const l=[...disc.querySelectorAll("img")]; if(!l.length) return; h=(n+l.length)%l.length; l.forEach((el,i)=>el.classList.toggle("on",i===h)); }
 HERO.forEach(f=>{ const i=new Image(); i.alt=""; i.onload=()=>hero(h); i.onerror=()=>{i.remove();hero(h);}; i.src="img/"+encodeURIComponent(f); disc.appendChild(i); });
 if(!matchMedia("(prefers-reduced-motion: reduce)").matches) setInterval(()=>hero(h+1),3000);
+
 /* ===== CONFIGURACIÓN: zonas y fechas sin disponibilidad ===== */
 const NO_SERVICIO = {
-  localidades: ["Sumapaz","Usme"],   // localidades sin servicio. Ej: "Sumapaz", "Ciudad Bolívar"
-  barrios: ["Arborizadora Alta", "Arborizadora Baja", "Barlovento", "Bella Vista", 
-  "Bellavista Jerusalén", "Buenavista Sur", 
-  "Caracolí", "Compartir", "El Capri", "El Paraíso", "El Tesoro", "Galán Sur", "Ismael Perdomo", "Jerusalén", "La Escala", 
-  "La Esmeralda", "Las Acacias", "Las Manitas", "Llanos de Chuntame", "Lucero Alto", 
-  "Lucero Bajo", "Lucero Medio", "Meissen", "Mochuelo Alto", 
-  "Mochuelo Bajo", "Monteblanco", "Nuestra Señora de la Paz", "Nube de San Antonio", 
-  "Paraíso Mirador", "Perdomo Alto", "Potosí", "Potosí Jerusalén", "Párroco", "Rincón del Perdomo", "Santo Domingo", "Sierra Morena", "Sotavento", "Tunas Bajo", 
+  localidades: ["Sumapaz","Usme"],   // localidades sin servicio
+  barrios: ["Arborizadora Alta", "Arborizadora Baja", "Barlovento", "Bella Vista",
+  "Bellavista Jerusalén", "Buenavista Sur",
+  "Caracolí", "Compartir", "El Capri", "El Paraíso", "El Tesoro", "Galán Sur", "Ismael Perdomo", "Jerusalén", "La Escala",
+  "La Esmeralda", "Las Acacias", "Las Manitas", "Llanos de Chuntame", "Lucero Alto",
+  "Lucero Bajo", "Lucero Medio", "Meissen", "Mochuelo Alto",
+  "Mochuelo Bajo", "Monteblanco", "Nuestra Señora de la Paz", "Nube de San Antonio",
+  "Paraíso Mirador", "Perdomo Alto", "Potosí", "Potosí Jerusalén", "Párroco", "Rincón del Perdomo", "Santo Domingo", "Sierra Morena", "Sotavento", "Tunas Bajo",
   "Vista Hermosa",
   "María Paz", "Patio Bonito", "El Amparo", "Corabastos",
-  
+
   // Los Mártires
   "La Estanzuela", "Samper Mendoza", "Santa Isabel", "Ricaurte", "Voto Nacional",
-  
+
   // Santa Fe
   "Las Cruces", "San Bernardo", "La Vera", "Las Nieves", "La Perseverancia",
-  
+
   // Bosa
   "San Bernardino", "Bosa Nova", "Campo Verde",
-  
+
   // Suba
   "Tibabuyes", "Bilbao", "Lisboa", "El Códito",
-  
-  
-  
+
   // San Cristóbal y Rafael Uribe Uribe
   "La Victoria", "Juan Rey", "Diana Turbay", "Molinos",
-  
+
   // Usme
   "Yomasa", "Santa Librada", "Alfonso López"
-  
-  
-]       // barrios sin servicio. Ej: "Barrio Ejemplo"
+  ]
 };
 const FECHAS_RESERVADAS = [];   // fechas ocupadas, formato AAAA-MM-DD. Ej: "2026-12-24"
 const MENSAJE_NO_DISPONIBLE = "Por el momento no tenemos disponibilidad para ese sector o esa fecha. Puedes probar con otra fecha.";
-const BARRIOS_BOGOTA = ["Castilla","Engativá","Suba","Teusaquillo","Los Mártires","Antonio Nariño","Puente Aranda","Candelaria"];      // pega aquí la lista de barrios para el autocompletado
+const BARRIOS_BOGOTA = ["Castilla","Engativá","Suba","Teusaquillo","Los Mártires","Antonio Nariño","Puente Aranda","Candelaria"];
 const LOCALIDADES = ["Usaquén","Chapinero","Santa Fe","San Cristóbal","Usme","Tunjuelito","Bosa","Kennedy","Fontibón","Engativá","Suba","Barrios Unidos","Teusaquillo","Los Mártires","Antonio Nariño","Puente Aranda","La Candelaria","Rafael Uribe Uribe","Ciudad Bolívar","Sumapaz"];
 const peso = n => "$" + n.toLocaleString("es-CO") + " COP";
 const PLANES = [
-  {id:"basico", nombre:"Básico DIY", desc:"Cada invitado graba su propio video 360° con su celular.", precios:[150000,220000,310000,400000],
-   incluye:["Accesorios divertidos (props)","Plataforma estable de 60 cm"]},
-  {id:"pro", nombre:"Digital Pro", tag:"Popular", desc:"Video con efectos y música, enviado al instante.", precios:[180000,300000,450000,580000],
+  {id:"basico", nombre:"Cabina 360", desc:"Grabacion de tu video con efectos de audio y video", precios:[180000,300000,450000,580000],
+   incluye:["Qr para descarga inmediata del video","Plataforma estable de 60 cm"]},
+  {id:"pro", nombre:"Digital Pro", tag:"Popular", desc:"Cabina Digital con efectos(Proms y tira de fotos digital), enviado al instante.", precios:[180000,300000,450000,580000],
    incluye:["Efectos: confeti, burbujas, corazones, estrellas","Música y cámara lenta","Envío inmediato  (requiere internet)"]},
   {id:"tira", nombre:"Impresión en tira", desc:"Fotocabina con recuerdos físicos impresos al momento.", precios:[220000,390000,560000,700000],
    incluye:["Tira impresa con tres fotos","Personalización con el logo del evento","Accesorios (props) incluidos"]},
-  {id:"premium", nombre:"Full Premium", desc:"Cabina 360 y fotocabina juntas: la experiencia completa.", precios:[300000,420000,600000,790000],
-   incluye:["Tira impresa con tres fotos","Videos digitales inmediatos","Experiencia 360 + fotocabina"]}
+  {id:"completo", nombre:"Completo", desc:"Cabina 360 y fotocabina impresión tira: la experiencia completa.", precios:[300000,420000,600000,790000],
+   incluye:["Tira impresa con tres fotos + logo","Videos digitales inmediatos","Experiencia 360 + fotocabina de impresión"]},
+  {id:"premium", nombre:"Full Premium", desc:"Cabina 360 + fotocabina digital y fotocabina impresión tira: la experiencia más completa.", precios:[380000,500000,680000,870000],
+   incluye:["Tira impresa y digital con tres fotos + logo","Videos digitales inmediatos","Experiencia 360 + fotocabina de impresión + fotos con proms digitales y efectos"]}
 ];
 let sel = "pro", horas = 2;
 
@@ -404,7 +363,7 @@ render();
 
 document.querySelectorAll(".wa-link").forEach(a=>a.addEventListener("click",e=>{ e.preventDefault(); abrirBot(); }));
 
-const FOTOS = ["cabinas.jpeg","WhatsApp 1.jpeg","foto1.jpg","WhatsApp 3.jpeg","foto2.jpg","WhatsApp 4.jpeg","WhatsApp 5.jpeg"];
+const FOTOS = ["cabinas.jpeg","WhatsApp 1.jpeg","foto1.jpg","WhatsApp 3.jpeg","foto2.jpg","WhatsApp 4.jpeg","WhatsApp 5.jpeg","22.jpeg"];
 const show = document.getElementById("show"), dots = document.getElementById("dots");
 let idx = 0, timer;
 const slides = () => [...show.querySelectorAll("img")];
@@ -415,24 +374,22 @@ function refrescar(){ dots.innerHTML=""; slides().forEach((_,i)=>{ const b=docum
 FOTOS.forEach(f=>{ const i=new Image(); i.alt="Evento con la Cabina 360 de AJ Studio"; i.onload=refrescar; i.onerror=()=>{i.remove();refrescar();}; i.src="img/"+encodeURIComponent(f); show.insertBefore(i,dots); });
 show.onmouseenter=()=>clearInterval(timer); show.onmouseleave=iniciar; iniciar();
 </script>
-<dialog id="dlg"><button class="x" id="dlgX">Cerrar</button><iframe id="dlgF" title="Vista previa" allow="autoplay" allowfullscreen></iframe></dialog>
 
 <button class="bot-btn" id="botBtn" aria-expanded="false" aria-controls="bot"><img src="img/deep.png" alt="" onerror="this.remove()"><span>Asesor del evento</span></button>
 <div class="bot" id="bot" role="dialog" aria-label="Asistente de AJ Studio">
   <header><span style="display:flex;align-items:center;gap:8px"><img class="av" src="img/deep.png" alt="" onerror="this.remove()">Asistente AJ Studio</span> <button id="botX" aria-label="Cerrar">×</button></header>
   <div class="log" id="log"></div>
   <div class="opts" id="opts"></div>
-  <form class="say" id="say"><input id="sayIn" placeholder="Escribe tu pregunta" aria-label="Tu pregunta"><button>Enviar</button></form>
+  <form class="say" id="say"><input id="sayIn" placeholder="Escribe tu respuesta o pregunta" aria-label="Tu respuesta o pregunta"><button>Enviar</button></form>
 </div>
 
 <script>
-/* ===== Portal de fotos (Google Drive vía Apps Script) ===== */
-const API = "https://script.google.com/macros/s/AKfycbz3WHzzlTlrWMBh7LGNtwyKwRj4ZvvOeA2BO4Ax5B9rpwYZ9VBtVD8Gj6LAfs55evg/exec";
 const $ = id => document.getElementById(id);
 LOCALIDADES.forEach(l=>$("loc").add(new Option(l,l)));
 BARRIOS_BOGOTA.forEach(b=>$("lista-barrios").appendChild(new Option(b)));
 const norm = x => (x||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
 const sinServicio = (loc,b) => NO_SERVICIO.localidades.some(l=>norm(l)===norm(loc)) || NO_SERVICIO.barrios.some(x=>norm(x)===norm(b));
+
 function validar(){
   const v = id => $(id).value.trim();
   const campos = [["fecha","la fecha"],["ciudad","la ciudad"],["barrio","el barrio"],["dir","la dirección"]];
@@ -446,77 +403,23 @@ function validar(){
   if(sinServicio(v("loc"),v("barrio")) || FECHAS_RESERVADAS.includes(v("fecha"))){ err.textContent = MENSAJE_NO_DISPONIBLE; return false; }
   err.textContent = ""; return true;
 }
-let archivos = [];
-let codigoActual = "";
-const esIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform==="MacIntel" && navigator.maxTouchPoints>1);
-
-async function descargar(a, btn){
-  if(esIOS && navigator.canShare){
-    const txt = btn.textContent; btn.textContent = "Preparando..."; btn.disabled = true;
-    try{
-      const r = await fetch(`${API}?codigo=${encodeURIComponent(codigoActual)}&archivo=${a.id}`);
-      const d = await r.json();
-      if(d.ok){
-        const bytes = Uint8Array.from(atob(d.b64), c=>c.charCodeAt(0));
-        const file = new File([bytes], d.nombre, {type:d.mime});
-        if(navigator.canShare({files:[file]})){
-          await navigator.share({files:[file]});   // aquí sale "Guardar imagen/video"
-          btn.textContent = txt; btn.disabled = false; return;
-        }
-      }
-    }catch(err){
-      if(err && err.name==="AbortError"){ btn.textContent = txt; btn.disabled = false; return; } // el usuario canceló
-    }
-    btn.textContent = txt; btn.disabled = false;
-  }
-  location.href = a.descargar;   // Android y respaldo en iPhone
-}
-async function buscar(codigo){
-  const msg = $("msg"); msg.className = ""; $("result").hidden = true;
-  codigo = codigo.trim().toUpperCase();
-  if(!codigo){ msg.textContent = "Escribe el código de tu evento."; return; }
-  if(API.indexOf("PEGA")===0){ msg.className="err"; msg.textContent = "El portal aún no está conectado a Drive."; return; }
-  msg.textContent = "Espera un momento...";
-  try{
-    const r = await fetch(API + "?codigo=" + encodeURIComponent(codigo));
-    const d = await r.json();
-    if(!d.ok){ msg.className="err"; msg.textContent = d.error || "No encontramos ese código. Revisa que esté bien escrito."; return; }
-    archivos = d.archivos; msg.textContent = "";
-    codigoActual = codigo;
-    $("evName").textContent = d.evento + " · " + archivos.length + " archivos";
-    $("items").innerHTML = "";
-   archivos.forEach(a=>{
-  a.descargar = `https://drive.usercontent.google.com/download?id=${a.id}&export=download&confirm=t`;
-  a.ver = a.tipo==="video" ? `https://drive.google.com/file/d/${a.id}/preview`
-                           : `https://drive.google.com/thumbnail?id=${a.id}&sz=w1800`;
-  const el = document.createElement("div"); el.className = "item";
-  el.innerHTML = `<button class="thumb" type="button" aria-label="Ver ${a.nombre}"><img src="${a.thumb}" alt="" loading="lazy">${a.tipo==="video"?"<b>Video</b>":""}</button>
-    <div class="acts"><button type="button" class="ver">Ver</button><button type="button" class="dl" style="background:var(--ink);border-color:var(--ink);color:#fff">Descargar</button></div>`;
-  const abrir = ()=>{ $("dlgF").src = a.ver; $("dlg").showModal(); };
-  el.querySelector(".thumb").onclick = abrir;
-  el.querySelector(".ver").onclick = abrir;
-  el.querySelector(".dl").onclick = e => descargar(a, e.currentTarget);
-  $("items").appendChild(el);
-});
-    $("result").hidden = false;
-  }catch(e){ msg.className="err"; msg.textContent = "No pudimos cargar la galería. Intenta de nuevo en un momento."; }
-}
-$("codeForm").onsubmit = e => { e.preventDefault(); buscar($("codigo").value); };
-$("dlgX").onclick = () => $("dlg").close();
-$("dlg").addEventListener("close", () => $("dlgF").src = "about:blank");
-$("dlAll").onclick = () => {
-  if(!confirm("Se descargarán " + archivos.length + " archivos. Si tu navegador pregunta, permite las descargas múltiples. ¿Continuar?")) return;
-  archivos.forEach((a,i)=>setTimeout(()=>{ const l=document.createElement("a"); l.href=a.descargar; l.download=""; document.body.appendChild(l); l.click(); l.remove(); }, i*900));
-};
-/* Enlace directo (para el QR): tusitio.com/?codigo=BODA-ANA-0612 */
-const cod = new URLSearchParams(location.search).get("codigo");
-if(cod){ $("codigo").value = cod.toUpperCase(); buscar(cod); setTimeout(()=>$("fotos").scrollIntoView(),300); }
 
 /* ===== Chatbot asesor de eventos ===== */
-const ASESORES = [{n:"Angela",w:"573106250804"},{n:"Jose_Arberi",w:"573204981495"}];
+
+/* Para agregar más asesores, añade una línea: {n:"Nombre", w:"57XXXXXXXXXX"} */
+const ASESORES = [
+  {n:"Angela",      w:"573106250804"},
+  {n:"Jose Arberi", w:"573204981495"}
+  // ,{n:"Nuevo asesor", w:"573001234567"}
+];
+const asesorAzar = () => ASESORES[Math.floor(Math.random()*ASESORES.length)];
+
 const TIPOS = ["Boda","Quince años","Cumpleaños","Evento corporativo","Grado","Otro"];
-const INV = ["Hasta 50","De 50 a 100","De 100 a 200","Más de 200"];
-const OBJ = ["Videos 360 para redes","Fotos impresas","Ambos"];
+const INV   = ["Hasta 50","De 50 a 100","De 100 a 200","Más de 200"];
+const HORAS = [1,2,3,4];
+const OBJ   = ["Videos 360 para redes","Fotos impresas","Fotos digitales (proms)","360 + fotos impresas","Las 3 máquinas"];
+const PLAN_POR_OBJ = ["basico","tira","pro","completo","premium"];   /* mismo orden que OBJ */
+
 const TIPS = {
  "Boda":"Consejo: activa la cabina después o antes del vals, cuando la pista ya está animada, y déjala disponible hasta el final.",
  "Quince años":"Consejo: úsala después o antes del vals y la hora loca, y pide a la quinceañera y su corte que inviten al resto.",
@@ -524,42 +427,110 @@ const TIPS = {
  "Evento corporativo":"Consejo: puedes pedir marco o tira con el logo de tu empresa; funciona muy bien en cierres de año y lanzamientos.",
  "Grado":"Consejo: un marco con el año y el nombre de la promoción convierte los videos y fotos en recuerdo de grado.",
  "Otro":"Consejo: cuéntale a tu asesor el ambiente del evento para elegir la mejor ubicación de la cabina."};
-const AREA = {basico:"2 x 2 m",pro:"2 x 2 m",tira:"2 x 2 m",premium:"3 x 3 m"};
-const espacio = id => `Para dar un buen servicio te recomiendo:\n• Un lugar luminoso, con buena luz del salón  y sin luces de colores fuertes.\n• Un área libre de unos ${AREA[id||"pro"]} aproximadamente, sin mesas ni columnas alrededor.\n• Un tomacorriente cercano, idealmente a menos de 3 m de donde quedará la cabina.\n• Piso firme y plano, lejos del paso de meseros o el baño.`;
+const AREA = {basico:"2 x 2 m",pro:"2 x 2 m",tira:"2 x 2 m",completo:"3 x 3 m",premium:"4 x 4 m"};
+const espacio = id => `Para dar un buen servicio te recomiendo:\n• Un lugar luminoso, con buena luz del salón y sin luces de colores fuertes.\n• Un área libre de unos ${AREA[id||"pro"]} aproximadamente, sin mesas ni columnas alrededor.\n• Un tomacorriente cercano, idealmente a menos de 3 m de donde quedará la cabina.\n• Piso firme y plano, lejos del paso de meseros o el baño.`;
+const hTxt = h => h+(h===1?" hora":" horas");
+
 let ctx = {};
+let nombre = "";   /* nombre del cliente: se conserva aunque el flujo se reinicie */
 const wa = (n,t) => `https://wa.me/${n}?text=${encodeURIComponent(t)}`;
 function say(t,c){ const d=document.createElement("div"); d.className="m "+c; d.textContent=t; $("log").appendChild(d); $("log").scrollTop=1e9; }
 function opts(list){ $("opts").innerHTML=""; list.forEach(([l,f])=>{ const b=document.createElement("button"); b.type="button"; b.textContent=l; b.onclick=()=>{ say(l,"u"); setTimeout(f,200); }; $("opts").appendChild(b); }); }
-function inicio(){ ctx={}; say("¿Qué tipo de evento vas a celebrar?","b");
-  opts([...TIPOS.map(t=>[t,()=>{ctx.tipo=t;pInv();}]),["Descargar mis fotos",guiaFotos]]); }
-function pInv(){ say("¿Cuántos invitados esperas?","b"); opts(INV.map(v=>[v,()=>{ctx.inv=v;pObj();}])); }
-function pObj(){ say("¿Qué quieres que se lleven tus invitados?","b"); opts(OBJ.map(v=>[v,()=>{ctx.obj=v;recomendar();}])); }
+
+/* --- Nombre del cliente: se pregunta una sola vez y luego continúa lo que estaba pendiente --- */
+function pedirNombre(luego){
+  ctx.esperando="nombre"; ctx.luego=luego;
+  say("¿Cómo te llamas?","b"); opts([]);
+}
+
+/* --- Flujo: nombre → tipo → invitados → horas → objetivo (se omite si son +200) → recomendación --- */
+function inicio(){
+  ctx={};
+  if(!nombre) pedirNombre(preguntaTipo); else preguntaTipo();
+}
+function preguntaTipo(){
+  say(`¿Qué tipo de evento vas a celebrar${nombre?", "+nombre:""}?`,"b");
+  opts([...TIPOS.map(t=>[t,()=>{ctx.tipo=t;pInv();}]),["Descargar mis fotos",guiaFotos]]);
+}
+
+function pInv(){ say("¿Cuántos invitados esperas?","b"); opts(INV.map(v=>[v,()=>{ctx.inv=v;pHoras();}])); }
+
+function pHoras(){ say("¿Cuántas horas de servicio necesitas?","b");
+  opts(HORAS.map(h=>[hTxt(h),()=>{
+    ctx.h=h;
+    if(ctx.inv===INV[3]){ ctx.obj=OBJ[4]; recomendar(); }   /* más de 200 → Full Premium directo */
+    else pObj();
+  }])); }
+
+function pObj(){ ctx.paso="obj"; say("¿Qué quieres para tus invitados? Si no estás seguro, te recomiendo yo según tus invitados y horas.","b");
+  opts([["Recomiéndame uno",recomendarAuto],...OBJ.map(v=>[v,()=>{ctx.obj=v;recomendar();}])]); }
+
+/* --- Recomendación automática según invitados, horas y tipo de evento --- */
+function planAuto(){
+  const g = INV.indexOf(ctx.inv), h = ctx.h;
+  let id, r;
+  if(g===3){ id="premium"; r="con más de 200 invitados necesitas la experiencia más completa para que nadie se quede sin participar."; }
+  else if(g===2){
+    if(h>=3){ id="premium"; r="con 100 a 200 invitados y "+hTxt(h)+" hay tiempo para que todos prueben el video 360, las fotos digitales y la tira impresa."; }
+    else { id="completo"; r="con 100 a 200 invitados combina el video 360 con la tira impresa, así hay recuerdo para todos."; }
+  }
+  else if(g===1){
+    if(h>=4){ id="completo"; r="con 50 a 100 invitados y 4 horas alcanza para el video 360 y la tira impresa sin filas largas."; }
+    else { id="tira"; r="con 50 a 100 invitados la tira impresa es el recuerdo que se llevan en la mano."; }
+  }
+  else {
+    if(ctx.tipo==="Evento corporativo"){ id="tira"; r="para un evento corporativo la tira impresa lleva el logo de tu empresa."; }
+    else { id="pro"; r="para un grupo de hasta 50 invitados la opción digital es práctica, muy animada y de buen precio."; }
+  }
+  if(h===1 && g>=2) r += "\n\nOjo: con tantos invitados 1 hora puede quedarse corta; te sugiero 2 o 3 horas.";
+  return {id,r};
+}
+function recomendarAuto(){ ctx.auto=true; ctx.obj="Que le recomienden un plan"; recomendar(); }
+
 function recomendar(){
-  const h = Math.min(4, INV.indexOf(ctx.inv)+2);
-  const id = ctx.obj===OBJ[2] ? "premium" : ctx.obj===OBJ[1] ? "tira" : "pro";
-  const p = PLANES.find(x=>x.id===id); ctx.plan=id; ctx.h=h;
-  let t = `Para ${ctx.tipo.toLowerCase()} con ${ctx.inv.toLowerCase()} invitados te recomiendo:\n\n${p.nombre} · ${h} horas · ${peso(p.precios[h-1])}\nIncluye 2 operadores de logística.\n\n${TIPS[ctx.tipo]}`;
-  if(h===4 && ctx.inv===INV[3]) t += "\n\nCon más de 200 invitados, un asesor puede revisar contigo si conviene más tiempo.";
+  ctx.paso=null;
+  const auto = ctx.auto ? planAuto() : null;
+  const id = ctx.inv===INV[3] ? "premium" : auto ? auto.id : PLAN_POR_OBJ[OBJ.indexOf(ctx.obj)];
+  const p = PLANES.find(x=>x.id===id); ctx.plan=id;
+  let t = `${nombre?nombre+", p":"P"}ara ${ctx.tipo.toLowerCase()} con ${ctx.inv.toLowerCase()} invitados te recomiendo:\n\n${p.nombre} · ${hTxt(ctx.h)} · ${peso(p.precios[ctx.h-1])}\nIncluye: ${["2 operadores de logística",...p.incluye].join(", ")}.\n\n${TIPS[ctx.tipo]}`;
+  if(ctx.inv===INV[3]){
+    t += "\n\nPara más de 200 invitados el Full Premium es la mejor opción: es la experiencia más completa y más gente puede participar.";
+    if(ctx.h<4) t += " Si quieres, un asesor te ayuda a revisar si conviene más tiempo.";
+  }
+  if(auto && ctx.inv!==INV[3]) t += "\n\nLo elegí porque "+auto.r;
   say(t,"b"); say(espacio(id),"b");
   opts([["Enviar cotización a un asesor",pLugar],["Ajustar en el cotizador",usarCot],["Empezar de nuevo",inicio]]);
 }
+
 function usarCot(){
   sel = ctx.plan; horas = ctx.h; $("p-"+sel).checked = true;
   const t=$("tipo"); [...t.options].forEach(o=>{ if(o.text===ctx.tipo) t.value=o.text; });
   render(); cerrarBot(); $("cotizar").scrollIntoView({behavior:"smooth"});
 }
+
+/* --- Descarga de fotos: el bot lleva a descargar.html --- */
 function guiaFotos(){
-  say("Te guío para descargar tus fotos y videos:\n1. Ve a la sección Mis fotos y videos.\n2. Escribe el código de tu evento y toca Ver mi galería.\n3. Toca Ver para abrir una foto o video, o Descargar para guardarla.\n4. Para bajar todo junto, usa Descargar todo y permite las descargas múltiples si el navegador lo pide.\n\nEn el celular, los archivos quedan en Descargas o en tu galería.","b");
-  opts([["Llevarme a mis fotos",()=>{ cerrarBot(); $("fotos").scrollIntoView({behavior:"smooth"}); setTimeout(()=>$("codigo").focus({preventScroll:true}),600); }],
-    ["No tengo mi código",()=>{ say("El código te lo entregamos al terminar tu evento. Si no lo tienes, un asesor te lo envía.","b"); opts([["Pedir mi código",()=>{ctx={msg:"Hola, necesito el código de mi evento para descargar mis fotos y videos."};asesor();}],["Volver al inicio",inicio]]); }],
-    ["No me descarga",()=>{ say("Prueba esto:\n• Si es un video grande, espera unos minutos: Drive tarda en procesarlo.\n• Si el navegador bloquea la descarga, permite las descargas múltiples o descarga de a un archivo.\n• Revisa tu conexión y que el código esté bien escrito.\n\nSi sigue fallando, un asesor te ayuda.","b"); opts([["Hablar con un asesor",()=>{ctx={msg:"Hola, tengo problemas para descargar mis fotos y videos."};asesor();}],["Volver al inicio",inicio]]); }]]);
+  say("Para descargar tus fotos y videos:\n1. Toca el botón \"Descargar mis fotos\" del menú de arriba.\n2. Sigue los pasos en esa página.\n\nEn el celular, los archivos quedan en Descargas o en tu galería.","b");
+  opts([
+    ["Ir a descargar mis fotos",()=>{ location.href="descargar.html"; }],
+    ["Necesito ayuda",()=>{ ctx.msg="Hola, tengo problemas para descargar mis fotos y videos."; contactar(); }],
+    ["Volver al inicio",inicio]
+  ]);
 }
+
+/* --- Datos del lugar --- */
 function pLugar(){ ctx.lugar={}; say("Para enviar tu cotización necesito los datos del evento. ¿En qué localidad es?","b");
   opts(LOCALIDADES.map(l=>[l,()=>{ ctx.lugar.loc=l; ctx.esperando="barrio"; say("¿En qué barrio?","b"); opts([]); }])); }
 function bloqueado(){ ctx.esperando=null; say(MENSAJE_NO_DISPONIBLE,"b"); opts([["Cambiar fecha o ubicación",pLugar],["Empezar de nuevo",inicio]]); }
 function pasoTexto(t){
   const e=ctx.esperando, L=ctx.lugar;
-  if(e==="barrio"){ if(t.length<3) return say("Escribe el nombre del barrio.","b");
+  if(e==="nombre"){
+    const n=t.replace(/\s+/g," ").trim().slice(0,40);
+    if(n.length<2) return say("Escribe tu nombre, por favor.","b");
+    nombre=n; ctx.esperando=null;
+    say(`Mucho gusto, ${nombre}.`,"b");
+    const f=ctx.luego; ctx.luego=null; if(f) f(); }
+  else if(e==="barrio"){ if(t.length<3) return say("Escribe el nombre del barrio.","b");
     L.barrio=t; if(sinServicio(L.loc,t)) return bloqueado();
     ctx.esperando="dir"; say("¿Cuál es la dirección del evento?","b"); }
   else if(e==="dir"){ if(t.length<5) return say("Escribe la dirección completa, por ejemplo: Calle 10 # 20-30.","b");
@@ -568,19 +539,27 @@ function pasoTexto(t){
     if(m){ const d=new Date(+m[3],+m[2]-1,+m[1]); if(d.getMonth()===+m[2]-1 && d>=new Date(new Date().toDateString())) iso=`${m[3]}-${m[2].padStart(2,"0")}-${m[1].padStart(2,"0")}`; }
     if(!iso) return say("No pude leer esa fecha. Escríbela como dd/mm/aaaa, por ejemplo 15/12/2026, y que sea una fecha futura.","b");
     if(FECHAS_RESERVADAS.includes(iso)) return bloqueado();
-    L.fecha=`${m[1]}/${m[2]}/${m[3]}`; ctx.esperando=null; asesor(); }
+    L.fecha=`${m[1]}/${m[2]}/${m[3]}`; ctx.esperando=null; contactar(); }
 }
-function asesor(){ say("¿Con cuál asesor prefieres hablar por WhatsApp?","b");
-  opts([...ASESORES.map(a=>["WhatsApp "+a.n,()=>abrir(a)]),["Volver al inicio",inicio]]); }
-function abrir(a){
+
+/* --- Asesor al azar: el cliente no elige, solo se le dice con quién hablará --- */
+function contactar(){
+  if(!nombre) return pedirNombre(contactar);   /* si aún no tenemos el nombre, se pide primero */
+  const a = asesorAzar();
   let m = "Hola, vengo de la página de AJ Studio y quiero asesoría para mi evento.";
   if(ctx.msg) m = ctx.msg;
   else if(ctx.plan){ const p=PLANES.find(x=>x.id===ctx.plan);
-    m = `Hola, quiero esta cotización para mi evento:\nEvento: ${ctx.tipo}\nInvitados: ${ctx.inv}\nBusco: ${ctx.obj}\nPlan: ${p.nombre}, ${ctx.h} horas (${peso(p.precios[ctx.h-1])})\nIncluye 2 operadores de logística.`+(ctx.lugar?`\nFecha: ${ctx.lugar.fecha}\nCiudad: Bogotá\nLocalidad: ${ctx.lugar.loc}\nBarrio: ${ctx.lugar.barrio}\nDirección: ${ctx.lugar.dir}`:"")+`\n¿Tienen disponibilidad?`; }
-  window.open(wa(a.w,m),"_blank","noopener");
-  say("Listo, te llevé con el asesor del "+a.n+" con tu cotización ya escrita. Ahí confirma disponibilidad y los detalles.","b");
-  opts([["Nueva recomendación",inicio]]);
+    m = `Hola, quiero esta cotización para mi evento:\nEvento: ${ctx.tipo}\nInvitados: ${ctx.inv}\nBusco: ${ctx.obj}\nPlan: ${p.nombre}, ${hTxt(ctx.h)} (${peso(p.precios[ctx.h-1])})\nIncluye 2 operadores de logística.`
+      +(ctx.lugar?`\nFecha: ${ctx.lugar.fecha}\nCiudad: Bogotá\nLocalidad: ${ctx.lugar.loc}\nBarrio: ${ctx.lugar.barrio}\nDirección: ${ctx.lugar.dir}`:"")
+      +`\n¿Tienen disponibilidad?`; }
+  m = m.replace(/^Hola, /, `Hola, soy ${nombre}. `);
+  const url = wa(a.w,m);
+  say(`Listo, ${nombre}, te voy a contactar con ${a.n} por WhatsApp. Ahí confirmas disponibilidad y detalles, con tu cotización ya escrita.\n\nSi no se abre solo, toca el botón.`,"b");
+  window.open(url,"_blank","noopener");
+  opts([["Abrir WhatsApp con "+a.n,()=>window.open(url,"_blank","noopener")],["Nueva recomendación",inicio]]);
 }
+
+/* --- Preguntas libres --- */
 function faq(t){
   t=t.toLowerCase();
   if(/espacio|ilumin|luz|[aá]rea|metros|corriente|enchufe|lugar/.test(t)) return espacio(ctx.plan);
@@ -592,17 +571,24 @@ function faq(t){
 }
 $("say").onsubmit = e => { e.preventDefault(); const t=$("sayIn").value.trim(); if(!t) return; $("sayIn").value=""; say(t,"u");
   if(ctx.esperando){ pasoTexto(t); return; }
+  if(/recomiend|sugier|aconsej|cu[aá]l me conviene|no s[eé]/i.test(t)){
+    if(ctx.inv && ctx.h){ setTimeout(recomendarAuto,250); return; }
+    setTimeout(()=>{ say("Con gusto. Respóndeme unas preguntas rápidas y te recomiendo el plan ideal.","b"); inicio(); },250); return; }
   const r = faq(t);
   if(!r && /foto|video|descarg|c[oó]digo|galer/i.test(t)){ setTimeout(guiaFotos,250); return; }
-  setTimeout(()=>{ if(r) say(r,"b"); else { say("Eso lo resuelve mejor un asesor. ¿Quieres hablar con uno o que te recomiende según tu evento?","b"); opts([["Hablar con un asesor",asesor],["Recomiéndame algo",inicio]]); } },250); };
+  setTimeout(()=>{ if(r) say(r,"b"); else { say("Eso lo resuelve mejor un asesor. ¿Quieres que te contacte uno o que te recomiende según tu evento?","b"); opts([["Que me contacte un asesor",contactar],["Recomiéndame algo",inicio]]); } },250); };
+
 function cerrarBot(){ $("bot").classList.remove("on"); $("botBtn").setAttribute("aria-expanded","false"); }
+const saludo = () => { say("¡Hola! Soy el asistente de AJ Studio. Te ayudo a elegir el plan ideal para tu evento.","b"); inicio(); };
 $("botBtn").onclick = () => { const on=$("bot").classList.toggle("on"); $("botBtn").setAttribute("aria-expanded",on);
-  if(on && !$("log").children.length){ say("¡Hola! Soy el asistente de AJ Studio. Te ayudo a elegir el plan ideal para tu evento.","b"); inicio(); } };
+  if(on && !$("log").children.length) saludo(); };
 $("botX").onclick = cerrarBot;
 function abrirBot(saludar=true){ $("bot").classList.add("on"); $("botBtn").setAttribute("aria-expanded","true");
-  if(saludar && !$("log").children.length){ say("¡Hola! Soy el asistente de AJ Studio. Te ayudo a elegir el plan ideal para tu evento.","b"); inicio(); } }
+  if(saludar && !$("log").children.length) saludo(); }
+
+/* Botón "Enviar cotización (Reservar)" del cotizador */
 $("send").onclick = e => { e.preventDefault(); if(!validar()) return; abrirBot(false); ctx={msg:window.cotMsg}; say("Enviar la cotización que armé","u");
-  asesor(); };
+  contactar(); };
 </script>
 </body>
 </html>

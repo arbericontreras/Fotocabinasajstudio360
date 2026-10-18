@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Descargar mis fotos y videos - AJ Studio</title>
+  <title>AJ Studio descargas</title>
+  <link rel="icon" type="image/png" href="img/logo aj studio copia.png">
   <!-- Fuentes profesionales -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,17 +26,15 @@
     .wrap { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
     header { position: sticky; top: 0; z-index: 20; background: rgba(251,250,255,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
     nav { display: flex; align-items: center; justify-content: space-between; height: 68px; gap: 16px; }
-    .brand { font-family: var(--head); font-weight: 800; font-size: 1.2rem; color: var(--ink); }
-    .links { display: flex; gap: 24px; align-items: center; }
-    .links a { font-weight: 500; font-size: .95rem; }
-    .links a:hover { color: var(--pink); }
     
+    /* Estilo para el logo en la barra de navegación */
+    .brand { display: flex; align-items: center; gap: 10px; font-family: var(--head); font-weight: 800; font-size: 1.2rem; color: var(--ink); }
+    .brand img { height: 38px; width: auto; object-fit: contain; }
+
     .btn { display: inline-block; background: var(--pink); color: #fff; border: 0; border-radius: 999px; padding: 13px 26px; font: 600 1rem var(--body); cursor: pointer; text-align: center; }
     .btn:hover { background: #c92a67; }
     .btn.ghost { background: transparent; color: var(--ink); border: 2px solid var(--ink); padding: 9px 18px; }
     .btn.ghost:hover { background: var(--ink); color: #fff; }
-
-    @media(max-width: 760px) { .links a:not(.btn) { display: none; } }
 
     section { padding: 60px 0; }
     .sec-head { margin-bottom: 30px; max-width: 60ch; }
@@ -78,6 +77,18 @@
   </style>
 </head>
 <body>
+
+  <!-- Barra de navegación con el logo incorporado -->
+  <header>
+    <div class="wrap">
+      <nav>
+        <a class="brand" href="index.html">
+          <img src="img/logo aj studio copia.png" alt="AJ Studio Logo">
+          <span>AJ Studio</span>
+        </a>
+      </nav>
+    </div>
+  </header>
 
   <main>
     <section id="fotos">
@@ -181,9 +192,6 @@
         $("evName").textContent = d.evento + " · " + archivos.length + " archivos";
         $("items").innerHTML = "";
         archivos.forEach(a=>{
-          a.descargar = `https://drive.usercontent.google.com/download?id=${a.id}&export=download&confirm=t`;
-          a.ver = a.tipo==="video" ? `https://drive.google.com/file/d/${a.id}/preview`
-                                   : `https://drive.google.com/thumbnail?id=${a.id}&sz=w1800`;
           const el = document.createElement("div"); el.className = "item";
           el.innerHTML = `<button class="thumb" type="button" aria-label="Ver ${a.nombre}"><img src="${a.thumb}" alt="" loading="lazy">${a.tipo==="video"?"<b>Video</b>":""}</button>
             <div class="acts"><button type="button" class="ver">Ver</button><button type="button" class="dl">Descargar</button></div>`;
