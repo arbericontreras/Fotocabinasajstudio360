@@ -2,9 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <title>Cabina 360 · AJ Studio · Bogotá</title>
 <link rel="icon" type="image/png" href="img/logo aj studio copia.png">
 <link rel="apple-touch-icon" href="img/libro3.jpg">
@@ -167,10 +165,16 @@ dialog .x{display:block;margin:10px 10px 10px auto;border:0;background:var(--sof
 .dots button.on{background:#fff}
 @media(max-width:820px){.exp{grid-template-columns:minmax(0,1fr);gap:28px}.exp video{max-width:340px;margin:0 auto}}
 @media(prefers-reduced-motion:reduce){.show img{transition:none}}
+.say input{font-size:16px}
+.log{overscroll-behavior:contain}
+.opts button{min-height:38px}
+@media(max-width:520px){
+  .bot{left:0;right:0;bottom:0;width:100%;height:80dvh;max-height:calc(100dvh - 12px);border-radius:20px 20px 0 0}
+  body.chat-open{overflow:hidden}
+}
 .disc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .8s ease}
 .disc img.on{opacity:1}
 @media(prefers-reduced-motion:reduce){.disc img{transition:none}}
-
 </style>
 </head>
 <body>
@@ -202,10 +206,11 @@ dialog .x{display:block;margin:10px 10px 10px auto;border:0;background:var(--sof
         <a class="btn ghost wa-link" href="#" data-msg="Hola, tengo una pregunta sobre la Cabina 360.">Hablar con el asistente</a>
       </div>
     </div>
-  <div class="stage" aria-hidden="true">
-  <div class="ring"></div>
-  <div class="disc" id="disc"></div>
-</div>
+    <div class="stage" aria-hidden="true">
+      <div class="ring"></div>
+      <div class="disc" id="disc"></div>
+    </div>
+  </div>
 </section>
 
 <section id="cabina" style="padding-top:20px">
@@ -314,7 +319,7 @@ dialog .x{display:block;margin:10px 10px 10px auto;border:0;background:var(--sof
 
 
 <script>
-    const HERO = ["cabina jose 360.png","cabinas.jpeg","1.jpeg","2.jpeg","19.jpeg"];
+const HERO = ["cabina jose 360.png","cabinas.jpeg","1.jpeg","2.jpeg","19.jpeg"];
 const disc = document.getElementById("disc"); let h = 0;
 function hero(n){ const l=[...disc.querySelectorAll("img")]; if(!l.length) return; h=(n+l.length)%l.length; l.forEach((el,i)=>el.classList.toggle("on",i===h)); }
 HERO.forEach(f=>{ const i=new Image(); i.alt=""; i.onload=()=>hero(h); i.onerror=()=>{i.remove();hero(h);}; i.src="img/"+encodeURIComponent(f); disc.appendChild(i); });
@@ -419,7 +424,10 @@ function refrescar(){ dots.innerHTML=""; slides().forEach((_,i)=>{ const b=docum
 FOTOS.forEach(f=>{ const i=new Image(); i.alt="Evento con la Cabina 360 de AJ Studio"; i.onload=refrescar; i.onerror=()=>{i.remove();refrescar();}; i.src="img/"+encodeURIComponent(f); show.insertBefore(i,dots); });
 show.onmouseenter=()=>clearInterval(timer); show.onmouseleave=iniciar; iniciar();
 </script>
-<dialog id="dlg"><button class="x" id="dlgX">Cerrar</button><iframe id="dlgF" title="Vista previa" allow="autoplay" allowfullscreen></iframe></dialog>
+<dialog id="dlg"><button class="x" id="dlgX">Cerrar</button>
+  <img id="dlgI" alt="" style="display:none;width:100%;max-height:70vh;object-fit:contain;background:#000">
+  <iframe id="dlgF" title="Vista previa" allow="autoplay" allowfullscreen></iframe>
+  <div style="padding:12px;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap"><span style="font-size:.85rem;color:var(--muted)">Si el video no se reproduce, toca Descargar.</span><a id="dlgD" class="btn" href="#">Descargar</a></div></dialog>
 
 <button class="bot-btn" id="botBtn" aria-expanded="false" aria-controls="bot"><img src="img/deep.png" alt="" onerror="this.remove()"><span>Asesor del evento</span></button>
 <div class="bot" id="bot" role="dialog" aria-label="Asistente de AJ Studio">
@@ -433,6 +441,11 @@ show.onmouseenter=()=>clearInterval(timer); show.onmouseleave=iniciar; iniciar()
 /* ===== Portal de fotos (Google Drive vía Apps Script) ===== */
 const API = "https://script.google.com/macros/s/AKfycbz3WHzzlTlrWMBh7LGNtwyKwRj4ZvvOeA2BO4Ax5B9rpwYZ9VBtVD8Gj6LAfs55evg/exec";
 const $ = id => document.getElementById(id);
+const dl = id => `https://drive.usercontent.google.com/download?id=${id}&export=download&confirm=t`;
+function abrirVista(a){ const f=$("dlgF"), i=$("dlgI");
+  if(a.tipo==="foto"){ f.style.display="none"; f.src="about:blank"; i.style.display="block"; i.src=`https://drive.google.com/thumbnail?id=${a.id}&sz=w1600`; }
+  else { i.style.display="none"; i.removeAttribute("src"); f.style.display="block"; f.src=a.ver; }
+  $("dlgD").href=dl(a.id); $("dlg").showModal(); }
 LOCALIDADES.forEach(l=>$("loc").add(new Option(l,l)));
 BARRIOS_BOGOTA.forEach(b=>$("lista-barrios").appendChild(new Option(b)));
 const norm = x => (x||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
@@ -468,8 +481,8 @@ async function buscar(codigo){
     archivos.forEach(a=>{
       const el = document.createElement("div"); el.className = "item";
       el.innerHTML = `<button class="thumb" type="button" aria-label="Ver ${a.nombre}"><img src="${a.thumb}" alt="" loading="lazy">${a.tipo==="video"?"<b>Video</b>":""}</button>
-        <div class="acts"><button type="button">Ver</button><a href="${a.descargar}" download>Descargar</a></div>`;
-      el.querySelectorAll("button").forEach(b=>b.onclick=()=>{ $("dlgF").src = a.ver; $("dlg").showModal(); });
+        <div class="acts"><button type="button">Ver</button><a href="${dl(a.id)}">Descargar</a></div>`;
+      el.querySelectorAll("button").forEach(b=>b.onclick=()=>abrirVista(a));
       $("items").appendChild(el);
     });
     $("result").hidden = false;
@@ -480,7 +493,7 @@ $("dlgX").onclick = () => $("dlg").close();
 $("dlg").addEventListener("close", () => $("dlgF").src = "about:blank");
 $("dlAll").onclick = () => {
   if(!confirm("Se descargarán " + archivos.length + " archivos. Si tu navegador pregunta, permite las descargas múltiples. ¿Continuar?")) return;
-  archivos.forEach((a,i)=>setTimeout(()=>{ const l=document.createElement("a"); l.href=a.descargar; l.download=""; document.body.appendChild(l); l.click(); l.remove(); }, i*900));
+  archivos.forEach((a,i)=>setTimeout(()=>{ const l=document.createElement("a"); l.href=dl(a.id); document.body.appendChild(l); l.click(); l.remove(); }, i*1500));
 };
 /* Enlace directo (para el QR): tusitio.com/?codigo=BODA-ANA-0612 */
 const cod = new URLSearchParams(location.search).get("codigo");
@@ -503,7 +516,7 @@ const espacio = id => `Para dar un buen servicio te recomiendo:\n• Un lugar lu
 let ctx = {};
 const wa = (n,t) => `https://wa.me/${n}?text=${encodeURIComponent(t)}`;
 function say(t,c){ const d=document.createElement("div"); d.className="m "+c; d.textContent=t; $("log").appendChild(d); $("log").scrollTop=1e9; }
-function opts(list){ $("opts").innerHTML=""; list.forEach(([l,f])=>{ const b=document.createElement("button"); b.type="button"; b.textContent=l; b.onclick=()=>{ say(l,"u"); setTimeout(f,200); }; $("opts").appendChild(b); }); }
+function opts(list){ $("opts").innerHTML=""; list.forEach(([l,f])=>{ const b=document.createElement("button"); b.type="button"; b.textContent=l; b.onclick=()=>{ say(l,"u"); f(); }; $("opts").appendChild(b); }); }
 function inicio(){ ctx={}; say("¿Qué tipo de evento vas a celebrar?","b");
   opts([...TIPOS.map(t=>[t,()=>{ctx.tipo=t;pInv();}]),["Descargar mis fotos",guiaFotos],["Hablar con un asesor",asesor]]); }
 function pInv(){ say("¿Cuántos invitados esperas?","b"); opts(INV.map(v=>[v,()=>{ctx.inv=v;pObj();}])); }
@@ -551,7 +564,7 @@ function abrir(a){
   if(ctx.msg) m = ctx.msg;
   else if(ctx.plan){ const p=PLANES.find(x=>x.id===ctx.plan);
     m = `Hola, quiero esta cotización para mi evento:\nEvento: ${ctx.tipo}\nInvitados: ${ctx.inv}\nBusco: ${ctx.obj}\nPlan: ${p.nombre}, ${ctx.h} horas (${peso(p.precios[ctx.h-1])})\nIncluye 2 operadores de logística.`+(ctx.lugar?`\nFecha: ${ctx.lugar.fecha}\nCiudad: Bogotá\nLocalidad: ${ctx.lugar.loc}\nBarrio: ${ctx.lugar.barrio}\nDirección: ${ctx.lugar.dir}`:"")+`\n¿Tienen disponibilidad?`; }
-  window.open(wa(a.w,m),"_blank","noopener");
+  const url=wa(a.w,m); if(matchMedia("(pointer:coarse)").matches) location.href=url; else window.open(url,"_blank","noopener");
   say("Listo, te llevé al WhatsApp de "+a.n+" con tu cotización ya escrita. Ahí confirma disponibilidad y los detalles.","b");
   opts([["Nueva recomendación",inicio]]);
 }
@@ -577,6 +590,14 @@ function abrirBot(saludar=true){ $("bot").classList.add("on"); $("botBtn").setAt
   if(saludar && !$("log").children.length){ say("¡Hola! Soy el asistente de AJ Studio. Te ayudo a elegir el plan ideal para tu evento.","b"); inicio(); } }
 $("send").onclick = e => { e.preventDefault(); if(!validar()) return; abrirBot(false); ctx={msg:window.cotMsg}; say("Enviar la cotización que armé","u");
   asesor(); };
+if(window.visualViewport){
+  const ajustar=()=>{ const b=$("bot"), vv=visualViewport;
+    if(innerWidth>520){ b.style.height=""; b.style.bottom=""; return; }
+    b.style.height=Math.min(vv.height-16,620)+"px";
+    b.style.bottom=Math.max(0,innerHeight-vv.height-vv.offsetTop)+"px"; };
+  visualViewport.addEventListener("resize",ajustar); visualViewport.addEventListener("scroll",ajustar); ajustar();
+}
+new MutationObserver(()=>document.body.classList.toggle("chat-open",$("bot").classList.contains("on"))).observe($("bot"),{attributes:true,attributeFilter:["class"]});
 </script>
 </body>
 </html>
