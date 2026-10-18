@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Descargar mis fotos y videos - AJ Studio</title>
+  <!-- Fuentes profesionales -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg: #fbfaff; --card: #ffffff; --soft: #eeeafb; --ink: #1b1740; --muted: #5d5a7a;
+      --pink: #e6397a; --cyan: #12a9c9; --line: #dcd7f2;
+      --head: 'Bricolage Grotesque', system-ui, sans-serif; --body: 'Figtree', system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--body); background: var(--bg); color: var(--ink); line-height: 1.6; font-size: 17px; }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+    h1, h2, h3 { font-family: var(--head); line-height: 1.1; font-weight: 800; letter-spacing: -.02em; }
+    
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+    header { position: sticky; top: 0; z-index: 20; background: rgba(251,250,255,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+    nav { display: flex; align-items: center; justify-content: space-between; height: 68px; gap: 16px; }
+    .brand { font-family: var(--head); font-weight: 800; font-size: 1.2rem; color: var(--ink); }
+    .links { display: flex; gap: 24px; align-items: center; }
+    .links a { font-weight: 500; font-size: .95rem; }
+    .links a:hover { color: var(--pink); }
+    
+    .btn { display: inline-block; background: var(--pink); color: #fff; border: 0; border-radius: 999px; padding: 13px 26px; font: 600 1rem var(--body); cursor: pointer; text-align: center; }
+    .btn:hover { background: #c92a67; }
+    .btn.ghost { background: transparent; color: var(--ink); border: 2px solid var(--ink); padding: 9px 18px; }
+    .btn.ghost:hover { background: var(--ink); color: #fff; }
+
+    @media(max-width: 760px) { .links a:not(.btn) { display: none; } }
+
+    section { padding: 60px 0; }
+    .sec-head { margin-bottom: 30px; max-width: 60ch; }
+    .sec-head h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); margin-bottom: 10px; }
+    .sec-head p { color: var(--muted); }
+
+    /* Buscador optimizado para móvil y PC */
+    .codebox { display: flex; gap: 10px; flex-wrap: wrap; max-width: 520px; }
+    .codebox input { flex: 1; min-width: 200px; border: 2px solid var(--line); border-radius: 999px; padding: 14px 22px; font: 1rem var(--body); text-transform: uppercase; background: #fff; color: var(--ink); }
+    .codebox input:focus { outline: 3px solid var(--cyan); outline-offset: 2px; }
+
+    #msg { margin: 14px 0; color: var(--muted); min-height: 1.5em; font-weight: 500; }
+    #msg.err { color: #b3261e; }
+
+    .bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin: 30px 0 16px; border-bottom: 2px solid var(--line); padding-bottom: 12px; }
+    .bar h3 { font-size: 1.3rem; }
+    .bar-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+    /* Galería responsiva de fotos y videos */
+    .items { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 16px; }
+    .item { background: #fff; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(27,23,64,0.04); }
+    .thumb { position: relative; display: block; width: 100%; border: 0; padding: 0; cursor: pointer; background: var(--soft); }
+    .thumb img { width: 100%; aspect-ratio: 4/5; object-fit: cover; }
+    .thumb b { position: absolute; left: 10px; bottom: 10px; background: var(--ink); color: #fff; border-radius: 999px; font-size: .75rem; padding: 4px 10px; }
+    
+    .item .acts { display: flex; gap: 8px; padding: 12px; }
+    .item .acts button { flex: 1; text-align: center; font: 600 .9rem var(--body); padding: 10px; border-radius: 10px; cursor: pointer; border: 2px solid var(--line); background: #fff; color: var(--ink); }
+    .item .acts button.ver:hover { background: var(--soft); }
+    .item .acts button.dl { background: var(--ink); border-color: var(--ink); color: #fff; }
+    .item .acts button.dl:hover { background: #322b75; }
+
+    /* Modal de reproducción / vista previa */
+    dialog { border: 0; border-radius: 20px; padding: 0; width: min(900px, 94vw); overflow: hidden; background: #000; box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
+    dialog::backdrop { background: rgba(27, 23, 64, 0.75); backdrop-filter: blur(4px); }
+    dialog iframe { width: 100%; height: min(75vh, 580px); border: 0; display: block; }
+    dialog .x { position: absolute; top: 12px; right: 12px; z-index: 10; border: 0; background: rgba(0,0,0,0.6); color: #fff; border-radius: 999px; padding: 8px 16px; font: 600 .9rem var(--body); cursor: pointer; }
+    dialog .x:hover { background: var(--pink); }
+
+    footer { padding: 30px 0; text-align: center; color: var(--muted); font-size: .9rem; border-top: 1px solid var(--line); margin-top: 60px; }
+  </style>
+</head>
+<body>
+
+
+
+  <main>
+    <section id="fotos">
+      <div class="wrap">
+        <div class="sec-head">
+          <h2>Mis fotos y videos</h2>
+          <p>Escribe el código de tu evento (viene en tu tira impresa o en el mensaje que te enviamos) y descarga tus recuerdos en alta calidad.</p>
+        </div>
+
+        <form class="codebox" id="codeForm">
+          <input id="codigo" placeholder="Ej: BODA-ANA-0612" autocomplete="off" aria-label="Código del evento" required>
+          <button class="btn" type="submit">Ver mi galería</button>
+        </form>
+
+        <p id="msg" role="status"></p>
+
+        <div id="result" hidden>
+          <div class="bar">
+            <h3 id="evName"></h3>
+            <div class="bar-actions">
+              <button class="btn ghost" id="dlAll" type="button"></button>
+              <button class="btn ghost" id="btnSalir" type="button" style="border-color: #b3261e; color: #b3261e;"></button>
+            </div>
+          </div>
+          <div class="items" id="items"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Ventana Modal -->
+  <dialog id="dlg">
+    <button class="x" id="dlgX" type="button">Cerrar</button>
+    <iframe id="dlgF" title="Vista previa" allow="autoplay" allowfullscreen></iframe>
+  </dialog>
+
+  <footer>
+    <div class="wrap">
+      <p>© AJ Studio · Alquiler de Cabina 360 y Fotocabina en Bogotá.</p>
+    </div>
+  </footer>
+
+  <!-- Lógica y Conexión con Google Drive -->
+  <script>
+    const API = "https://script.google.com/macros/s/AKfycbz3WHzzlTlrWMBh7LGNtwyKwRj4ZvvOeA2BO4Ax5B9rpwYZ9VBtVD8Gj6LAfs55evg/exec";
+    const $ = id => document.getElementById(id);
+
+    let archivos = [];
+    let codigoActual = "";
+    const esIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform==="MacIntel" && navigator.maxTouchPoints>1);
+
+    const EXPIRATION_TIME = 60 * 60 * 1000; // 1 hora en milisegundos
+
+    async function descargar(a, btn){
+      if(esIOS && navigator.canShare){
+        const txt = btn.textContent; btn.textContent = "Preparando..."; btn.disabled = true;
+        try{
+          const r = await fetch(`${API}?codigo=${encodeURIComponent(codigoActual)}&archivo=${a.id}`);
+          const d = await r.json();
+          if(d.ok){
+            const bytes = Uint8Array.from(atob(d.b64), c=>c.charCodeAt(0));
+            const file = new File([bytes], d.nombre, {type:d.mime});
+            if(navigator.canShare({files:[file]})){
+              await navigator.share({files:[file]});
+              btn.textContent = txt; btn.disabled = false; return;
+            }
+          }
+        }catch(err){
+          if(err && err.name==="AbortError"){ btn.textContent = txt; btn.disabled = false; return; }
+        }
+        btn.textContent = txt; btn.disabled = false;
+      }
+      location.href = a.descargar;
+    }
+
+    async function buscar(codigo, guardarSesion = true){
+      const msg = $("msg"); msg.className = ""; $("result").hidden = true;
+      codigo = codigo.trim().toUpperCase();
+      if(!codigo){ msg.textContent = "Escribe el código de tu evento."; return; }
+      msg.textContent = "Buscando tu galería...";
+      try{
+        const r = await fetch(API + "?codigo=" + encodeURIComponent(codigo));
+        const d = await r.json();
+        if(!d.ok){ 
+          msg.className="err"; 
+          msg.textContent = d.error || "No encontramos ese código. Revisa que esté bien escrito."; 
+          // Si falló y había datos guardados viejos, los limpiamos
+          localStorage.removeItem("aj_codigo");
+          localStorage.removeItem("aj_tiempo");
+          return; 
+        }
+        
+        archivos = d.archivos; 
+        msg.textContent = "";
+        codigoActual = codigo;
+
+        // Guardar sesión por 1 hora
+        if(guardarSesion) {
+          localStorage.setItem("aj_codigo", codigo);
+          localStorage.setItem("aj_tiempo", new Date().getTime());
+        }
+
+        $("codigo").value = codigo;
+        $("evName").textContent = d.evento + " · " + archivos.length + " archivos";
+        $("items").innerHTML = "";
+        archivos.forEach(a=>{
+          a.descargar = `https://drive.usercontent.google.com/download?id=${a.id}&export=download&confirm=t`;
+          a.ver = a.tipo==="video" ? `https://drive.google.com/file/d/${a.id}/preview`
+                                   : `https://drive.google.com/thumbnail?id=${a.id}&sz=w1800`;
+          const el = document.createElement("div"); el.className = "item";
+          el.innerHTML = `<button class="thumb" type="button" aria-label="Ver ${a.nombre}"><img src="${a.thumb}" alt="" loading="lazy">${a.tipo==="video"?"<b>Video</b>":""}</button>
+            <div class="acts"><button type="button" class="ver">Ver</button><button type="button" class="dl">Descargar</button></div>`;
+          const abrir = ()=>{ $("dlgF").src = a.ver; $("dlg").showModal(); };
+          el.querySelector(".thumb").onclick = abrir;
+          el.querySelector(".ver").onclick = abrir;
+          el.querySelector(".dl").onclick = e => descargar(a, e.currentTarget);
+          $("items").appendChild(el);
+        });
+        $("result").hidden = false;
+      }catch(e){ 
+        msg.className="err"; 
+        msg.textContent = "No pudimos cargar la galería. Intenta de nuevo en un momento."; 
+      }
+    }
+
+    $("codeForm").onsubmit = e => { e.preventDefault(); buscar($("codigo").value, true); };
+    $("dlgX").onclick = () => $("dlg").close();
+    $("dlg").addEventListener("close", () => $("dlgF").src = "about:blank");
+    
+    $("dlAll").onclick = () => {
+      if(!confirm("Se descargarán " + archivos.length + " archivos. Si tu navegador pregunta, permite las descargas múltiples. ¿Continuar?")) return;
+      archivos.forEach((a,i)=>setTimeout(()=>{ const l=document.createElement("a"); l.href=a.descargar; l.download=""; document.body.appendChild(l); l.click(); l.remove(); }, i*900));
+    };
+
+    // Botón para salir o cambiar de código manualmente
+    $("btnSalir").onclick = () => {
+      localStorage.removeItem("aj_codigo");
+      localStorage.removeItem("aj_tiempo");
+      $("result").hidden = true;
+      $("codigo").value = "";
+      $("codigo").focus();
+    };
+
+    // 1. Verificar si viene por URL (ej: código QR)
+    const urlParams = new URLSearchParams(location.search);
+    const codUrl = urlParams.get("codigo");
+
+    if(codUrl){
+      $("codigo").value = codUrl.toUpperCase();
+      buscar(codUrl.toUpperCase(), true);
+      setTimeout(()=>$("fotos").scrollIntoView(),300);
+    } else {
+      // 2. Si no viene por URL, revisar si hay una sesión guardada menor a 1 hora
+      const savedCode = localStorage.getItem("aj_codigo");
+      const savedTime = localStorage.getItem("aj_tiempo");
+      const now = new Date().getTime();
+
+      if(savedCode && savedTime && (now - savedTime < EXPIRATION_TIME)){
+        // Carga automática manteniendo el código guardado
+        buscar(savedCode, false);
+      } else {
+        // Expiró o no hay datos, limpiamos por si acaso
+        localStorage.removeItem("aj_codigo");
+        localStorage.removeItem("aj_tiempo");
+      }
+    }
+  </script>
+</body>
+</html>

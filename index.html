@@ -33,8 +33,8 @@ nav{display:flex;align-items:center;justify-content:space-between;height:68px;ga
 .links{display:flex;gap:24px;align-items:center}
 .links a{text-decoration:none;font-weight:500;font-size:.95rem}
 .links a:hover{color:var(--pink)}
-.btn{display:inline-block;background:var(--pink);color:#fff;border:0;border-radius:999px;padding:13px 26px;font:600 1rem var(--body);text-decoration:none;cursor:pointer}
-.btn:hover{background:#c92a67}
+.btn{display:inline-block;background:var(--write);color:#fff;border:0;border-radius:999px;padding:13px 26px;font:600 1rem var(--body);text-decoration:none;cursor:pointer}
+.btn:hover{background:#f4eff1}
 .btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--ink)}
 .btn.ghost:hover{background:var(--ink);color:#fff}
 @media(max-width:760px){.links a:not(.btn){display:none}}
@@ -175,13 +175,13 @@ dialog .x{display:block;margin:10px 10px 10px auto;border:0;background:var(--sof
 <header>
   <div class="wrap">
     <nav>
-     <div class="links">
-  <a href="#cabina">La cabina</a>
-  <a href="#cotizar">Cotizar</a>
-  <a href="#experiencias">Experiencias</a>
-  <a href="#contacto">Contacto</a>
-  <a class="btn" href="#fotos">Descargar mis fotos</a>
-</div>
+      <div class="links">
+        <a href="#cabina">La cabina</a>
+        <a href="#cotizar">Cotizar</a>
+        <a href="#experiencias">Experiencias</a>
+        <a href="#contacto">Contacto</a>
+        <a class="btn" href="descargar .html">Descargar mis fotos</a>
+      </div>
     </nav>
   </div>
 </header>
@@ -273,16 +273,16 @@ dialog .x{display:block;margin:10px 10px 10px auto;border:0;background:var(--sof
 <section id="fotos">
   <div class="wrap">
     <div class="sec-head">
-      <h2>Mis fotos y videos</h2>
-      <p>Escribe el código de tu evento (viene en tu tira impresa o en el mensaje que te enviamos) y descarga tus recuerdos en alta calidad.</p>
+      <h2></h2>
+      <p></p>
     </div>
     <form class="codebox" id="codeForm">
-      <input id="codigo" placeholder="Ej: BODA-ANA-0612" autocomplete="off" aria-label="Código del evento">
-      <button class="btn" type="submit">Ver mi galería</button>
+      <input id="codigo" placeholder="" autocomplete="off" aria-label="Código del evento">
+      <button class="btn" type="submit"></button>
     </form>
     <p id="msg" role="status"></p>
     <div id="result" hidden>
-      <div class="bar"><h3 id="evName"></h3><button class="btn ghost" id="dlAll" type="button">Descargar todo</button></div>
+      <div class="bar"><h3 id="evName"></h3><button class="btn ghost" id="dlAll" type="button"></button></div>
       <div class="items" id="items"></div>
     </div>
   </div>
