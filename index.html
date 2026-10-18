@@ -408,7 +408,8 @@ function render(){
   window.cotMsg = msg;
 }
 ["tipo","fecha","ciudad","loc","barrio","dir"].forEach(id=>document.getElementById(id).addEventListener("input",render));
-document.getElementById("fecha").min = new Date().toISOString().split("T")[0];
+const hoy = () => { const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; };
+document.getElementById("fecha").min = hoy();
 render();
 
 document.querySelectorAll(".wa-link").forEach(a=>a.addEventListener("click",e=>{ e.preventDefault(); abrirBot(); }));
@@ -460,7 +461,7 @@ function validar(){
   faltan.forEach(([id])=>$(id).setAttribute("aria-invalid","true"));
   const err = $("err");
   if(faltan.length){ err.textContent = "Completa "+faltan.map(f=>f[1]).join(", ")+" para continuar."; return false; }
-  if(v("fecha") < new Date().toISOString().split("T")[0]){ $("fecha").setAttribute("aria-invalid","true"); err.textContent = "La fecha debe ser hoy o una fecha futura."; return false; }
+  if(v("fecha") < hoy()){ $("fecha").setAttribute("aria-invalid","true"); err.textContent = "La fecha debe ser hoy o una fecha futura."; return false; }
   if(sinServicio(v("loc"),v("barrio")) || FECHAS_RESERVADAS.includes(v("fecha"))){ err.textContent = MENSAJE_NO_DISPONIBLE; return false; }
   err.textContent = ""; return true;
 }
@@ -518,7 +519,7 @@ const wa = (n,t) => `https://wa.me/${n}?text=${encodeURIComponent(t)}`;
 function say(t,c){ const d=document.createElement("div"); d.className="m "+c; d.textContent=t; $("log").appendChild(d); $("log").scrollTop=1e9; }
 function opts(list){ $("opts").innerHTML=""; list.forEach(([l,f])=>{ const b=document.createElement("button"); b.type="button"; b.textContent=l; b.onclick=()=>{ say(l,"u"); f(); }; $("opts").appendChild(b); }); }
 function inicio(){ ctx={}; say("¿Qué tipo de evento vas a celebrar?","b");
-  opts([...TIPOS.map(t=>[t,()=>{ctx.tipo=t;pInv();}]),["Descargar mis fotos",guiaFotos],["Hablar con un asesor",asesor]]); }
+  opts([...TIPOS.map(t=>[t,()=>{ctx.tipo=t;pInv();}]),["Descargar mis fotos",guiaFotos]]); }
 function pInv(){ say("¿Cuántos invitados esperas?","b"); opts(INV.map(v=>[v,()=>{ctx.inv=v;pObj();}])); }
 function pObj(){ say("¿Qué quieres que se lleven tus invitados?","b"); opts(OBJ.map(v=>[v,()=>{ctx.obj=v;recomendar();}])); }
 function recomendar(){
@@ -581,7 +582,7 @@ $("say").onsubmit = e => { e.preventDefault(); const t=$("sayIn").value.trim(); 
   if(ctx.esperando){ pasoTexto(t); return; }
   const r = faq(t);
   if(!r && /foto|video|descarg|c[oó]digo|galer/i.test(t)){ setTimeout(guiaFotos,250); return; }
-  setTimeout(()=>{ if(r) say(r,"b"); else { say("Eso lo resuelve mejor un asesor. ¿Quieres hablar con uno o que te recomiende según tu evento?","b"); opts([["Hablar con un asesor",asesor],["Recomiéndame algo",inicio]]); } },250); };
+  setTimeout(()=>{ if(r){ say(r,"b"); opts([["Recomiéndame algo",inicio],["Hablar con un asesor",asesor]]); } else { say("Eso lo resuelve mejor un asesor. ¿Quieres hablar con uno o que te recomiende según tu evento?","b"); opts([["Hablar con un asesor",asesor],["Recomiéndame algo",inicio]]); } },250); };
 function cerrarBot(){ $("bot").classList.remove("on"); $("botBtn").setAttribute("aria-expanded","false"); }
 $("botBtn").onclick = () => { const on=$("bot").classList.toggle("on"); $("botBtn").setAttribute("aria-expanded",on);
   if(on && !$("log").children.length){ say("¡Hola! Soy el asistente de AJ Studio. Te ayudo a elegir el plan ideal para tu evento.","b"); inicio(); } };
