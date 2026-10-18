@@ -164,6 +164,9 @@ dialog .x{display:block;margin:10px 10px 10px auto;border:0;background:var(--sof
 .dots button.on{background:#fff}
 @media(max-width:820px){.exp{grid-template-columns:1fr;gap:28px}.exp video{margin:0 auto}}
 @media(prefers-reduced-motion:reduce){.show img{transition:none}}
+.disc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .8s ease}
+.disc img.on{opacity:1}
+@media(prefers-reduced-motion:reduce){.disc img{transition:none}}
 </style>
 </head>
 <body>
@@ -176,7 +179,7 @@ dialog .x{display:block;margin:10px 10px 10px auto;border:0;background:var(--sof
         <a href="#cabina">La cabina</a>
         <a href="#cotizar">Cotizar</a>
         <a href="#experiencias">Experiencias</a>
-        <a href="#fotos">Mis fotos</a>
+        <a href="#fotos">Descargar Mis fotos y videos</a>
         <a href="#contacto">Contacto</a>
         <a class="btn wa-link" href="#" data-msg="Hola, quiero reservar la cabina para mi evento.">Reservar</a>
       </div>
@@ -196,9 +199,9 @@ dialog .x{display:block;margin:10px 10px 10px auto;border:0;background:var(--sof
       </div>
     </div>
     <div class="stage" aria-hidden="true">
-      <div class="ring"></div>
-      <div class="disc"><img src="img/fusion.png" alt="" onerror="this.style.display='none'"></div>
-    </div>
+  <div class="ring"></div>
+  <div class="disc" id="disc"></div>
+</div>
   </div>
 </section>
 
@@ -308,6 +311,11 @@ dialog .x{display:block;margin:10px 10px 10px auto;border:0;background:var(--sof
 
 
 <script>
+  const HERO = ["fusion.png","cabinas.jpeg","foto1.jpg","foto2.jpg","5.jpeg","21.jpeg","11.jpeg"];
+const disc = document.getElementById("disc"); let h = 0;
+function hero(n){ const l=[...disc.querySelectorAll("img")]; if(!l.length) return; h=(n+l.length)%l.length; l.forEach((el,i)=>el.classList.toggle("on",i===h)); }
+HERO.forEach(f=>{ const i=new Image(); i.alt=""; i.onload=()=>hero(h); i.onerror=()=>{i.remove();hero(h);}; i.src="img/"+encodeURIComponent(f); disc.appendChild(i); });
+if(!matchMedia("(prefers-reduced-motion: reduce)").matches) setInterval(()=>hero(h+1),3000);
 /* ===== CONFIGURACIÓN: zonas y fechas sin disponibilidad ===== */
 const NO_SERVICIO = {
   localidades: ["Sumapaz","Usme"],   // localidades sin servicio. Ej: "Sumapaz", "Ciudad Bolívar"
@@ -353,7 +361,7 @@ const PLANES = [
   {id:"basico", nombre:"Básico DIY", desc:"Cada invitado graba su propio video 360° con su celular.", precios:[150000,220000,310000,400000],
    incluye:["Accesorios divertidos (props)","Plataforma estable de 60 cm"]},
   {id:"pro", nombre:"Digital Pro", tag:"Popular", desc:"Video con efectos y música, enviado al instante por WhatsApp.", precios:[180000,300000,450000,580000],
-   incluye:["Efectos: confeti, burbujas, corazones, estrellas","Música y cámara lenta","Envío inmediato por WhatsApp (requiere internet)"]},
+   incluye:["Efectos: confeti, burbujas, corazones, estrellas","Música y cámara lenta","Envío inmediato  (requiere internet)"]},
   {id:"tira", nombre:"Impresión en tira", desc:"Fotocabina con recuerdos físicos impresos al momento.", precios:[220000,390000,560000,700000],
    incluye:["Tira impresa con tres fotos","Personalización con el logo del evento","Accesorios (props) incluidos"]},
   {id:"premium", nombre:"Full Premium", desc:"Cabina 360 y fotocabina juntas: la experiencia completa.", precios:[300000,420000,600000,790000],
@@ -410,9 +418,9 @@ show.onmouseenter=()=>clearInterval(timer); show.onmouseleave=iniciar; iniciar()
 </script>
 <dialog id="dlg"><button class="x" id="dlgX">Cerrar</button><iframe id="dlgF" title="Vista previa" allow="autoplay" allowfullscreen></iframe></dialog>
 
-<button class="bot-btn" id="botBtn" aria-expanded="false" aria-controls="bot"><img src="img/chatbot.png" alt="" onerror="this.remove()"><span>Asesor del evento</span></button>
+<button class="bot-btn" id="botBtn" aria-expanded="false" aria-controls="bot"><img src="img/deep.png" alt="" onerror="this.remove()"><span>Asesor del evento</span></button>
 <div class="bot" id="bot" role="dialog" aria-label="Asistente de AJ Studio">
-  <header><span style="display:flex;align-items:center;gap:8px"><img class="av" src="img/chatbot.png" alt="" onerror="this.remove()">Asistente AJ Studio</span> <button id="botX" aria-label="Cerrar">×</button></header>
+  <header><span style="display:flex;align-items:center;gap:8px"><img class="av" src="img/deep.png" alt="" onerror="this.remove()">Asistente AJ Studio</span> <button id="botX" aria-label="Cerrar">×</button></header>
   <div class="log" id="log"></div>
   <div class="opts" id="opts"></div>
   <form class="say" id="say"><input id="sayIn" placeholder="Escribe tu pregunta" aria-label="Tu pregunta"><button>Enviar</button></form>
