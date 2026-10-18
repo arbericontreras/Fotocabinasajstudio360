@@ -156,8 +156,8 @@ footer{padding:28px 0;text-align:center;color:var(--muted);font-size:.9rem;borde
     <nav>
       <div class="links">
         <a href="#cabina">La cabina</a>
-        <a href="#cotizar">Cotizar</a>
         <a href="#experiencias">Experiencias</a>
+        <a href="#cotizar">Cotizar</a>
         <a href="#contacto">Contacto</a>
         <a class="btn" href="descargar.html">Descargar mis fotos</a>
       </div>
@@ -189,6 +189,19 @@ footer{padding:28px 0;text-align:center;color:var(--muted);font-size:.9rem;borde
     <div><h3>Luces y efectos</h3><p>Luces LED y efectos visuales en cada video 360: confeti, burbujas, corazones y más.</p></div>
     <div><h3>Alta resolución</h3><p>Videos listos para subir a redes sociales o compartir por WhatsApp.</p></div>
     <div><h3>Logística incluida</h3><p>Transporte en Bogotá y 2 operadores calificados de logística durante todo el evento.</p></div>
+  </div>
+</section>
+
+<section id="experiencias">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Así se vive en un evento</h2>
+      <p>Algunos momentos de nuestros clientes con la Cabina 360 y la fotocabina.</p>
+    </div>
+    <div class="exp">
+      <video controls preload="metadata" playsinline><source src="img/videos/Reserva Ahora.mp4" type="video/mp4"></video>
+      <div class="show" id="show" aria-label="Fotos de eventos con la cabina"><div class="dots" id="dots"></div></div>
+    </div>
   </div>
 </section>
 
@@ -236,19 +249,6 @@ footer{padding:28px 0;text-align:center;color:var(--muted);font-size:.9rem;borde
   </div>
 </section>
 
-<section id="experiencias">
-  <div class="wrap">
-    <div class="sec-head">
-      <h2>Así se vive en un evento</h2>
-      <p>Algunos momentos de nuestros clientes con la Cabina 360 y la fotocabina.</p>
-    </div>
-    <div class="exp">
-      <video controls preload="metadata" playsinline><source src="img/videos/Reserva Ahora.mp4" type="video/mp4"></video>
-      <div class="show" id="show" aria-label="Fotos de eventos con la cabina"><div class="dots" id="dots"></div></div>
-    </div>
-  </div>
-</section>
-
 <section id="contacto" class="band">
   <div class="wrap contact">
     <div>
@@ -270,7 +270,7 @@ footer{padding:28px 0;text-align:center;color:var(--muted);font-size:.9rem;borde
 <footer>AJ Studio / Geek Studio · © 2026 Todos los derechos reservados</footer>
 
 <script>
-const HERO = ["2.jpeg","cabinas.jpeg","foto1.jpg","whatsapp 6.jpeg","21.jpeg","foto3.jpeg","WhatsApp 1.jpeg"];
+const HERO = ["1.jpeg","cabinas.jpeg","foto1.jpg","foto2.jpg","5.jpeg","21.jpeg","11.jpeg"];
 const disc = document.getElementById("disc"); let h = 0;
 function hero(n){ const l=[...disc.querySelectorAll("img")]; if(!l.length) return; h=(n+l.length)%l.length; l.forEach((el,i)=>el.classList.toggle("on",i===h)); }
 HERO.forEach(f=>{ const i=new Image(); i.alt=""; i.onload=()=>hero(h); i.onerror=()=>{i.remove();hero(h);}; i.src="img/"+encodeURIComponent(f); disc.appendChild(i); });
@@ -363,7 +363,7 @@ render();
 
 document.querySelectorAll(".wa-link").forEach(a=>a.addEventListener("click",e=>{ e.preventDefault(); abrirBot(); }));
 
-const FOTOS = ["cabinas.jpeg","WhatsApp 1.jpeg","foto1.jpg","WhatsApp 3.jpeg","foto2.jpg","WhatsApp 4.jpeg","WhatsApp 5.jpeg","22.jpeg"];
+const FOTOS = ["cabinas.jpeg","WhatsApp 1.jpeg","foto1.jpg","WhatsApp 3.jpeg","foto2.jpg","WhatsApp 4.jpeg","WhatsApp 5.jpeg"];
 const show = document.getElementById("show"), dots = document.getElementById("dots");
 let idx = 0, timer;
 const slides = () => [...show.querySelectorAll("img")];
