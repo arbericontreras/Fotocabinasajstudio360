@@ -476,7 +476,7 @@ async function buscar(codigo){
   codigo = codigo.trim().toUpperCase();
   if(!codigo){ msg.textContent = "Escribe el código de tu evento."; return; }
   if(API.indexOf("PEGA")===0){ msg.className="err"; msg.textContent = "El portal aún no está conectado a Drive."; return; }
-  msg.textContent = "Buscando tu galería...";
+  msg.textContent = "Espera un momento...";
   try{
     const r = await fetch(API + "?codigo=" + encodeURIComponent(codigo));
     const d = await r.json();
