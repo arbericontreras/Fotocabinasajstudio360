@@ -360,7 +360,7 @@ const peso = n => "$" + n.toLocaleString("es-CO") + " COP";
 const PLANES = [
   {id:"basico", nombre:"Básico DIY", desc:"Cada invitado graba su propio video 360° con su celular.", precios:[150000,220000,310000,400000],
    incluye:["Accesorios divertidos (props)","Plataforma estable de 60 cm"]},
-  {id:"pro", nombre:"Digital Pro", tag:"Popular", desc:"Video con efectos y música, enviado al instante por WhatsApp.", precios:[180000,300000,450000,580000],
+  {id:"pro", nombre:"Digital Pro", tag:"Popular", desc:"Video con efectos y música, enviado al instante.", precios:[180000,300000,450000,580000],
    incluye:["Efectos: confeti, burbujas, corazones, estrellas","Música y cámara lenta","Envío inmediato  (requiere internet)"]},
   {id:"tira", nombre:"Impresión en tira", desc:"Fotocabina con recuerdos físicos impresos al momento.", precios:[220000,390000,560000,700000],
    incluye:["Tira impresa con tres fotos","Personalización con el logo del evento","Accesorios (props) incluidos"]},
@@ -418,9 +418,9 @@ show.onmouseenter=()=>clearInterval(timer); show.onmouseleave=iniciar; iniciar()
 </script>
 <dialog id="dlg"><button class="x" id="dlgX">Cerrar</button><iframe id="dlgF" title="Vista previa" allow="autoplay" allowfullscreen></iframe></dialog>
 
-<button class="bot-btn" id="botBtn" aria-expanded="false" aria-controls="bot"><img src="img/deep.png" alt="" onerror="this.remove()"><span>Asesor del evento</span></button>
+<button class="bot-btn" id="botBtn" aria-expanded="false" aria-controls="bot"><img src="img/" alt="" onerror="this.remove()"><span>Asesor del evento</span></button>
 <div class="bot" id="bot" role="dialog" aria-label="Asistente de AJ Studio">
-  <header><span style="display:flex;align-items:center;gap:8px"><img class="av" src="img/deep.png" alt="" onerror="this.remove()">Asistente AJ Studio</span> <button id="botX" aria-label="Cerrar">×</button></header>
+  <header><span style="display:flex;align-items:center;gap:8px"><img class="av" src="img/" alt="" onerror="this.remove()">Asistente AJ Studio</span> <button id="botX" aria-label="Cerrar">×</button></header>
   <div class="log" id="log"></div>
   <div class="opts" id="opts"></div>
   <form class="say" id="say"><input id="sayIn" placeholder="Escribe tu pregunta" aria-label="Tu pregunta"><button>Enviar</button></form>
