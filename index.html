@@ -174,15 +174,13 @@ dialog .x{display:block;margin:10px 10px 10px auto;border:0;background:var(--sof
 <header>
   <div class="wrap">
     <nav>
-      <a class="brand" href="#inicio"><img src="img/logo%20aj%20studio%20copia.png" alt="" onerror="this.style.display='none'">AJ Studio</a>
-      <div class="links">
-        <a href="#cabina">La cabina</a>
-        <a href="#cotizar">Cotizar</a>
-        <a href="#experiencias">Experiencias</a>
-        <a href="#fotos">Descargar Mis fotos y videos</a>
-        <a href="#contacto">Contacto</a>
-        <a class="btn wa-link" href="#" data-msg="Hola, quiero reservar la cabina para mi evento.">Reservar</a>
-      </div>
+     <div class="links">
+  <a href="#cabina">La cabina</a>
+  <a href="#cotizar">Cotizar</a>
+  <a href="#experiencias">Experiencias</a>
+  <a href="#contacto">Contacto</a>
+  <a class="btn" href="#fotos">Descargar mis fotos</a>
+</div>
     </nav>
   </div>
 </header>
@@ -418,9 +416,9 @@ show.onmouseenter=()=>clearInterval(timer); show.onmouseleave=iniciar; iniciar()
 </script>
 <dialog id="dlg"><button class="x" id="dlgX">Cerrar</button><iframe id="dlgF" title="Vista previa" allow="autoplay" allowfullscreen></iframe></dialog>
 
-<button class="bot-btn" id="botBtn" aria-expanded="false" aria-controls="bot"><img src="img/" alt="" onerror="this.remove()"><span>Asesor del evento</span></button>
+<button class="bot-btn" id="botBtn" aria-expanded="false" aria-controls="bot"><img src="img/deep.png" alt="" onerror="this.remove()"><span>Asesor del evento</span></button>
 <div class="bot" id="bot" role="dialog" aria-label="Asistente de AJ Studio">
-  <header><span style="display:flex;align-items:center;gap:8px"><img class="av" src="img/" alt="" onerror="this.remove()">Asistente AJ Studio</span> <button id="botX" aria-label="Cerrar">×</button></header>
+  <header><span style="display:flex;align-items:center;gap:8px"><img class="av" src="img/deep.png" alt="" onerror="this.remove()">Asistente AJ Studio</span> <button id="botX" aria-label="Cerrar">×</button></header>
   <div class="log" id="log"></div>
   <div class="opts" id="opts"></div>
   <form class="say" id="say"><input id="sayIn" placeholder="Escribe tu pregunta" aria-label="Tu pregunta"><button>Enviar</button></form>
