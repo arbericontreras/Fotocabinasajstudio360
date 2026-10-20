@@ -78,7 +78,7 @@ nav{display:flex;align-items:center;justify-content:space-between;height:68px;ga
 .plan label span{font-size:.9rem;color:var(--muted);display:block;margin-top:4px}
 .plan input:checked+label{border-color:var(--pink);background:#fff4f8}
 .plan input:focus-visible+label{outline:3px solid var(--cyan);outline-offset:2px}
-.tag{position:absolute;top:-11px;right:12px;background:var(--cyan);color:#fff;border-radius:999px;font-size:.75rem;font-weight:600;padding:2px 10px}
+.plan label .pimg{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:10px;margin-bottom:10px;background:var(--soft)}
 .hours{display:flex;gap:10px;flex-wrap:wrap}
 .hours button{flex:1;min-width:70px;border:2px solid var(--line);background:#fff;border-radius:12px;padding:12px;font:600 1rem var(--body);cursor:pointer;color:var(--ink)}
 .hours button[aria-pressed=true]{border-color:var(--pink);background:#fff4f8}
@@ -173,7 +173,6 @@ footer{padding:28px 0;text-align:center;color:var(--muted);font-size:.9rem;borde
       <p>Cabina 360 y fotocabina con impresión para bodas, quinces, cumpleaños y eventos corporativos en Bogotá. Dos operadores y transporte incluidos.</p>
       <div class="cta">
         <a class="btn" href="#cotizar">Cotizar mi evento</a>
-        <a class="btn ghost wa-link" href="#" data-msg="Hola, tengo una pregunta sobre la Cabina 360.">Hablar con el asistente</a>
       </div>
     </div>
     <div class="stage" aria-hidden="true">
@@ -185,7 +184,7 @@ footer{padding:28px 0;text-align:center;color:var(--muted);font-size:.9rem;borde
 
 <section id="cabina" style="padding-top:20px">
   <div class="wrap feats">
-   <div><h3>Plataforma de 60 cm</h3><p>Estable y segura, con soporte ajustable para el celular de cada invitado.</p></div>
+  <div><h3>Plataforma de 60 cm</h3><p>Estable y segura, con soporte ajustable para el celular de cada invitado.</p></div>
   <div><h3>Luces y efectos</h3><p>Luces LED y efectos visuales en cada video 360: confeti, burbujas, corazones y más.</p></div>
   <div><h3>Alta resolución</h3><p>Videos listos para subir a redes sociales o compartir por WhatsApp.</p></div>
   <div><h3>Descarga con QR</h3><p>Tus invitados escanean el QR de la cabina y se llevan su video en segundos, sin instalar nada.</p></div>
@@ -193,17 +192,17 @@ footer{padding:28px 0;text-align:center;color:var(--muted);font-size:.9rem;borde
   <div><h3>Impresión en tira</h3><p>Tira de tres fotos con el logo de tu evento, impresa y entregada al momento. Un recuerdo que se llevan en la mano.</p></div>
   <div><h3>Página web de tu evento</h3><p>Una galería con el logo de tu evento, donde descargas todas las fotos y videos durante 15 días hábiles.</p></div>
   <div><h3>Logística incluida</h3><p>Transporte en Bogotá y 2 operadores calificados durante todo el evento.</p></div>
-  </div>
+</div>
 </section>
 
 <section id="experiencias">
   <div class="wrap">
     <div class="sec-head">
-      <h2>Así se vive en un evento </h2>
+      <h2>Así se vive en un evento</h2>
       <p>Video de algunos momentos de nuestros clientes con la Cabina 360 y la fotocabina.</p>
     </div>
     <div class="exp">
-      <video controls preload="metadata" playsinline><source src="img/videos/Reserva Ahora.mp4" type="video/mp4"></video>
+      <video controls preload="metadata" playsinline><source src="img/videos/video1.mp4" type="video/mp4"></video>
       <div class="show" id="show" aria-label="Fotos de eventos con la cabina"><div class="dots" id="dots"></div></div>
     </div>
   </div>
@@ -317,25 +316,33 @@ const MENSAJE_NO_DISPONIBLE = "Por el momento no tenemos disponibilidad para ese
 const BARRIOS_BOGOTA = ["Castilla","Engativá","Suba","Teusaquillo","Los Mártires","Antonio Nariño","Puente Aranda","Candelaria"];
 const LOCALIDADES = ["Usaquén","Chapinero","Santa Fe","San Cristóbal","Usme","Tunjuelito","Bosa","Kennedy","Fontibón","Engativá","Suba","Barrios Unidos","Teusaquillo","Los Mártires","Antonio Nariño","Puente Aranda","La Candelaria","Rafael Uribe Uribe","Ciudad Bolívar","Sumapaz"];
 const peso = n => "$" + n.toLocaleString("es-CO") + " COP";
+/* Recargo para el norte de Bogotá: se suma al total sin mostrarse como una línea aparte */
+const RECARGO_NORTE = 50000;
+const LOCALIDADES_NORTE = ["Usaquén","Chapinero","Suba"];
+const n0 = x => (x||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
+const esNorte = loc => LOCALIDADES_NORTE.some(l=>n0(l)===n0(loc));
+function precioFinal(p,h,ciudad,loc){
+  return p.precios[h-1] + ((n0(ciudad)==="bogota" && esNorte(loc)) ? RECARGO_NORTE : 0);
+}
 const PLANES = [
-  {id:"basico", nombre:"Cabina 360", desc:"Grabacion de tu video con efectos de audio y video", precios:[180000,300000,450000,580000],
+  {id:"basico", img:"img/cabina360.png", nombre:"Cabina 360", desc:"Grabacion de tu video con efectos de audio y video", precios:[180000,300000,450000,580000],
    incluye:["Qr para descarga inmediata del video","Plataforma estable de 60 cm"]},
-  {id:"pro", nombre:"Digital Pro", tag:"Popular", desc:"Cabina Digital con efectos(Proms y tira de fotos digital), enviado al instante.", precios:[180000,300000,450000,580000],
+  {id:"pro", img:"img/digital.jpg", nombre:"Digital Pro", desc:"Cabina Digital con efectos(Proms y tira de fotos digital), enviado al instante.", precios:[180000,300000,450000,580000],
    incluye:["Efectos: confeti, burbujas, corazones, estrellas","Música y cámara lenta","Envío inmediato  (requiere internet)"]},
-  {id:"tira", nombre:"Impresión en tira", desc:"Fotocabina con recuerdos físicos impresos al momento.", precios:[220000,390000,560000,700000],
+  {id:"tira", img:"img/impresion-tira.jpg", nombre:"Impresión en tira", desc:"Fotocabina con recuerdos físicos impresos al momento.", precios:[220000,390000,560000,700000],
    incluye:["Tira impresa con tres fotos","Personalización con el logo del evento","Accesorios (props) incluidos"]},
-  {id:"completo", nombre:"Completo", desc:"Cabina 360 y fotocabina impresión tira: la experiencia completa.", precios:[300000,420000,600000,790000],
+  {id:"completo", img:"img/fusion.png", nombre:"Completo", desc:"Cabina 360 y fotocabina impresión tira: la experiencia completa.", precios:[300000,420000,600000,790000],
    incluye:["Tira impresa con tres fotos + logo","Videos digitales inmediatos","Experiencia 360 + fotocabina de impresión"]},
-  {id:"premium", nombre:"Full Premium", desc:"Cabina 360 + fotocabina digital y fotocabina impresión tira: la experiencia más completa.", precios:[380000,500000,680000,870000],
+  {id:"premium", img:"img/full.jpg", nombre:"Full Premium", desc:"Cabina 360 + fotocabina digital y fotocabina impresión tira: la experiencia más completa.", precios:[380000,500000,680000,870000],
    incluye:["Tira impresa y digital con tres fotos + logo","Videos digitales inmediatos","Experiencia 360 + fotocabina de impresión + fotos con proms digitales y efectos"]}
 ];
-let sel = "pro", horas = 2;
+let sel = null, horas = 0;   /* el cotizador empieza sin servicio ni horas: total en $0 */
 
 const plansEl = document.getElementById("plans");
 PLANES.forEach(p=>{
   const d = document.createElement("div"); d.className = "plan";
   d.innerHTML = `<input type="radio" name="plan" id="p-${p.id}" value="${p.id}" ${p.id===sel?"checked":""}>
-    <label for="p-${p.id}">${p.tag?`<span class="tag">${p.tag}</span>`:""}<strong>${p.nombre}</strong><span>${p.desc}</span></label>`;
+    <label for="p-${p.id}">${p.img?`<img class="pimg" src="${p.img}" alt="Referencia: ${p.nombre}" loading="lazy" onerror="this.remove()">`:""}<strong>${p.nombre}</strong><span>${p.desc}</span></label>`;
   d.querySelector("input").addEventListener("change",()=>{sel=p.id;render()});
   plansEl.appendChild(d);
 });
@@ -347,19 +354,20 @@ const hoursEl = document.getElementById("hours");
 
 function render(){
   const p = PLANES.find(x=>x.id===sel);
-  document.getElementById("sname").textContent = p.nombre;
-  document.getElementById("total").textContent = peso(p.precios[horas-1]);
-  document.getElementById("shours").textContent = horas+(horas===1?" hora":" horas")+" de servicio";
-  document.getElementById("incl").innerHTML = ["2 operadores de logística",...p.incluye].map(i=>`<li>${i}</li>`).join("");
-  [...hoursEl.children].forEach((b,i)=>b.setAttribute("aria-pressed", i+1===horas));
   const tipo = document.getElementById("tipo").value;
   const fecha = document.getElementById("fecha").value;
   const ciudad = document.getElementById("ciudad").value.trim(), loc = document.getElementById("loc").value, barrio = document.getElementById("barrio").value.trim(), dir = document.getElementById("dir").value.trim();
+  const listo = !!(p && horas);
+  const precio = listo ? precioFinal(p,horas,ciudad,loc) : 0;
+  document.getElementById("sname").textContent = p ? p.nombre : "Elige un servicio";
+  document.getElementById("total").textContent = peso(precio);
+  document.getElementById("shours").textContent = horas ? horas+(horas===1?" hora":" horas")+" de servicio" : "Elige las horas de servicio";
+  document.getElementById("incl").innerHTML = p ? ["2 operadores de logística",...p.incluye].map(i=>`<li>${i}</li>`).join("") : "";
+  [...hoursEl.children].forEach((b,i)=>b.setAttribute("aria-pressed", i+1===horas));
   document.getElementById("sev").textContent = `Evento: ${tipo}`+(fecha?` · ${fecha}`:"")+(ciudad?`\nCiudad: ${ciudad}`:"")+(loc?`\nLocalidad: ${loc}`:"")+(barrio?`\nBarrio: ${barrio}`:"")+(dir?`\nDirección: ${dir}`:"");
-  const msg = `Hola, quiero cotizar el plan ${p.nombre} de ${horas} ${horas===1?"hora":"horas"} (${peso(p.precios[horas-1])}).`
+  window.cotMsg = !listo ? "" : `Hola, quiero cotizar el plan ${p.nombre} de ${horas} ${horas===1?"hora":"horas"} (${peso(precio)}).`
     + `\nEvento: ${tipo}` + (fecha?`\nFecha: ${fecha}`:"") + (ciudad?`\nCiudad: ${ciudad}`:"") + (loc?`\nLocalidad: ${loc}`:"") + (barrio?`\nBarrio: ${barrio}`:"") + (dir?`\nDirección: ${dir}`:"") + `\nIncluye 2 operadores de logística.`
     + `\n¿Tienen disponibilidad?`;
-  window.cotMsg = msg;
 }
 ["tipo","fecha","ciudad","loc","barrio","dir"].forEach(id=>document.getElementById(id).addEventListener("input",render));
 document.getElementById("fecha").min = new Date().toISOString().split("T")[0];
@@ -396,6 +404,8 @@ const sinServicio = (loc,b) => NO_SERVICIO.localidades.some(l=>norm(l)===norm(lo
 
 function validar(){
   const v = id => $(id).value.trim();
+  if(!sel){ $("err").textContent = "Elige el servicio que quieres cotizar."; return false; }
+  if(!horas){ $("err").textContent = "Elige las horas de servicio."; return false; }
   const campos = [["fecha","la fecha"],["ciudad","la ciudad"],["barrio","el barrio"],["dir","la dirección"]];
   if(norm(v("ciudad"))==="bogota") campos.splice(2,0,["loc","la localidad"]);
   ["fecha","ciudad","loc","barrio","dir"].forEach(id=>$(id).removeAttribute("aria-invalid"));
@@ -496,7 +506,7 @@ function recomendar(){
   const auto = ctx.auto ? planAuto() : null;
   const id = ctx.inv===INV[3] ? "premium" : auto ? auto.id : PLAN_POR_OBJ[OBJ.indexOf(ctx.obj)];
   const p = PLANES.find(x=>x.id===id); ctx.plan=id;
-  let t = `${nombre?nombre+", p":"P"}ara ${ctx.tipo.toLowerCase()} con ${ctx.inv.toLowerCase()} invitados te recomiendo:\n\n${p.nombre} · ${hTxt(ctx.h)} · ${peso(p.precios[ctx.h-1])}\nIncluye: ${["2 operadores de logística",...p.incluye].join(", ")}.\n\n${TIPS[ctx.tipo]}`;
+  let t = `${nombre?nombre+", p":"P"}ara ${ctx.tipo.toLowerCase()} con ${ctx.inv.toLowerCase()} invitados te recomiendo:\n\n${p.nombre} · ${hTxt(ctx.h)} · ${peso(p.precios[ctx.h-1])}\nIncluye: ${["2 operadores de logística",...p.incluye].join(", ")}.\nPrecio de referencia; se confirma según la ubicación del evento.\n\n${TIPS[ctx.tipo]}`;
   if(ctx.inv===INV[3]){
     t += "\n\nPara más de 200 invitados el Full Premium es la mejor opción: es la experiencia más completa y más gente puede participar.";
     if(ctx.h<4) t += " Si quieres, un asesor te ayuda a revisar si conviene más tiempo.";
@@ -553,7 +563,7 @@ function contactar(){
   let m = "Hola, vengo de la página de AJ Studio y quiero asesoría para mi evento.";
   if(ctx.msg) m = ctx.msg;
   else if(ctx.plan){ const p=PLANES.find(x=>x.id===ctx.plan);
-    m = `Hola, quiero esta cotización para mi evento:\nEvento: ${ctx.tipo}\nInvitados: ${ctx.inv}\nBusco: ${ctx.obj}\nPlan: ${p.nombre}, ${hTxt(ctx.h)} (${peso(p.precios[ctx.h-1])})\nIncluye 2 operadores de logística.`
+    m = `Hola, quiero esta cotización para mi evento:\nEvento: ${ctx.tipo}\nInvitados: ${ctx.inv}\nBusco: ${ctx.obj}\nPlan: ${p.nombre}, ${hTxt(ctx.h)} (${peso(precioFinal(p,ctx.h,"Bogotá",ctx.lugar?ctx.lugar.loc:""))})\nIncluye 2 operadores de logística.`
       +(ctx.lugar?`\nFecha: ${ctx.lugar.fecha}\nCiudad: Bogotá\nLocalidad: ${ctx.lugar.loc}\nBarrio: ${ctx.lugar.barrio}\nDirección: ${ctx.lugar.dir}`:"")
       +`\n¿Tienen disponibilidad?`; }
   m = m.replace(/^Hola, /, `Hola, soy ${nombre}. `);
