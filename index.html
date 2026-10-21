@@ -61,6 +61,29 @@ nav{display:flex;align-items:center;justify-content:space-between;height:68px;ga
 .feats div{border-top:3px solid var(--cyan);padding-top:16px}
 .feats div:nth-child(even){border-color:var(--pink)}
 
+/* página web del evento (destacado) */
+.promo{display:grid;grid-template-columns:1.1fr .9fr;gap:36px;align-items:center;padding:44px;border-radius:28px;color:#fff;overflow:hidden;
+  background:radial-gradient(circle at 85% 12%,rgba(230,57,122,.45),transparent 45%),linear-gradient(135deg,#1b1740,#3a2a86);box-shadow:0 24px 50px rgba(27,23,64,.25)}
+.pill{display:inline-block;background:var(--pink);color:#fff;font:700 .8rem var(--body);letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;border-radius:999px;margin-bottom:14px}
+.promo h2{font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:12px}
+.promo p{color:#dcd7f2;max-width:46ch;margin-bottom:18px}
+.promo ul{list-style:none;padding:0;margin:0 0 24px;display:grid;gap:9px}
+.promo li{padding-left:32px;position:relative;font-weight:500}
+.promo li::before{content:"✓";position:absolute;left:0;top:1px;width:22px;height:22px;border-radius:50%;background:var(--cyan);color:#fff;font-size:.8rem;font-weight:800;display:grid;place-items:center}
+.promo-img{display:block;margin:0 auto;max-width:100%;max-height:520px;width:auto;height:auto;border-radius:18px;box-shadow:0 18px 40px rgba(0,0,0,.35)}
+.mock[hidden]{display:none}
+.mock{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,.35);transform:rotate(2deg);color:var(--ink)}
+.mock-bar{display:flex;gap:6px;align-items:center;padding:10px 12px;background:var(--soft)}
+.mock-bar i{width:9px;height:9px;border-radius:50%;background:#c9c3ea}
+.mock-bar b{flex:1;margin-left:8px;background:#fff;border-radius:999px;font:500 .72rem var(--body);padding:3px 10px;color:var(--muted)}
+.mock-hero{padding:24px 16px;text-align:center;background:linear-gradient(135deg,#8c1c3f,#e6397a);color:#fff}
+.mock-hero strong{display:block;font:800 1.6rem var(--head)}
+.mock-hero span{font-size:.82rem;opacity:.92}
+.mock-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:14px}
+.mock-grid div{aspect-ratio:4/5;border-radius:8px;background:linear-gradient(160deg,var(--soft),#d9d2f5)}
+.mock-grid div:nth-child(2n){background:linear-gradient(160deg,#ffe3ee,#f7b6cf)}
+@media(max-width:860px){.promo{grid-template-columns:1fr;padding:30px 24px}.mock{transform:none;max-width:380px;margin:0 auto}}
+
 /* cotizador */
 .band{background:var(--soft)}
 .sec-head{margin-bottom:36px;max-width:60ch}
@@ -95,6 +118,15 @@ nav{display:flex;align-items:center;justify-content:space-between;height:68px;ga
 
 /* experiencias */
 video{width:100%;max-height:460px;border-radius:18px;background:#000;margin-bottom:16px}
+
+/* redes sociales */
+.soc{display:flex;gap:12px;margin-top:6px}
+.contact .soc a{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;border:2px solid var(--line);background:#fff;color:var(--ink);transition:background .2s,color .2s}
+.contact .soc svg{width:22px;height:22px}
+.contact .soc a:hover{color:#fff;border-color:transparent}
+.contact .soc a.ig:hover{background:linear-gradient(45deg,#f9a825,#e6397a,#6228d7)}
+.contact .soc a.fb:hover{background:#1877f2}
+.contact .soc a.tt:hover{background:#000}
 
 /* contacto */
 .contact{display:grid;grid-template-columns:1fr 1fr;gap:32px}
@@ -190,9 +222,35 @@ footer{padding:28px 0;text-align:center;color:var(--muted);font-size:.9rem;borde
   <div><h3>Descarga con QR</h3><p>Tus invitados escanean el QR de la cabina y se llevan su video en segundos, sin instalar nada.</p></div>
   <div><h3>Cabina digital con props</h3><p>Fotos con props digitales (sombreros, gafas, marcos y más) y efectos, enviadas al instante al celular de cada invitado.</p></div>
   <div><h3>Impresión en tira</h3><p>Tira de tres fotos con el logo de tu evento, impresa y entregada al momento. Un recuerdo que se llevan en la mano.</p></div>
-  <div><h3>Página web de tu evento</h3><p>Una galería con el logo de tu evento, donde descargas todas las fotos y videos durante 15 días hábiles.</p></div>
   <div><h3>Logística incluida</h3><p>Transporte en Bogotá y 2 operadores calificados durante todo el evento.</p></div>
 </div>
+</section>
+
+<section id="web-evento" style="padding:30px 0 70px">
+  <div class="wrap">
+    <div class="promo">
+      <div>
+        <span class="pill">Sin costo adicional</span>
+        <h2>Tu evento tiene su propia página web</h2>
+        <p>Con el logo y los colores de tu evento, para que tus invitados descarguen todas las fotos y videos cuando quieran.</p>
+        <ul>
+          <li>Diseño personalizado según el logo de tu evento</li>
+          <li>Todas las fotos y videos en alta resolución</li>
+          <li>Descarga con QR o con el código de tu evento</li>
+          <li>Disponible durante 15 días hábiles</li>
+        </ul>
+        <a class="btn" href="#cotizar">Cotizar mi evento</a>
+      </div>
+      <div class="promo-vis">
+      <img class="promo-img" src="img/mochup.jpg" alt="Página web de un evento de AJ Studio" onload="this.nextElementSibling.hidden=true" onerror="this.remove()">
+      <div class="mock" aria-hidden="true">
+        <div class="mock-bar"><i></i><i></i><i></i><b>galería · tu evento</b></div>
+        <div class="mock-hero"><strong>Tu evento</strong><span>Descarga tus fotos y videos</span></div>
+        <div class="mock-grid"><div></div><div></div><div></div><div></div><div></div><div></div></div>
+      </div>
+      </div>
+    </div>
+  </div>
 </section>
 
 <section id="experiencias">
@@ -257,13 +315,14 @@ footer{padding:28px 0;text-align:center;color:var(--muted);font-size:.9rem;borde
     <div>
       <h2 style="font-size:clamp(1.8rem,4vw,2.6rem)">Reserva tu fecha</h2>
       <h3>Dirección</h3><p>Kra 72m Bis B # 43-63 Sur, Bogotá</p>
-      <h3>Líneas de atención</h3>
-      <p><a href="tel:+573106250804">310 625 0804</a><br><a href="tel:+573204981495">320 498 1495</a></p>
+      <h3>Línea de atención</h3>
+      <p><a href="tel:+573106250804">Bogotá</a><br><a href="tel:+573204981495">Fijo</a><br><a href="tel:+576015485934">(601) 548 5934</a></p>
       <h3>Redes</h3>
-      <p><a href="https://www.instagram.com/aj_geek/" target="_blank" rel="noopener">Instagram</a> ·
-         <a href="https://www.facebook.com/FotocabinaAJGeek" target="_blank" rel="noopener">Facebook</a> ·
-         <a href="https://www.tiktok.com/@arbericontreras" target="_blank" rel="noopener">TikTok</a></p>
-      <p style="margin-top:22px"><a class="btn wa-link" href="#" data-msg="Hola, quiero consultar disponibilidad para mi evento." style="color:#fff">Consultar disponibilidad</a></p>
+      <div class="soc">
+        <a class="ig" href="https://www.instagram.com/aj_geek/" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+        <a class="fb" href="https://www.facebook.com/FotocabinaAJGeek" target="_blank" rel="noopener" aria-label="Facebook" title="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+        <a class="tt" href="https://www.tiktok.com/@arbericontreras/video/7698907159433678100?is_from_webapp=1&sender_device=pc&web_id=7697868663198500353" target="_blank" rel="noopener" aria-label="TikTok" title="TikTok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v11a3.5 3.5 0 1 1-3.5-3.5"/><path d="M14 3c.3 2.6 2.1 4.4 5 4.6"/></svg></a>
+      </div>
     </div>
     <iframe title="Ubicación de AJ Studio" loading="lazy" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3976.9745147575235!2d-74.1534062!3d4.6039147!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e3f9eeb557be1ab%3A0x2db48f430f81d113!2sCra.%2072m%20%2343-63%20sur%2C%20Bogot%C3%A1!5e0!3m2!1ses!2sco!4v1710000000000!5m2!1ses!2sco"></iframe>
   </div>
@@ -362,7 +421,7 @@ function render(){
   document.getElementById("sname").textContent = p ? p.nombre : "Elige un servicio";
   document.getElementById("total").textContent = peso(precio);
   document.getElementById("shours").textContent = horas ? horas+(horas===1?" hora":" horas")+" de servicio" : "Elige las horas de servicio";
-  document.getElementById("incl").innerHTML = p ? ["2 operadores de logística",...p.incluye].map(i=>`<li>${i}</li>`).join("") : "";
+  document.getElementById("incl").innerHTML = p ? ["2 operadores de logística","Página web de tu evento sin costo adicional",...p.incluye].map(i=>`<li>${i}</li>`).join("") : "";
   [...hoursEl.children].forEach((b,i)=>b.setAttribute("aria-pressed", i+1===horas));
   document.getElementById("sev").textContent = `Evento: ${tipo}`+(fecha?` · ${fecha}`:"")+(ciudad?`\nCiudad: ${ciudad}`:"")+(loc?`\nLocalidad: ${loc}`:"")+(barrio?`\nBarrio: ${barrio}`:"")+(dir?`\nDirección: ${dir}`:"");
   window.cotMsg = !listo ? "" : `Hola, quiero cotizar el plan ${p.nombre} de ${horas} ${horas===1?"hora":"horas"} (${peso(precio)}).`
