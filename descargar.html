@@ -69,6 +69,9 @@
     dialog .x { position: absolute; top: 12px; right: 12px; z-index: 10; border: 0; background: rgba(0,0,0,0.6); color: #fff; border-radius: 999px; padding: 8px 16px; font: 600 .9rem var(--body); cursor: pointer; }
     dialog .x:hover { background: var(--pink); }
 
+    #aviso { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); z-index: 40; background: var(--ink); color: #fff; padding: 12px 22px; border-radius: 999px; font: 600 .95rem var(--body); box-shadow: 0 10px 28px rgba(0,0,0,.3); opacity: 0; pointer-events: none; transition: opacity .3s, transform .3s; }
+    #aviso.on { opacity: 1; transform: translate(-50%, 0); }
+
     footer { padding: 30px 0; text-align: center; color: var(--muted); font-size: .9rem; border-top: 1px solid var(--line); margin-top: 60px; }
 
     /* ================= HOMENAJE (solo aparece con tema de evento) ================= */
@@ -162,8 +165,9 @@
 
         <div id="result" hidden>
           <div class="bar">
-            <h3><span id="evName"></span><small>Este sitio web esta disponible para descargar tus fotos y videos por 15 dias habiles.</small></h3>
+            <h2><span id="evName"></span><small>Este sitio web está disponible para descargar tus fotos y videos por 15 días hábiles. <br> Solo descarga cuando puedas ver la imagen del video o foto.</small></h2>
             <div class="bar-actions">
+              <button class="btn ghost" type="button" id="btnAct">Actualizar</button>
               <a class="btn" href="index.html#cotizar" id="btnReservar">Reservar evento</a>
             </div>
           </div>
@@ -172,6 +176,8 @@
       </div>
     </section>
   </main>
+
+  <div id="aviso" role="status" aria-live="polite"></div>
 
   <dialog id="dlg">
     <button class="x" id="dlgX" type="button">Cerrar</button>
@@ -232,14 +238,15 @@
       $("tit").textContent = BASE.tit; $("sub").textContent = BASE.sub; document.title = BASE.doc; $("pie").textContent = BASE.pie;
 
       const forzado = new URLSearchParams(location.search).get("tema");
-      const t = TEMAS.find(x => (forzado && x.id===forzado.toLowerCase()) || x.buscar.test(codigo + " " + (evento || "")));
+      const t = TEMAS.find(x => (forzado && x.id.toLowerCase()===forzado.toLowerCase()) || x.buscar.test(codigo + " " + (evento || "")));
       if(!t) return;
       Object.entries(t.colores).forEach(([k,v]) => root.style.setProperty(k,v));
       document.body.classList.add("tema");
       $("tKicker").textContent = t.kicker; $("tNombre").textContent = t.nombre; $("tInsignia").textContent = t.insignia;
       $("tFecha").textContent = t.fecha; $("tDedic").textContent = t.dedicatoria;
       $("tit").textContent = t.titulo; $("sub").textContent = t.texto; document.title = t.pestana; $("pie").textContent = t.pie;
-      if(t.logo){ $("evLogo").parentNode.hidden = false; $("evLogo").alt = "Logo de "+t.nombre; $("evLogo").src = t.logo; }
+      $("evLogo").parentNode.hidden = !t.logo;   /* sin logo, no se muestra el marco vacío */
+      if(t.logo){ $("evLogo").alt = "Logo de "+t.nombre; $("evLogo").src = t.logo; }
       $("tributo").hidden = false; chispas();
     }
 
@@ -285,6 +292,55 @@
       location.href = a.descargar;
     }
 
+    /* ===== Pintar la galería (se usa al buscar y en cada actualización automática) ===== */
+    let eventoActual = "", pollTimer = null;
+    function pintar(){
+    $("evName").textContent = eventoActual + " · " + archivos.length + " archivos";
+    $("items").innerHTML = "";
+    archivos.forEach(a=>{
+      const el = document.createElement("div"); el.className = "item";
+      el.innerHTML = `<button class="thumb" type="button" aria-label="Ver ${a.nombre}"><img src="${a.thumb}" alt="" loading="lazy">${a.tipo==="video"?"<b>Video</b>":""}</button>
+        <div class="acts"><button type="button" class="ver">Ver</button><button type="button" class="dl">Descargar</button></div>`;
+      const abrir = ()=>{ $("dlgF").src = a.ver; $("dlg").showModal(); };
+      el.querySelector(".thumb").onclick = abrir;
+      el.querySelector(".ver").onclick = abrir;
+      el.querySelector(".dl").onclick = e => descargar(a, e.currentTarget);
+      $("items").appendChild(el);
+    });
+    }
+
+    const idsDe = l => l.map(a=>a.id).join(",");
+    function aviso(t){
+      const el=$("aviso"); el.textContent=t; el.classList.add("on");
+      clearTimeout(aviso.t); aviso.t=setTimeout(()=>el.classList.remove("on"),4500);
+    }
+    /* Vuelve a pedir la galería y, solo si hay cambios, la actualiza (sin cerrar la vista previa) */
+    async function refrescar(manual=false){
+      if(!codigoActual) return;
+      const btn=$("btnAct");
+      if(manual){ btn.disabled=true; btn.textContent="Actualizando..."; }
+      try{
+        const r = await fetch(API + "?codigo=" + encodeURIComponent(codigoActual));
+        const d = await r.json();
+        if(d.ok){
+          const nuevos = ordenar(d.archivos);
+          const antes = new Set(archivos.map(a=>a.id));
+          const n = nuevos.filter(a=>!antes.has(a.id)).length;
+          if(idsDe(nuevos)!==idsDe(archivos)){
+            archivos = nuevos; eventoActual = d.evento || eventoActual; pintar();
+            if(n) aviso(n===1 ? "¡Hay 1 archivo nuevo!" : "¡Hay "+n+" archivos nuevos!");
+          } else if(manual){ aviso("Ya tienes todo al día"); }
+        }
+      }catch(e){ if(manual) aviso("No pudimos actualizar. Intenta de nuevo."); }
+      if(manual){ btn.disabled=false; btn.textContent="Actualizar"; }
+    }
+    /* Cada 60 s, solo si la página está a la vista y no hay una foto o video abierto */
+    function programar(){
+      clearInterval(pollTimer);
+      pollTimer = setInterval(()=>{ if(document.visibilityState==="visible" && !$("dlg").open) refrescar(); }, 60000);
+    }
+    document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible" && codigoActual && !$("dlg").open) refrescar(); });
+
     async function buscar(codigo, guardarSesion = true){
       const msg = $("msg"); msg.className = ""; $("result").hidden = true;
       codigo = codigo.trim().toUpperCase();
@@ -312,18 +368,9 @@
         }
 
         $("codigo").value = codigo;
-        $("evName").textContent = d.evento + " · " + archivos.length + " archivos";
-        $("items").innerHTML = "";
-        archivos.forEach(a=>{
-          const el = document.createElement("div"); el.className = "item";
-          el.innerHTML = `<button class="thumb" type="button" aria-label="Ver ${a.nombre}"><img src="${a.thumb}" alt="" loading="lazy">${a.tipo==="video"?"<b>Video</b>":""}</button>
-            <div class="acts"><button type="button" class="ver">Ver</button><button type="button" class="dl">Descargar</button></div>`;
-          const abrir = ()=>{ $("dlgF").src = a.ver; $("dlg").showModal(); };
-          el.querySelector(".thumb").onclick = abrir;
-          el.querySelector(".ver").onclick = abrir;
-          el.querySelector(".dl").onclick = e => descargar(a, e.currentTarget);
-          $("items").appendChild(el);
-        });
+        eventoActual = d.evento;
+        pintar();
+        programar();
         $("result").hidden = false;
       }catch(e){
         msg.className="err";
@@ -332,6 +379,7 @@
     }
 
     $("codeForm").onsubmit = e => { e.preventDefault(); buscar($("codigo").value, true); };
+    $("btnAct").onclick = () => refrescar(true);
     $("dlgX").onclick = () => $("dlg").close();
     $("dlg").addEventListener("close", () => $("dlgF").src = "about:blank");
 
