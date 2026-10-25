@@ -14,9 +14,12 @@
       --bg: #fbfaff; --card: #ffffff; --soft: #eeeafb; --ink: #1b1740; --muted: #5d5a7a;
       --pink: #e6397a; --cyan: #12a9c9; --line: #dcd7f2;
       --pink-dark: #c92a67; --ink-hover: #322b75; --sombra: 27,23,64;
+      /* colores del homenaje (se calculan desde el color elegido) */
+      --t1: #a82250; --t2: #6b1230; --t3: #3f0a1c; --tl: #f7ccd7; --tl2: #f8dfe5; --tm: #f2a9bc; --td: #5a0f27;
       --head: 'Bricolage Grotesque', system-ui, sans-serif; --body: 'Figtree', system-ui, sans-serif;
     }
     * { box-sizing: border-box; margin: 0; }
+    [hidden] { display: none !important; }
     html { scroll-behavior: smooth; }
     body { font-family: var(--body); background: var(--bg); color: var(--ink); line-height: 1.6; font-size: 17px; }
     img { max-width: 100%; display: block; }
@@ -24,7 +27,7 @@
     h1, h2, h3 { font-family: var(--head); line-height: 1.1; font-weight: 800; letter-spacing: -.02em; }
 
     .wrap { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
-    header { position: sticky; top: 0; z-index: 20; background: rgba(251,250,255,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+    header { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
     nav { display: flex; align-items: center; justify-content: space-between; height: 68px; gap: 16px; }
     .brand { display: flex; align-items: center; gap: 10px; font-family: var(--head); font-weight: 800; font-size: 1.2rem; color: var(--ink); }
     .brand img { height: 38px; width: auto; object-fit: contain; }
@@ -47,9 +50,16 @@
     #msg.err { color: #b3261e; }
 
     .bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin: 30px 0 16px; border-bottom: 2px solid var(--line); padding-bottom: 12px; }
-    .bar h3 { font-size: 1.3rem; }
+    .bar h3, .bar h2 { font-size: 1.3rem; }
     .bar small { display: block; font: 500 .85rem var(--body); color: var(--muted); letter-spacing: 0; margin-top: 4px; }
     .bar-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+    /* ===== Pestañas Fotos / Videos ===== */
+    .tabs { display: flex; gap: 8px; margin: 0 0 20px; flex-wrap: wrap; }
+    .tabs button { font: 600 .98rem var(--body); padding: 10px 22px; border-radius: 999px; border: 2px solid var(--line); background: #fff; color: var(--ink); cursor: pointer; }
+    .tabs button:hover { background: var(--soft); }
+    .tabs button[aria-selected="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+    .vacio { grid-column: 1 / -1; color: var(--muted); padding: 30px 0; text-align: center; }
 
     .items { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 16px; }
     .item { background: #fff; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(var(--sombra),0.06); }
@@ -69,48 +79,59 @@
     dialog .x { position: absolute; top: 12px; right: 12px; z-index: 10; border: 0; background: rgba(0,0,0,0.6); color: #fff; border-radius: 999px; padding: 8px 16px; font: 600 .9rem var(--body); cursor: pointer; }
     dialog .x:hover { background: var(--pink); }
 
-    #aviso { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); z-index: 40; background: var(--ink); color: #fff; padding: 12px 22px; border-radius: 999px; font: 600 .95rem var(--body); box-shadow: 0 10px 28px rgba(0,0,0,.3); opacity: 0; pointer-events: none; transition: opacity .3s, transform .3s; }
+    #aviso { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); z-index: 60; background: var(--ink); color: #fff; padding: 12px 22px; border-radius: 999px; font: 600 .95rem var(--body); box-shadow: 0 10px 28px rgba(0,0,0,.3); opacity: 0; pointer-events: none; transition: opacity .3s, transform .3s; }
     #aviso.on { opacity: 1; transform: translate(-50%, 0); }
 
     footer { padding: 30px 0; text-align: center; color: var(--muted); font-size: .9rem; border-top: 1px solid var(--line); margin-top: 60px; }
 
+    /* ================= EDITOR (solo con ?editar=1) ================= */
+    #editor { position: fixed; right: 16px; bottom: 16px; z-index: 50; width: min(340px, calc(100vw - 32px)); font-family: var(--body); }
+    #edT { display: block; margin-left: auto; background: #1b1740; color: #fff; border: 0; border-radius: 999px; padding: 11px 20px; font: 600 .95rem var(--body); cursor: pointer; box-shadow: 0 8px 22px rgba(0,0,0,.3); }
+    #edB { margin-top: 10px; background: #fff; color: #1b1740; border: 1px solid #dcd7f2; border-radius: 18px; padding: 16px; box-shadow: 0 16px 40px rgba(0,0,0,.28); max-height: min(72vh, 560px); overflow: auto; display: grid; gap: 10px; }
+    #edB label { display: grid; gap: 4px; font: 600 .82rem var(--body); color: #5d5a7a; }
+    #edB input, #edB textarea { font: 1rem var(--body); color: #1b1740; border: 2px solid #dcd7f2; border-radius: 10px; padding: 8px 10px; width: 100%; background: #fff; }
+    #edB input[type=color] { padding: 2px; height: 42px; cursor: pointer; }
+    #edB textarea { resize: vertical; }
+    #edB .row { display: grid; gap: 8px; }
+    #edB button { font: 600 .9rem var(--body); padding: 10px; border-radius: 10px; border: 2px solid #1b1740; background: #1b1740; color: #fff; cursor: pointer; }
+    #edB button.sec { background: #fff; color: #1b1740; }
+    #edB small { font: 500 .78rem var(--body); color: #5d5a7a; line-height: 1.4; }
+
     /* ================= HOMENAJE (solo aparece con tema de evento) ================= */
     .tributo { position: relative; overflow: hidden; text-align: center; color: #fff; padding: 56px 20px 84px;
-      background: radial-gradient(ellipse at 50% 0%, #a82250 0%, #6b1230 55%, #3f0a1c 100%); }
-    .tributo[hidden] { display: none; }
+      background: radial-gradient(ellipse at 50% 0%, var(--t1) 0%, var(--t2) 55%, var(--t3) 100%); }
     .bokeh { position: absolute; inset: 0; pointer-events: none; background:
-      radial-gradient(circle at 10% 20%, rgba(255,190,205,.26) 0 36px, transparent 38px),
-      radial-gradient(circle at 88% 16%, rgba(255,190,205,.20) 0 58px, transparent 60px),
-      radial-gradient(circle at 18% 82%, rgba(255,190,205,.16) 0 72px, transparent 74px),
-      radial-gradient(circle at 92% 78%, rgba(255,190,205,.24) 0 34px, transparent 36px),
-      radial-gradient(circle at 52% 40%, rgba(255,190,205,.08) 0 110px, transparent 112px); }
+      radial-gradient(circle at 10% 20%, color-mix(in srgb, var(--tm) 26%, transparent) 0 36px, transparent 38px),
+      radial-gradient(circle at 88% 16%, color-mix(in srgb, var(--tm) 20%, transparent) 0 58px, transparent 60px),
+      radial-gradient(circle at 18% 82%, color-mix(in srgb, var(--tm) 16%, transparent) 0 72px, transparent 74px),
+      radial-gradient(circle at 92% 78%, color-mix(in srgb, var(--tm) 24%, transparent) 0 34px, transparent 36px),
+      radial-gradient(circle at 52% 40%, color-mix(in srgb, var(--tm) 8%, transparent) 0 110px, transparent 112px); }
     .tributo-in { position: relative; max-width: 720px; margin: 0 auto; }
     .corona { width: 86px; margin: 0 auto 6px; filter: drop-shadow(0 4px 10px rgba(0,0,0,.35)); }
-    .kicker { font: italic 600 1.2rem 'Cormorant Garamond', Georgia, serif; letter-spacing: .38em; text-transform: uppercase; color: #f7ccd7; }
+    .kicker { font: italic 600 1.2rem 'Cormorant Garamond', Georgia, serif; letter-spacing: .38em; text-transform: uppercase; color: var(--tl); }
     .nombre { font: 400 clamp(4.6rem, 18vw, 9rem)/1.05 'Great Vibes', cursive; margin: 6px 0 2px; letter-spacing: 0;
-      background: linear-gradient(180deg, #fff 10%, #ffd3dd 60%, #e99ab0 100%); -webkit-background-clip: text; background-clip: text; color: transparent;
+      background: linear-gradient(180deg, #fff 10%, var(--tl) 60%, var(--tm) 100%); -webkit-background-clip: text; background-clip: text; color: transparent;
       filter: drop-shadow(0 6px 18px rgba(0,0,0,.35)); }
-    .insignia { display: flex; align-items: center; justify-content: center; gap: 18px; font: 600 clamp(2.2rem, 8vw, 3.4rem) 'Cormorant Garamond', Georgia, serif; letter-spacing: .22em; color: #ffe3ea; }
-    .insignia::before, .insignia::after { content: ""; width: clamp(40px, 14vw, 110px); height: 2px; background: linear-gradient(90deg, transparent, #f2a9bc); }
+    .insignia { display: flex; align-items: center; justify-content: center; gap: 18px; font: 600 clamp(2.2rem, 8vw, 3.4rem) 'Cormorant Garamond', Georgia, serif; letter-spacing: .22em; color: var(--tl2); }
+    .insignia::before, .insignia::after { content: ""; width: clamp(40px, 14vw, 110px); height: 2px; background: linear-gradient(90deg, transparent, var(--tm)); }
     .insignia::after { transform: scaleX(-1); }
-    .fecha { display: inline-block; margin-top: 18px; padding: 9px 40px; background: #f8dfe5; color: #5a0f27; font: 600 1.05rem 'Cormorant Garamond', Georgia, serif; letter-spacing: .2em;
+    .fecha { display: inline-block; margin-top: 18px; padding: 9px 40px; background: var(--tl2); color: var(--td); font: 600 1.05rem 'Cormorant Garamond', Georgia, serif; letter-spacing: .2em;
       clip-path: polygon(0 0, 100% 0, 96% 50%, 100% 100%, 0 100%, 4% 50%); }
-    .dedic { max-width: 46ch; margin: 22px auto 0; font: italic 500 1.3rem/1.5 'Cormorant Garamond', Georgia, serif; color: #fbe2e8; }
+    .dedic { max-width: 46ch; margin: 22px auto 0; font: italic 500 1.3rem/1.5 'Cormorant Garamond', Georgia, serif; color: var(--tl2); }
     .medallon { margin: 30px auto 0; width: min(300px, 78%); }
     .medallon img { width: 100%; height: auto; border-radius: 22px; border: 3px solid rgba(255,255,255,.75); box-shadow: 0 20px 44px rgba(0,0,0,.4); }
-    .chispa { position: absolute; color: #ffd6de; opacity: 0; pointer-events: none; animation: flota 7s linear infinite; }
+    .chispa { position: absolute; color: var(--tl); opacity: 0; pointer-events: none; animation: flota 7s linear infinite; }
     @keyframes flota { 0% { transform: translateY(24px) scale(.6); opacity: 0; } 20% { opacity: .95; } 100% { transform: translateY(-150px) scale(1.1) rotate(40deg); opacity: 0; } }
     @media (prefers-reduced-motion: reduce) { .chispa { display: none; } }
 
-    body.tema { background-image: linear-gradient(#fff6f7, #fbe7ec 55%, #fff6f7); }
-    body.tema header { background: rgba(255,246,247,.92); }
+    body.tema { background-image: linear-gradient(var(--bg), var(--soft) 55%, var(--bg)); }
     body.tema .sec-head { text-align: center; margin-left: auto; margin-right: auto; }
     body.tema .sec-head h2 { font: 400 clamp(2.8rem, 8vw, 4rem)/1.1 'Great Vibes', cursive; letter-spacing: 0; color: var(--pink); }
     body.tema .sec-head h2::after { content: "✦  ✦  ✦"; display: block; font: 1rem var(--body); letter-spacing: .5em; color: var(--cyan); margin-top: 6px; }
     body.tema .codebox { margin-left: auto; margin-right: auto; }
     body.tema #msg { text-align: center; }
     body.tema .bar h3 { font: 600 1.6rem 'Cormorant Garamond', Georgia, serif; letter-spacing: 0; color: var(--pink); }
-    body.tema .item { border-color: #ecc0cb; border-radius: 20px; box-shadow: 0 8px 22px rgba(var(--sombra), .12); }
+    body.tema .item { border-color: var(--line); border-radius: 20px; box-shadow: 0 8px 22px rgba(var(--sombra), .12); }
     body.tema .thumb b { background: var(--pink); }
     body.tema footer { border-top-color: var(--line); }
     body.tema #pie { font: italic 500 1.15rem 'Cormorant Garamond', Georgia, serif; color: var(--pink); }
@@ -171,6 +192,12 @@
               <a class="btn" href="index.html#cotizar" id="btnReservar">Reservar evento</a>
             </div>
           </div>
+
+          <div class="tabs" role="tablist" aria-label="Tipo de archivo">
+            <button type="button" role="tab" id="tabFotos" aria-selected="true">Fotos</button>
+            <button type="button" role="tab" id="tabVideos" aria-selected="false">Videos</button>
+          </div>
+
           <div class="items" id="items"></div>
         </div>
       </div>
@@ -190,14 +217,81 @@
     </div>
   </footer>
 
+  <!-- Editor de personalización: se abre con descargar.html?editar=1 -->
+  <aside id="editor" hidden>
+    <button type="button" id="edT" aria-expanded="false">Personalizar</button>
+    <div id="edB" hidden>
+      <label>Código del evento
+        <input id="ed-cod" placeholder="Ej: JAZ-XV-2510" autocomplete="off">
+      </label>
+      <label>Nombre
+        <input id="ed-n" placeholder="Jazlin" autocomplete="off">
+      </label>
+      <label>Tipo de evento
+        <input id="ed-k" placeholder="Mis XV años / Nuestra boda" autocomplete="off">
+      </label>
+      <label>Insignia (opcional)
+        <input id="ed-i" maxlength="8" placeholder="XV" autocomplete="off">
+      </label>
+      <label>Fecha
+        <input id="ed-f" type="date">
+      </label>
+      <label>Dedicatoria
+        <textarea id="ed-d" rows="3" placeholder="Gracias por acompañarme..."></textarea>
+      </label>
+      <label>Color principal
+        <input id="ed-c" type="color" value="#8c1c3f">
+      </label>
+      <div class="row">
+        <button type="button" id="ed-link">Copiar enlace para el cliente</button>
+        <button type="button" id="ed-bloque" class="sec">Copiar bloque para dejarlo fijo</button>
+        <button type="button" id="ed-reset" class="sec">Restablecer</button>
+      </div>
+      <small>El enlace ya lleva el código y el diseño: úsalo para el QR o para enviarlo. El bloque se pega dentro de TEMAS si quieres que el diseño quede guardado sin parámetros.</small>
+    </div>
+  </aside>
+
   <script>
     const API = "https://script.google.com/macros/s/AKfycbz3WHzzlTlrWMBh7LGNtwyKwRj4ZvvOeA2BO4Ax5B9rpwYZ9VBtVD8Gj6LAfs55evg/exec";
     const $ = id => document.getElementById(id);
 
+    /* ===== COLORES: de un solo color principal se calcula toda la paleta ===== */
+    function hexHsl(hex){
+      const r=parseInt(hex.slice(1,3),16)/255, g=parseInt(hex.slice(3,5),16)/255, b=parseInt(hex.slice(5,7),16)/255;
+      const mx=Math.max(r,g,b), mn=Math.min(r,g,b); let h=0, s=0; const l=(mx+mn)/2;
+      if(mx!==mn){
+        const d=mx-mn; s = l>.5 ? d/(2-mx-mn) : d/(mx+mn);
+        h = mx===r ? (g-b)/d+(g<b?6:0) : mx===g ? (b-r)/d+2 : (r-g)/d+4; h*=60;
+      }
+      return [h, s*100, l*100];
+    }
+    const hsl = (h,s,l) => `hsl(${Math.round(h)} ${Math.round(s)}% ${Math.round(l)}%)`;
+    function hslRgb(h,s,l){
+      s/=100; l/=100; const k=n=>(n+h/30)%12, a=s*Math.min(l,1-l);
+      const f=n=>l-a*Math.max(-1,Math.min(k(n)-3,Math.min(9-k(n),1)));
+      return [f(0),f(8),f(4)].map(x=>Math.round(x*255)).join(",");
+    }
+    function paleta(hex){
+      const [h,s0,l0] = hexHsl(hex);
+      const s = Math.max(s0, 25);
+      const l = Math.min(l0, 45);              /* que el color se lea sobre fondo claro */
+      const st = Math.max(Math.min(s,80), 35); /* saturación para el homenaje */
+      return {
+        "--pink": hsl(h,s,l), "--pink-dark": hsl(h,s,Math.max(l-8,8)),
+        "--ink": hsl(h,Math.min(s,60),15), "--ink-hover": hsl(h,Math.min(s,45),28),
+        "--muted": hsl(h,20,40), "--bg": hsl(h,80,97), "--soft": hsl(h,60,94), "--line": hsl(h,45,87),
+        "--cyan": hsl(h,s,Math.min(l+15,58)), "--sombra": hslRgb(h,Math.min(s,60),15),
+        "--t1": hsl(h,st,38), "--t2": hsl(h,st,24), "--t3": hsl(h,st,15),
+        "--tl": hsl(h,60,88), "--tl2": hsl(h,60,92), "--tm": hsl(h,60,78), "--td": hsl(h,60,20)
+      };
+    }
+
     /* ===== TEMAS POR EVENTO =====
        id:      nombre corto; también sirve para probar con  descargar.html?tema=jazlin
        buscar:  se activa si el código o el nombre del evento coincide
-       Para otro evento, copia el bloque y cambia textos, logo y colores. */
+       color:   color principal (el resto de la paleta se calcula solo)
+       Para otro evento, copia el bloque y cambia textos y color.
+       Truco: abre descargar.html?editar=1 y usa "Copiar bloque" para generarlo. */
     const TEMAS = [
       {
         id: "Jazlin",
@@ -212,14 +306,32 @@
         texto: "Escribe el código de tu evento y descarga tus fotos y videos.",
         pestana: "Jazlin XV · Nuestros momentos",
         pie: "Con cariño · Jazlin XV · AJ Studio",
-        colores: {
-          "--bg": "#fff6f7", "--soft": "#f9e4e9", "--ink": "#4a1024", "--muted": "#80565f",
-          "--pink": "#8c1c3f", "--pink-dark": "#6e1431", "--cyan": "#c0476b",
-          "--line": "#efd0d7", "--ink-hover": "#6b2a3d", "--sombra": "74,16,36"
-        }
+        color: "#8c1c3f"
       }
     ];
     const BASE = { tit: $("tit").textContent, sub: $("sub").textContent, doc: document.title, pie: $("pie").textContent };
+
+    /* ===== Tema personalizado (desde el editor o desde el enlace) ===== */
+    const COLOR_DEF = "#8c1c3f";
+    const hexOk = c => /^[0-9a-f]{6}$/i.test(c||"") ? "#"+c : null;
+    function completar(d){
+      const nombre = (d.nombre||"").trim();
+      return {
+        logo: "", kicker: d.kicker||"", nombre, insignia: d.insignia||"", fecha: d.fecha||"", dedicatoria: d.dedicatoria||"",
+        titulo: "Nuestros momentos", texto: "Escribe el código de tu evento y descarga tus fotos y videos.",
+        pestana: (nombre ? nombre+" · " : "") + "Nuestros momentos",
+        pie: "Con cariño · " + (nombre ? nombre+" · " : "") + "AJ Studio",
+        color: d.color || COLOR_DEF
+      };
+    }
+    const urlParams = new URLSearchParams(location.search);
+    let personal = null;
+    if(urlParams.get("n") || urlParams.get("c")){
+      personal = completar({
+        nombre: urlParams.get("n"), kicker: urlParams.get("k"), insignia: urlParams.get("i"),
+        fecha: urlParams.get("f"), dedicatoria: urlParams.get("d"), color: hexOk(urlParams.get("c"))
+      });
+    }
 
     function chispas(){
       const h = $("tributo"); h.querySelectorAll(".chispa").forEach(x=>x.remove());
@@ -231,19 +343,28 @@
       }
     }
 
+    function temaDe(codigo, evento){
+      const forzado = urlParams.get("tema");
+      if(forzado){ const f = TEMAS.find(x => x.id.toLowerCase()===forzado.toLowerCase()); if(f) return f; }
+      if(personal) return personal;
+      return TEMAS.find(x => x.buscar.test(codigo + " " + (evento || "")));
+    }
+
     function aplicarTema(codigo, evento){
       const root = document.documentElement;
       root.removeAttribute("style");
       document.body.classList.remove("tema"); $("tributo").hidden = true;
       $("tit").textContent = BASE.tit; $("sub").textContent = BASE.sub; document.title = BASE.doc; $("pie").textContent = BASE.pie;
 
-      const forzado = new URLSearchParams(location.search).get("tema");
-      const t = TEMAS.find(x => (forzado && x.id.toLowerCase()===forzado.toLowerCase()) || x.buscar.test(codigo + " " + (evento || "")));
+      const t = temaDe(codigo, evento);
       if(!t) return;
-      Object.entries(t.colores).forEach(([k,v]) => root.style.setProperty(k,v));
+      Object.entries(paleta(t.color || COLOR_DEF)).forEach(([k,v]) => root.style.setProperty(k,v));
       document.body.classList.add("tema");
-      $("tKicker").textContent = t.kicker; $("tNombre").textContent = t.nombre; $("tInsignia").textContent = t.insignia;
-      $("tFecha").textContent = t.fecha; $("tDedic").textContent = t.dedicatoria;
+      $("tKicker").textContent = t.kicker; $("tKicker").hidden = !t.kicker;
+      $("tNombre").textContent = t.nombre; $("tNombre").hidden = !t.nombre;
+      $("tInsignia").textContent = t.insignia; $("tInsignia").hidden = !t.insignia;
+      $("tFecha").textContent = t.fecha; $("tFecha").hidden = !t.fecha;
+      $("tDedic").textContent = t.dedicatoria; $("tDedic").hidden = !t.dedicatoria;
       $("tit").textContent = t.titulo; $("sub").textContent = t.texto; document.title = t.pestana; $("pie").textContent = t.pie;
       $("evLogo").parentNode.hidden = !t.logo;   /* sin logo, no se muestra el marco vacío */
       if(t.logo){ $("evLogo").alt = "Logo de "+t.nombre; $("evLogo").src = t.logo; }
@@ -267,6 +388,8 @@
 
     let archivos = [];
     let codigoActual = "";
+    let pestana = "foto";   /* "foto" o "video" */
+    const esVideo = a => a.tipo === "video";
     const esIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform==="MacIntel" && navigator.maxTouchPoints>1);
     const EXPIRATION_TIME = 60 * 60 * 1000;
 
@@ -295,19 +418,34 @@
     /* ===== Pintar la galería (se usa al buscar y en cada actualización automática) ===== */
     let eventoActual = "", pollTimer = null;
     function pintar(){
-    $("evName").textContent = eventoActual + " · " + archivos.length + " archivos";
-    $("items").innerHTML = "";
-    archivos.forEach(a=>{
-      const el = document.createElement("div"); el.className = "item";
-      el.innerHTML = `<button class="thumb" type="button" aria-label="Ver ${a.nombre}"><img src="${a.thumb}" alt="" loading="lazy">${a.tipo==="video"?"<b>Video</b>":""}</button>
-        <div class="acts"><button type="button" class="ver">Ver</button><button type="button" class="dl">Descargar</button></div>`;
-      const abrir = ()=>{ $("dlgF").src = a.ver; $("dlg").showModal(); };
-      el.querySelector(".thumb").onclick = abrir;
-      el.querySelector(".ver").onclick = abrir;
-      el.querySelector(".dl").onclick = e => descargar(a, e.currentTarget);
-      $("items").appendChild(el);
-    });
+      const fotos = archivos.filter(a=>!esVideo(a));
+      const videos = archivos.filter(esVideo);
+      $("evName").textContent = eventoActual + " · " + archivos.length + " archivos";
+      $("tabFotos").textContent = "Fotos (" + fotos.length + ")";
+      $("tabVideos").textContent = "Videos (" + videos.length + ")";
+      $("tabFotos").setAttribute("aria-selected", pestana==="foto");
+      $("tabVideos").setAttribute("aria-selected", pestana==="video");
+
+      const lista = pestana==="video" ? videos : fotos;
+      $("items").innerHTML = "";
+      if(!lista.length){
+        const p = document.createElement("p"); p.className = "vacio";
+        p.textContent = pestana==="video" ? "Todavía no hay videos en este evento." : "Todavía no hay fotos en este evento.";
+        $("items").appendChild(p); return;
+      }
+      lista.forEach(a=>{
+        const el = document.createElement("div"); el.className = "item";
+        el.innerHTML = `<button class="thumb" type="button" aria-label="Ver ${a.nombre}"><img src="${a.thumb}" alt="" loading="lazy">${esVideo(a)?"<b>Video</b>":""}</button>
+          <div class="acts"><button type="button" class="ver">Ver</button><button type="button" class="dl">Descargar</button></div>`;
+        const abrir = ()=>{ $("dlgF").src = a.ver; $("dlg").showModal(); };
+        el.querySelector(".thumb").onclick = abrir;
+        el.querySelector(".ver").onclick = abrir;
+        el.querySelector(".dl").onclick = e => descargar(a, e.currentTarget);
+        $("items").appendChild(el);
+      });
     }
+    $("tabFotos").onclick = () => { pestana = "foto"; pintar(); };
+    $("tabVideos").onclick = () => { pestana = "video"; pintar(); };
 
     const idsDe = l => l.map(a=>a.id).join(",");
     function aviso(t){
@@ -358,6 +496,7 @@
         }
 
         archivos = ordenar(d.archivos);
+        pestana = archivos.some(a=>!esVideo(a)) || !archivos.length ? "foto" : "video";  /* abre en la pestaña que tenga contenido */
         msg.textContent = "";
         codigoActual = codigo;
         aplicarTema(codigo, d.evento);
@@ -383,8 +522,83 @@
     $("dlgX").onclick = () => $("dlg").close();
     $("dlg").addEventListener("close", () => $("dlgF").src = "about:blank");
 
+    /* ===== EDITOR DE PERSONALIZACIÓN (descargar.html?editar=1) ===== */
+    const MESES = ["ENERO","FEBRERO","MARZO","ABRIL","MAYO","JUNIO","JULIO","AGOSTO","SEPTIEMBRE","OCTUBRE","NOVIEMBRE","DICIEMBRE"];
+    const fechaTexto = iso => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso||""); return m ? `${+m[3]} · ${MESES[+m[2]-1]} · ${m[1]}` : ""; };
+    const fechaIso = txt => {
+      const m = /(\d{1,2})\D+([A-ZÁÉÍÓÚa-záéíóú]+)\D+(\d{4})/.exec(txt||""); if(!m) return "";
+      const i = MESES.indexOf(m[2].toUpperCase()); if(i<0) return "";
+      return `${m[3]}-${String(i+1).padStart(2,"0")}-${String(m[1]).padStart(2,"0")}`;
+    };
+    const norm = s => s.normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+    const campos = () => ({
+      codigo: $("ed-cod").value.trim().toUpperCase(), nombre: $("ed-n").value.trim(), kicker: $("ed-k").value.trim(),
+      insignia: $("ed-i").value.trim(), fecha: fechaTexto($("ed-f").value), dedicatoria: $("ed-d").value.trim(), color: $("ed-c").value
+    });
+    const codigoParaTema = () => codigoActual || $("codigo").value.trim().toUpperCase();
+
+    function vistaPrevia(){
+      const c = campos();
+      personal = completar(c);
+      aplicarTema(codigoParaTema(), "");
+    }
+    function llenarEditor(){
+      const t = personal || temaDe(codigoParaTema(), "") || TEMAS[0];
+      $("ed-cod").value = codigoParaTema();
+      $("ed-n").value = t.nombre||""; $("ed-k").value = t.kicker||""; $("ed-i").value = t.insignia||"";
+      $("ed-f").value = fechaIso(t.fecha); $("ed-d").value = t.dedicatoria||""; $("ed-c").value = t.color || COLOR_DEF;
+    }
+    async function copiar(texto, ok){
+      try{ await navigator.clipboard.writeText(texto); aviso(ok); }
+      catch(e){ window.prompt("Copia esto (Ctrl+C):", texto); }
+    }
+
+    if(urlParams.get("editar") !== null){
+      $("editor").hidden = false;
+      llenarEditor();
+      $("edT").onclick = () => {
+        const abre = $("edB").hidden; $("edB").hidden = !abre; $("edT").setAttribute("aria-expanded", abre);
+        $("edT").textContent = abre ? "Cerrar editor" : "Personalizar";
+        if(abre) llenarEditor();
+      };
+      ["ed-n","ed-k","ed-i","ed-f","ed-d","ed-c"].forEach(id => $(id).addEventListener("input", vistaPrevia));
+      $("ed-link").onclick = () => {
+        const c = campos(), p = new URLSearchParams();
+        if(c.codigo) p.set("codigo", c.codigo);
+        if(c.nombre) p.set("n", c.nombre);
+        if(c.kicker) p.set("k", c.kicker);
+        if(c.insignia) p.set("i", c.insignia);
+        if(c.fecha) p.set("f", c.fecha);
+        if(c.dedicatoria) p.set("d", c.dedicatoria);
+        p.set("c", c.color.replace("#",""));
+        copiar(location.origin + location.pathname + "?" + p.toString(), "Enlace copiado");
+      };
+      $("ed-bloque").onclick = () => {
+        const c = campos(), t = completar(c);
+        const cod = (c.codigo || c.nombre || "EVENTO").replace(/[.*+?^${}()|[\]\\\/]/g,"\\$&");
+        const q = JSON.stringify;
+        const bloque =
+`{
+  id: ${q(c.nombre || "Evento")},
+  buscar: /${cod}/i,
+  logo: "",
+  kicker: ${q(t.kicker)},
+  nombre: ${q(t.nombre)},
+  insignia: ${q(t.insignia)},
+  fecha: ${q(t.fecha)},
+  dedicatoria: ${q(t.dedicatoria)},
+  titulo: ${q(t.titulo)},
+  texto: ${q(t.texto)},
+  pestana: ${q(t.pestana)},
+  pie: ${q(t.pie)},
+  color: ${q(t.color)}
+}`;
+        copiar(bloque, "Bloque copiado. Pégalo dentro de TEMAS");
+      };
+      $("ed-reset").onclick = () => { personal = null; aplicarTema(codigoParaTema(), ""); llenarEditor(); aviso("Diseño restablecido"); };
+    }
+
     // El tema se aplica desde el principio si el enlace/QR o la sesión guardada ya traen el código
-    const urlParams = new URLSearchParams(location.search);
     const codUrl = urlParams.get("codigo");
     const savedCode = localStorage.getItem("aj_codigo");
     const savedTime = localStorage.getItem("aj_tiempo");
