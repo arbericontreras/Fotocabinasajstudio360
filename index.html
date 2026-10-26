@@ -377,7 +377,7 @@ const LOCALIDADES = ["Usaquén","Chapinero","Santa Fe","San Cristóbal","Usme","
 const peso = n => "$" + n.toLocaleString("es-CO") + " COP";
 /* Recargo para el norte de Bogotá: se suma al total sin mostrarse como una línea aparte */
 const RECARGO_NORTE = 50000;
-const LOCALIDADES_NORTE = ["Usaquén","Chapinero","Suba","Candelaria"];
+const LOCALIDADES_NORTE = ["Usaquén","Chapinero","Suba","LaCandelaria"];
 const n0 = x => (x||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
 const esNorte = loc => LOCALIDADES_NORTE.some(l=>n0(l)===n0(loc));
 function precioFinal(p,h,ciudad,loc){
