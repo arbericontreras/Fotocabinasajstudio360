@@ -154,18 +154,14 @@
   <div class="tributo" id="tributo" hidden>
     <div class="bokeh" aria-hidden="true"></div>
     <div class="tributo-in">
-      <svg class="corona" viewBox="0 0 64 44" aria-hidden="true">
-        <defs><linearGradient id="gc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9ee"/><stop offset="1" stop-color="#e58fa8"/></linearGradient></defs>
-        <path d="M4 36 L9 12 L21 24 L32 6 L43 24 L55 12 L60 36 Z" fill="url(#gc)"/>
-        <rect x="4" y="36" width="56" height="6" rx="3" fill="url(#gc)"/>
-        <circle cx="9" cy="10" r="3" fill="#fff"/><circle cx="32" cy="4" r="3.4" fill="#fff"/><circle cx="55" cy="10" r="3" fill="#fff"/>
-      </svg>
+     
       <p class="kicker" id="tKicker"></p>
+      <div class="medallon"><img id="evLogo" alt="" onerror="this.parentNode.hidden=true"></div>
       <h1 class="nombre" id="tNombre"></h1>
       <div class="insignia" id="tInsignia"></div>
       <span class="fecha" id="tFecha"></span>
       <p class="dedic" id="tDedic"></p>
-      <div class="medallon"><img id="evLogo" alt="" onerror="this.parentNode.hidden=true"></div>
+      
     </div>
   </div>
 
@@ -292,23 +288,38 @@
        color:   color principal (el resto de la paleta se calcula solo)
        Para otro evento, copia el bloque y cambia textos y color.
        Truco: abre descargar.html?editar=1 y usa "Copiar bloque" para generarlo. */
-    const TEMAS = [
-      {
-        id: "Jazlin",
-        buscar: /JAZ/i,
-        logo: "",
-        kicker: "Mis XV años",
-        nombre: "Jazlin",
-        insignia: "XV",
-        fecha: "25 · OCTUBRE · 2026",
-        dedicatoria: "Gracias por acompañarme en la noche más especial de mi vida. Aquí viven nuestros recuerdos.",
-        titulo: "Nuestros momentos",
-        texto: "Escribe el código de tu evento y descarga tus fotos y videos.",
-        pestana: "Jazlin XV · Nuestros momentos",
-        pie: "Con cariño · Jazlin XV · AJ Studio",
-        color: "#8c1c3f"
-      }
-    ];
+const TEMAS = [
+  {
+    id: "Jazlin",
+    buscar: /JAZ/i,
+    logo: "",
+    kicker: "Mis XV años",
+    nombre: "Jazlin",
+    insignia: "XV",
+    fecha: "25 · OCTUBRE · 2026",
+    dedicatoria: "Gracias por acompañarme en la noche más especial de mi vida. Aquí viven nuestros recuerdos.",
+    titulo: "Nuestros momentos",
+    texto: "Escribe el código de tu evento y descarga tus fotos y videos.",
+    pestana: "Jazlin XV · Nuestros momentos",
+    pie: "Con cariño · Jazlin XV · AJ Studio",
+    color: "#8c1c3f"
+  },   // <-- esta coma es la que separa un evento del otro
+  {
+    id: "Leo y Nicole",
+    buscar: /LEO/i,
+    logo: "img/boda leo.jpeg",
+    kicker: "Nuestra boda",
+    nombre: "",
+    insignia: "",
+    fecha: "31 · OCTUBRE · 2026",
+    dedicatoria: "Gracias por acompañarnos en el día más especial de nuestras vidas. Aquí viven nuestros recuerdos.",
+    titulo: "Nuestros momentos",
+    texto: "Escribe el código de tu evento y descarga tus fotos y videos.",
+    pestana: "Leo y Nicole · Nuestros momentos",
+    pie: "Con cariño · Leo y Nicole · AJ Studio",
+    color: "#b07d2a"
+  }
+];
     const BASE = { tit: $("tit").textContent, sub: $("sub").textContent, doc: document.title, pie: $("pie").textContent };
 
     /* ===== Tema personalizado (desde el editor o desde el enlace) ===== */
