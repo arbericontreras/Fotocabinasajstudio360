@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Panel de asesores</title>
+<style>
+*{box-sizing:border-box;margin:0}[hidden]{display:none!important}
+body{font:16px system-ui,sans-serif;background:#fbfaff;color:#1b1740;height:100vh}
+#ing{max-width:320px;margin:15vh auto;display:grid;gap:10px}
+input,select,button{font:inherit;padding:10px;border:2px solid #dcd7f2;border-radius:10px}
+button{background:#e6397a;color:#fff;border:0;cursor:pointer;font-weight:600}
+#app{display:grid;grid-template-columns:260px 1fr;height:100vh}
+#side{display:flex;flex-direction:column;border-right:1px solid #dcd7f2;min-height:0}
+#tabs{display:flex;gap:6px;padding:8px;border-bottom:1px solid #dcd7f2}
+#tabs button{flex:1;background:#fff;color:#1b1740;border:2px solid #dcd7f2;padding:8px}
+#lista{flex:1;overflow:auto}
+.it{display:block;width:100%;text-align:left;background:#fff;color:#1b1740;border:0;border-bottom:1px solid #dcd7f2;border-radius:0;position:relative}
+.it.on{background:#fff4f8}.it small{display:block;font-weight:400;color:#5d5a7a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.it i{position:absolute;right:10px;top:12px;background:#e6397a;color:#fff;border-radius:99px;padding:0 8px;font-style:normal;font-size:.8rem}
+#main{display:flex;flex-direction:column;min-width:0;min-height:0}
+#chatv{display:flex;flex-direction:column;flex:1;min-height:0}
+#log{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:8px}
+.m{max-width:75%;padding:9px 13px;border-radius:14px;white-space:pre-line}
+.m.c{background:#fff;border:1px solid #dcd7f2;align-self:flex-start}.m.a{background:#e6397a;color:#fff;align-self:flex-end}
+#bar,#say{display:flex;gap:8px;padding:10px;border-top:1px solid #dcd7f2;flex-wrap:wrap}#say input{flex:1}
+#rv{padding:18px;overflow:auto;flex:1}
+#rf{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:12px 0}
+#rf label.chk{display:flex;gap:8px;align-items:center;grid-column:1/-1}
+.rr{display:flex;justify-content:space-between;gap:10px;padding:10px;border-bottom:1px solid #dcd7f2}
+.rr button{background:#b3261e;padding:4px 10px}
+@media(max-width:700px){#app{grid-template-columns:1fr;grid-template-rows:200px 1fr}}
+</style></head><body>
+
+<form id="ing"><h2>Panel de asesores</h2>
+  <input id="em" type="email" placeholder="Correo" required><input id="pw" type="password" placeholder="Contraseña" required>
+  <button>Ingresar</button><button type="button" id="olv" style="background:none;color:#5d5a7a;font-weight:400">Olvidé mi clave</button><p id="er" style="color:#b3261e"></p></form>
+
+<div id="app" hidden>
+  <div id="side">
+    <div id="tabs"><button type="button" onclick="verReservas(false)">Chats</button><button type="button" onclick="verReservas(true)">📅 Reservas</button></div>
+    <div id="lista"></div>
+  </div>
+  <div id="main">
+    <div id="chatv">
+      <div id="log"></div>
+      <div id="bar">
+        <select id="num"></select>
+        <button id="wa" type="button">Enviar mi WhatsApp</button>
+        <button id="qr" type="button">Enviar QR de reserva ($50.000)</button>
+      </div>
+      <form id="say"><input id="in" placeholder="Escribe tu respuesta" autocomplete="off"><button>Enviar</button></form>
+    </div>
+    <div id="rv" hidden>
+      <h2>Reservas</h2>
+      <form id="rf">
+        <input id="rfecha" type="date" required>
+        <select id="rhora"><option value="">Hora (opcional)</option></select>
+        <input id="rcli" placeholder="Nombre del cliente" required>
+        <input id="rnota" placeholder="Nota (plan, abono…)">
+        <label class="chk"><input type="checkbox" id="rbloq" checked> Bloquear esta fecha para nuevas cotizaciones</label>
+        <button>Guardar reserva</button>
+      </form>
+      <div id="rlista"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===== CONFIGURA ESTO ===== */
+const DB="https://cabina-de-fotos-4f20d-default-rtdb.firebaseio.com/";   // URL de tu Realtime Database
+const API_KEY="AIzaSyD1LkAdkqpAEVBC5aZ8XemYsvMoOC2C7SM";                                    // API key de Firebase
+const ASESORES=[{n:"Angela",w:"573106250804"},{n:"Jose Arberi",w:"573204981495"}];
+/* ========================== */
+
+const $=id=>document.getElementById(id);
+let tok="",cred=null,es=null,S={},vistos=new Set(),listo=false,sel="",unread={},R={};
+
+ASESORES.forEach(a=>$("num").add(new Option(`${a.n} · +${a.w}`,a.w)));
+$("num").add(new Option("Escribir otro número…","otro"));
+
+let au;
+function beep(){ try{ au=au||new (window.AudioContext||window.webkitAudioContext)(); if(au.state==="suspended") au.resume();
+  const t=au.currentTime,o=au.createOscillator(),g=au.createGain(); o.frequency.setValueAtTime(880,t); o.frequency.setValueAtTime(1175,t+.12);
+  g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.3,t+.02); g.gain.exponentialRampToValueAtTime(.0001,t+.35);
+  o.connect(g).connect(au.destination); o.start(t); o.stop(t+.35); }catch(e){} }
+
+async function login(email,pass){
+  const r=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${API_KEY}`,
+    {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email,password:pass,returnSecureToken:true})});
+  const j=await r.json(); if(!j.idToken) throw new Error(j.error&&j.error.message||"Error"); tok=j.idToken; cred={email,pass}; }
+
+const latir=()=>fetch(`${DB}/presence.json?auth=${tok}`,{method:"PUT",body:JSON.stringify({ts:Date.now()})});
+
+function poner(path,data,merge){
+  const k=path.split("/").filter(Boolean);
+  if(!k.length){ S=merge?{...S,...data}:(data||{}); return; }
+  let o=S; for(let i=0;i<k.length-1;i++) o=o[k[i]]=o[k[i]]||{};
+  const l=k[k.length-1];
+  if(merge) o[l]={...(o[l]||{}),...data}; else if(data===null) delete o[l]; else o[l]=data; }
+
+function conectar(){
+  if(es) es.close();
+  es=new EventSource(`${DB}/chats.json?auth=${tok}`);
+  const f=ev=>{ const {path,data}=JSON.parse(ev.data); poner(path,data,ev.type==="patch"); revisar(); };
+  es.addEventListener("put",f); es.addEventListener("patch",f); }
+
+function revisar(){
+  let nuevo=false;
+  for(const [id,c] of Object.entries(S)) for(const [k,m] of Object.entries(c.msgs||{})){
+    if(vistos.has(id+k)) continue; vistos.add(id+k);
+    if(listo && m.de==="c"){ nuevo=true; if(id!==sel||document.hidden) unread[id]=(unread[id]||0)+1; } }
+  if(nuevo) beep();   /* suena cuando el cliente escribe */
+  if(!revisar.t) revisar.t=setTimeout(()=>listo=true,1500);
+  lista(); chat(); }
+
+function lista(){
+  const l=$("lista"); l.innerHTML=""; let tot=0;
+  Object.entries(S).sort((a,b)=>((b[1].meta||{}).ts||0)-((a[1].meta||{}).ts||0)).forEach(([id,c])=>{
+    const b=document.createElement("button"), u=unread[id]||0; tot+=u;
+    b.className="it"+(id===sel?" on":""); b.innerHTML=`<b></b><small></small>${u?`<i>${u}</i>`:""}`;
+    b.children[0].textContent=(c.meta&&c.meta.nombre)||"Cliente"; b.children[1].textContent=(c.meta&&c.meta.ultimo)||"";
+    b.onclick=()=>{ sel=id; unread[id]=0; verReservas(false); lista(); chat(); }; l.appendChild(b); });
+  document.title=(tot?`(${tot}) `:"")+"Panel de asesores"; }
+
+function chat(){
+  const log=$("log"); log.innerHTML=""; if(!sel||!S[sel]) return;
+  Object.values(S[sel].msgs||{}).sort((a,b)=>a.ts-b.ts).forEach(m=>{
+    const d=document.createElement("div"); d.className="m "+(m.de==="c"?"c":"a"); d.textContent=m.t; log.appendChild(d); });
+  log.scrollTop=1e9; }
+
+function enviar(t,wa,qr){
+  if(!sel||!t) return; const ts=Date.now();
+  fetch(`${DB}/chats/${sel}/msgs.json?auth=${tok}`,{method:"POST",body:JSON.stringify({de:"a",t,ts,...(wa?{wa}:{}),...(qr?{qr:true}:{})})});
+  fetch(`${DB}/chats/${sel}/meta.json?auth=${tok}`,{method:"PATCH",body:JSON.stringify({ultimo:"Tú: "+t.slice(0,70),ts})}); }
+
+$("say").onsubmit=e=>{ e.preventDefault(); const t=$("in").value.trim(); $("in").value=""; enviar(t); };
+
+/* El asesor decide si comparte su WhatsApp y con qué número */
+$("wa").onclick=()=>{
+  let w=$("num").value;
+  if(w==="otro"){ w=(prompt("Número con indicativo, ej: 573001234567")||"").replace(/\D/g,""); if(w.length<10) return; }
+  enviar(`Puedes continuar conmigo por WhatsApp al +${w}.`,w); };
+
+/* QR del abono de $50.000 */
+$("qr").onclick=()=>enviar("Para apartar tu fecha se hace un abono de $50.000 COP escaneando este QR. Después envíame el comprobante por aquí y tu fecha queda reservada.",null,true);
+
+/* ===== Reservas ===== */
+for(let i=0;i<48;i++){ const v=String(Math.floor(i/2)).padStart(2,"0")+":"+(i%2?"30":"00"), h=+v.slice(0,2);
+  $("rhora").add(new Option((h%12||12)+":"+v.slice(3)+(h<12?" a. m.":" p. m."),v)); }   /* cada 30 min */
+function verReservas(on){ $("chatv").hidden=on; $("rv").hidden=!on;
+  if(on){ $("rcli").value=(sel&&S[sel]&&S[sel].meta&&S[sel].meta.nombre)||""; cargarRes(); } }
+async function cargarRes(){ R=(await fetch(`${DB}/reservas.json?auth=${tok}`).then(r=>r.json()))||{}; pintarRes(); }
+function pintarRes(){
+  const box=$("rlista"); box.innerHTML=""; const hoy=new Date().toISOString().split("T")[0];
+  Object.keys(R).sort().filter(f=>f>=hoy).forEach(f=>Object.entries(R[f]).forEach(([id,r])=>{
+    const d=document.createElement("div"); d.className="rr";
+    const s=document.createElement("span"); s.textContent=`${f}${r.hora?" · "+r.hora:""} — ${r.cliente}${r.nota?" ("+r.nota+")":""}${r.bloq===false?" · fecha abierta":""}`;
+    const b=document.createElement("button"); b.textContent="Borrar"; b.onclick=()=>borrarRes(f,id);
+    d.append(s,b); box.appendChild(d); }));
+  if(!box.children.length) box.textContent="No hay reservas próximas."; }
+
+$("rf").onsubmit=async e=>{ e.preventDefault();
+  const f=$("rfecha").value, bloq=$("rbloq").checked, hora=$("rhora").value;
+  const res=await fetch(`${DB}/reservas/${f}.json?auth=${tok}`,{method:"POST",body:JSON.stringify({cliente:$("rcli").value.trim().slice(0,60),hora,nota:$("rnota").value.trim().slice(0,80),bloq,ts:Date.now()})}).then(r=>r.json());
+  if(bloq&&res&&res.name) await fetch(`${DB}/ocupadas/${f}/${res.name}.json?auth=${tok}`,{method:"PUT",body:JSON.stringify(hora||"-")});
+  $("rf").reset(); $("rbloq").checked=true; cargarRes(); };
+
+async function borrarRes(f,id){
+  await fetch(`${DB}/reservas/${f}/${id}.json?auth=${tok}`,{method:"DELETE"});
+  await fetch(`${DB}/ocupadas/${f}/${id}.json?auth=${tok}`,{method:"DELETE"});
+  cargarRes(); }
+
+$("ing").onsubmit=async e=>{ e.preventDefault();
+  try{ await login($("em").value,$("pw").value); $("ing").hidden=true; $("app").hidden=false; conectar(); latir(); beep(); }
+  catch(x){ $("er").textContent="No se pudo ingresar: "+x.message; } };
+
+$("olv").onclick=async()=>{ const email=$("em").value.trim(); if(!email){ $("er").textContent="Escribe tu correo arriba y vuelve a tocar «Olvidé mi clave»."; return; }
+  const r=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${API_KEY}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({requestType:"PASSWORD_RESET",email})});
+  $("er").style.color=r.ok?"#137333":"#b3261e"; $("er").textContent=r.ok?"Te enviamos un correo para crear una clave nueva.":"No se pudo enviar. Revisa el correo."; };
+setInterval(()=>tok&&latir(),20000);   /* "asesor en línea" */
+setInterval(async()=>{ if(cred){ await login(cred.email,cred.pass); conectar(); } },50*60*1000);   /* renueva sesión */
+</script></body></html>

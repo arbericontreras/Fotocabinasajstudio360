@@ -24,8 +24,6 @@ h1,h2,h3{font-family:var(--head);line-height:1.1;font-weight:800;letter-spacing:
 .wrap{max-width:1100px;margin:0 auto;padding:0 20px}
 section{padding:80px 0}
 :focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
-
-/* nav */
 header{position:sticky;top:0;z-index:20;background:rgba(251,250,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
 nav{display:flex;align-items:center;justify-content:space-between;height:68px;gap:16px}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--head);font-weight:800;font-size:1.2rem}
@@ -38,8 +36,6 @@ nav{display:flex;align-items:center;justify-content:space-between;height:68px;ga
 .btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--ink)}
 .btn.ghost:hover{background:var(--ink);color:#fff}
 @media(max-width:760px){.links a:not(.btn){display:none}}
-
-/* hero */
 .hero{padding:64px 0 72px}
 .hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
 .hero h1{font-size:clamp(2.3rem,5.5vw,4rem);margin-bottom:18px}
@@ -53,15 +49,11 @@ nav{display:flex;align-items:center;justify-content:space-between;height:68px;ga
 @keyframes spin{to{transform:rotate(360deg)}}
 @media(max-width:820px){.hero .wrap{grid-template-columns:1fr}.stage{max-width:320px}}
 @media(prefers-reduced-motion:reduce){.ring{animation:none}html{scroll-behavior:auto}}
-
-/* características */
 .feats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:28px}
 .feats h3{font-size:1.25rem;margin-bottom:6px}
 .feats p{color:var(--muted);font-size:.98rem}
 .feats div{border-top:3px solid var(--cyan);padding-top:16px}
 .feats div:nth-child(even){border-color:var(--pink)}
-
-/* página web del evento (destacado) */
 .promo{display:grid;grid-template-columns:1.1fr .9fr;gap:36px;align-items:center;padding:44px;border-radius:28px;color:#fff;overflow:hidden;
   background:radial-gradient(circle at 85% 12%,rgba(230,57,122,.45),transparent 45%),linear-gradient(135deg,#1b1740,#3a2a86);box-shadow:0 24px 50px rgba(27,23,64,.25)}
 .pill{display:inline-block;background:var(--pink);color:#fff;font:700 .8rem var(--body);letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;border-radius:999px;margin-bottom:14px}
@@ -83,8 +75,6 @@ nav{display:flex;align-items:center;justify-content:space-between;height:68px;ga
 .mock-grid div{aspect-ratio:4/5;border-radius:8px;background:linear-gradient(160deg,var(--soft),#d9d2f5)}
 .mock-grid div:nth-child(2n){background:linear-gradient(160deg,#ffe3ee,#f7b6cf)}
 @media(max-width:860px){.promo{grid-template-columns:1fr;padding:30px 24px}.mock{transform:none;max-width:380px;margin:0 auto}}
-
-/* cotizador */
 .band{background:var(--soft)}
 .sec-head{margin-bottom:36px;max-width:60ch}
 .sec-head h2{font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:10px}
@@ -115,11 +105,7 @@ nav{display:flex;align-items:center;justify-content:space-between;height:68px;ga
 .sum li{padding:6px 0;border-bottom:1px solid var(--line)}
 .sum .btn{width:100%;text-align:center}
 .note{font-size:.85rem;color:var(--muted);margin-top:12px}
-
-/* experiencias */
 video{width:100%;max-height:460px;border-radius:18px;background:#000;margin-bottom:16px}
-
-/* redes sociales */
 .soc{display:flex;gap:12px;margin-top:6px}
 .contact .soc a{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;border:2px solid var(--line);background:#fff;color:var(--ink);transition:background .2s,color .2s}
 .contact .soc svg{width:22px;height:22px}
@@ -127,8 +113,6 @@ video{width:100%;max-height:460px;border-radius:18px;background:#000;margin-bott
 .contact .soc a.ig:hover{background:linear-gradient(45deg,#f9a825,#e6397a,#6228d7)}
 .contact .soc a.fb:hover{background:#1877f2}
 .contact .soc a.tt:hover{background:#000}
-
-/* contacto */
 .contact{display:grid;grid-template-columns:1fr 1fr;gap:32px}
 @media(max-width:780px){.contact{grid-template-columns:1fr}}
 .contact h3{margin:18px 0 4px;font-size:1.1rem}
@@ -136,10 +120,6 @@ video{width:100%;max-height:460px;border-radius:18px;background:#000;margin-bott
 .contact a:hover{color:var(--pink)}
 iframe{width:100%;height:340px;border:0;border-radius:18px}
 footer{padding:28px 0;text-align:center;color:var(--muted);font-size:.9rem;border-top:1px solid var(--line)}
-.wa{position:fixed;right:18px;bottom:18px;z-index:30;background:#25d366;color:#fff;width:58px;height:58px;border-radius:50%;display:grid;place-items:center;box-shadow:0 6px 18px rgba(0,0,0,.2);text-decoration:none}
-.wa svg{width:30px;height:30px;fill:#fff}
-
-/* chatbot */
 .bot-btn{position:fixed;right:18px;bottom:18px;z-index:30;background:var(--ink);color:#fff;border:0;border-radius:999px;padding:14px 22px;font:600 1rem var(--body);cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.2)}
 .bot{position:fixed;right:18px;bottom:78px;z-index:31;width:min(360px,calc(100vw - 36px));height:min(520px,70vh);background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:0 12px 40px rgba(27,23,64,.25);display:none;flex-direction:column;overflow:hidden}
 .bot.on{display:flex}
@@ -149,22 +129,22 @@ footer{padding:28px 0;text-align:center;color:var(--muted);font-size:.9rem;borde
 .m{max-width:85%;padding:10px 14px;border-radius:16px;font-size:.95rem;white-space:pre-line}
 .m.b{background:#fff;border:1px solid var(--line);align-self:flex-start}
 .m.u{background:var(--pink);color:#fff;align-self:flex-end}
-.opts{display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px;border-top:1px solid var(--line)}
+.m a{color:var(--pink);font-weight:600}
+.m img{display:block;width:100%;max-width:220px;border-radius:10px;margin-top:8px;background:#fff}
+.opts{display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px;border-top:1px solid var(--line);max-height:150px;overflow:auto}
 .opts button{border:2px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;font:500 .85rem var(--body);cursor:pointer;color:var(--ink)}
 .opts button:hover{border-color:var(--pink)}
 .say{display:flex;gap:8px;padding:0 12px 12px}
 .say input{flex:1;border:2px solid var(--line);border-radius:999px;padding:9px 14px;font:.95rem var(--body)}
 .say button{border:0;background:var(--pink);color:#fff;border-radius:999px;padding:0 16px;font:600 .9rem var(--body);cursor:pointer}
-@media(max-width:520px){.wa{bottom:78px}}
 .evsum{white-space:pre-line;font-size:.92rem;margin-top:12px;padding:10px 12px;background:var(--soft);border-radius:12px}
-.bot-btn{display:flex;align-items:center;gap:10px}
+.bot-btn{display:flex;align-items:center;gap:10px;right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));max-width:calc(100vw - 36px)}
 .bot-btn:has(img){padding:8px 20px 8px 8px}
 .bot-btn img{width:44px;height:44px;border-radius:50%;object-fit:cover;background:var(--soft)}
 .av{width:30px;height:30px;border-radius:50%;object-fit:cover}
 .err{color:#b3261e;font-size:.92rem;margin-bottom:10px}
 .err:empty{display:none}
 [aria-invalid=true]{border-color:#b3261e!important}
-.opts{max-height:150px;overflow:auto}
 .exp{display:grid;grid-template-columns:auto 1fr;gap:56px;align-items:center;justify-content:center}
 .exp video{width:min(100%,340px);aspect-ratio:9/16;max-height:none;object-fit:cover;border-radius:24px;box-shadow:0 24px 50px rgba(27,23,64,.22);margin:0;background:#000}
 .show{position:relative;width:100%;max-width:560px;aspect-ratio:4/3;border-radius:24px;overflow:hidden;box-shadow:0 24px 50px rgba(27,23,64,.22);background:var(--soft);justify-self:center}
@@ -178,7 +158,6 @@ footer{padding:28px 0;text-align:center;color:var(--muted);font-size:.9rem;borde
 .disc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .8s ease}
 .disc img.on{opacity:1}
 @media(prefers-reduced-motion:reduce){.disc img{transition:none}}
-.bot-btn{right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));max-width:calc(100vw - 36px)}
 </style>
 </head>
 <body>
@@ -203,9 +182,7 @@ footer{padding:28px 0;text-align:center;color:var(--muted);font-size:.9rem;borde
     <div>
       <h1>Tus invitados giran. El recuerdo se queda.</h1>
       <p>Cabina 360 y fotocabina con impresión para bodas, quinces, cumpleaños y eventos corporativos en Bogotá. Dos operadores y transporte incluidos.</p>
-      <div class="cta">
-        <a class="btn" href="#cotizar">Cotizar mi evento</a>
-      </div>
+      <div class="cta"><a class="btn" href="#cotizar">Cotizar mi evento</a></div>
     </div>
     <div class="stage" aria-hidden="true">
       <div class="ring"></div>
@@ -270,24 +247,20 @@ footer{padding:28px 0;text-align:center;color:var(--muted);font-size:.9rem;borde
   <div class="wrap">
     <div class="sec-head">
       <h2>Arma tu cotización</h2>
-      <p>Elige el servicio y las horas. El precio se calcula solo y puedes enviarlo directo por WhatsApp para reservar tu fecha.</p>
+      <p>Elige el servicio y las horas. El precio se calcula solo y puedes enviarlo directo a un asesor para reservar tu fecha.</p>
     </div>
     <div class="quote">
       <div>
-        <div class="panel">
-          <h3>1. Servicio</h3>
-          <div class="plans" id="plans"></div>
-        </div>
-        <div class="panel">
-          <h3>2. Horas de servicio</h3>
-          <div class="hours" id="hours"></div>
-        </div>
+        <div class="panel"><h3>1. Servicio</h3><div class="plans" id="plans"></div></div>
+        <div class="panel"><h3>2. Horas de servicio</h3><div class="hours" id="hours"></div></div>
         <div class="panel">
           <h3>3. Tu evento</h3>
           <div class="fields">
             <div><label for="tipo">Tipo de evento *</label>
-              <select id="tipo"><option>Boda</option><option>Quince años</option><option>Cumpleaños</option><option>Evento corporativo</option><option>Grado</option><option>Otro</option></select></div>
+              <select id="tipo"><option>Boda</option><option>Quince años</option><option>Cumpleaños</option><option>Fiesta prom</option><option>Evento empresarial</option><option>Fiesta infantil</option><option>Baby shower</option><option>Grado</option><option>Otro</option></select></div>
+            <div id="otroBox" hidden><label for="otro">¿Qué tipo de evento? *</label><input id="otro" placeholder="Ej: aniversario, despedida…" maxlength="50"></div>
             <div><label for="fecha">Fecha *</label><input type="date" id="fecha"></div>
+            <div><label for="hora">Hora del evento *</label><select id="hora"><option value="">Selecciona...</option></select></div>
             <div><label for="ciudad">Ciudad *</label><input id="ciudad" value="Bogotá" placeholder="Ej: Bogotá"></div>
             <div><label for="loc">Localidad *</label><select id="loc"><option value="">Selecciona...</option></select></div>
             <div><label for="barrio">Barrio *</label><input id="barrio" list="lista-barrios" placeholder="Castilla" autocomplete="off"><datalist id="lista-barrios"></datalist></div>
@@ -304,7 +277,7 @@ footer{padding:28px 0;text-align:center;color:var(--muted);font-size:.9rem;borde
         <ul id="incl"></ul>
         <p class="err" id="err" role="alert"></p>
         <a class="btn" id="send" href="#">Enviar cotización (Reservar)</a>
-        <p class="note">Precio de referencia. Confirmamos disponibilidad de tu fecha por WhatsApp.</p>
+        <p class="note">Precio de referencia. Confirmamos disponibilidad de tu fecha con un asesor. Para apartarla se abonan $50.000.</p>
       </aside>
     </div>
   </div>
@@ -329,7 +302,7 @@ footer{padding:28px 0;text-align:center;color:var(--muted);font-size:.9rem;borde
 </section>
 </main>
 
-<footer>AJ Studio / Geek Studio · © 2026 Todos los derechos reservados</footer>
+<footer>AJ Studio / Geek Studio · © 2026 Todos los derechos reservados · <a href="asesor.html" style="color:inherit;opacity:.7">Acceso asesores</a></footer>
 
 <script>
 const HERO = ["1.jpeg","cabinas.jpeg","foto1.jpg","foto2.jpg","5.jpeg","21.jpeg","11.jpeg"];
@@ -340,7 +313,7 @@ if(!matchMedia("(prefers-reduced-motion: reduce)").matches) setInterval(()=>hero
 
 /* ===== CONFIGURACIÓN: zonas y fechas sin disponibilidad ===== */
 const NO_SERVICIO = {
-  localidades: ["Sumapaz","Usme"],   // localidades sin servicio
+  localidades: ["Sumapaz","Usme"],
   barrios: ["Arborizadora Alta", "Arborizadora Baja", "Barlovento", "Bella Vista",
   "Bellavista Jerusalén", "Buenavista Sur",
   "Caracolí", "Compartir", "El Capri", "El Paraíso", "El Tesoro", "Galán Sur", "Ismael Perdomo", "Jerusalén", "La Escala",
@@ -350,32 +323,22 @@ const NO_SERVICIO = {
   "Paraíso Mirador", "Perdomo Alto", "Potosí", "Potosí Jerusalén", "Párroco", "Rincón del Perdomo", "Santo Domingo", "Sierra Morena", "Sotavento", "Tunas Bajo",
   "Vista Hermosa",
   "María Paz", "Patio Bonito", "El Amparo", "Corabastos",
-
-  // Los Mártires
   "La Estanzuela", "Samper Mendoza", "Santa Isabel", "Ricaurte", "Voto Nacional",
-
-  // Santa Fe
   "Las Cruces", "San Bernardo", "La Vera", "Las Nieves", "La Perseverancia",
-
-  // Bosa
   "San Bernardino", "Bosa Nova", "Campo Verde",
-
-  // Suba
   "Tibabuyes", "Bilbao", "Lisboa", "El Códito",
-
-  // San Cristóbal y Rafael Uribe Uribe
   "La Victoria", "Juan Rey", "Diana Turbay", "Molinos",
-
-  // Usme
   "Yomasa", "Santa Librada", "Alfonso López"
   ]
 };
-const FECHAS_RESERVADAS = [];   // fechas ocupadas, formato AAAA-MM-DD. Ej: "2026-12-24"
+const OCUPADAS = {};   /* fecha AAAA-MM-DD -> horas ya reservadas; se llena sola con el panel del asesor */
+const avisoCruce = (iso,h) => { const o=OCUPADAS[iso]; if(!o) return "";
+  return (h && o.includes(h)) ? "⚠ COINCIDE con un evento ya reservado en la misma fecha y hora." : "⚠ COINCIDE con un evento ya reservado en esta misma fecha (otra hora)."; };
 const MENSAJE_NO_DISPONIBLE = "Por el momento no tenemos disponibilidad para ese sector o esa fecha. Puedes probar con otra fecha.";
 const BARRIOS_BOGOTA = ["Castilla","Engativá","Suba","Teusaquillo","Los Mártires","Antonio Nariño","Puente Aranda","Candelaria"];
 const LOCALIDADES = ["Usaquén","Chapinero","Santa Fe","San Cristóbal","Usme","Tunjuelito","Bosa","Kennedy","Fontibón","Engativá","Suba","Barrios Unidos","Teusaquillo","Los Mártires","Antonio Nariño","Puente Aranda","La Candelaria","Rafael Uribe Uribe","Ciudad Bolívar","Sumapaz"];
 const peso = n => "$" + n.toLocaleString("es-CO") + " COP";
-/* Recargo para el norte de Bogotá: se suma al total sin mostrarse como una línea aparte */
+const fmtHora = t => { const [h,m]=t.split(":").map(Number); return (h%12||12)+":"+String(m).padStart(2,"0")+(h<12?" a. m.":" p. m."); };
 const RECARGO_NORTE = 50000;
 const LOCALIDADES_NORTE = ["Usaquén","Chapinero","Suba","La Candelaria","Teusaquillo"];
 const n0 = x => (x||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
@@ -383,6 +346,15 @@ const esNorte = loc => LOCALIDADES_NORTE.some(l=>n0(l)===n0(loc));
 function precioFinal(p,h,ciudad,loc){
   return p.precios[h-1] + ((n0(ciudad)==="bogota" && esNorte(loc)) ? RECARGO_NORTE : 0);
 }
+/* Asesores de respaldo: se usan por WhatsApp cuando nadie está en línea en el panel */
+const ASESORES = [
+  {n:"Angela",      w:"573106250804"},
+  {n:"Jose Arberi", w:"573204981495"}
+];
+const asesorAzar = () => ASESORES[Math.floor(Math.random()*ASESORES.length)];
+const wa = (n,t) => `https://wa.me/${n}?text=${encodeURIComponent(t)}`;
+const VALOR_APARTADO = 50000;
+
 const PLANES = [
   {id:"basico", img:"img/cabina3601.png", nombre:"Cabina 360", desc:"Grabacion de tu video con efectos de audio y video", precios:[180000,300000,450000,580000],
    incluye:["Qr para descarga inmediata del video","Plataforma estable de 60 cm"]},
@@ -395,7 +367,7 @@ const PLANES = [
   {id:"premium", img:"img/full.jpg", nombre:"Full Premium", desc:"Cabina 360 + fotocabina digital y fotocabina impresión tira: la experiencia más completa.", precios:[380000,500000,680000,870000],
    incluye:["Tira impresa y digital con tres fotos + logo","Videos digitales inmediatos","Experiencia 360 + fotocabina de impresión + fotos con proms digitales y efectos"]}
 ];
-let sel = null, horas = 0;   /* el cotizador empieza sin servicio ni horas: total en $0 */
+let sel = null, horas = 0;
 
 const plansEl = document.getElementById("plans");
 PLANES.forEach(p=>{
@@ -413,8 +385,11 @@ const hoursEl = document.getElementById("hours");
 
 function render(){
   const p = PLANES.find(x=>x.id===sel);
-  const tipo = document.getElementById("tipo").value;
+  const tipoSel = document.getElementById("tipo").value, otro = document.getElementById("otro").value.trim();
+  document.getElementById("otroBox").hidden = tipoSel!=="Otro";
+  const tipo = tipoSel==="Otro" && otro ? "Otro ("+otro+")" : tipoSel;
   const fecha = document.getElementById("fecha").value;
+  const hora = document.getElementById("hora").value;
   const ciudad = document.getElementById("ciudad").value.trim(), loc = document.getElementById("loc").value, barrio = document.getElementById("barrio").value.trim(), dir = document.getElementById("dir").value.trim();
   const listo = !!(p && horas);
   const precio = listo ? precioFinal(p,horas,ciudad,loc) : 0;
@@ -423,16 +398,15 @@ function render(){
   document.getElementById("shours").textContent = horas ? horas+(horas===1?" hora":" horas")+" de servicio" : "Elige las horas de servicio";
   document.getElementById("incl").innerHTML = p ? ["2 operadores de logística","Página web de tu evento sin costo adicional",...p.incluye].map(i=>`<li>${i}</li>`).join("") : "";
   [...hoursEl.children].forEach((b,i)=>b.setAttribute("aria-pressed", i+1===horas));
-  document.getElementById("sev").textContent = `Evento: ${tipo}`+(fecha?` · ${fecha}`:"")+(ciudad?`\nCiudad: ${ciudad}`:"")+(loc?`\nLocalidad: ${loc}`:"")+(barrio?`\nBarrio: ${barrio}`:"")+(dir?`\nDirección: ${dir}`:"");
+  document.getElementById("sev").textContent = `Evento: ${tipo}`+(fecha?` · ${fecha}`:"")+(hora?` · ${fmtHora(hora)}`:"")+(ciudad?`\nCiudad: ${ciudad}`:"")+(loc?`\nLocalidad: ${loc}`:"")+(barrio?`\nBarrio: ${barrio}`:"")+(dir?`\nDirección: ${dir}`:"");
   window.cotMsg = !listo ? "" : `Hola, quiero cotizar el plan ${p.nombre} de ${horas} ${horas===1?"hora":"horas"} (${peso(precio)}).`
-    + `\nEvento: ${tipo}` + (fecha?`\nFecha: ${fecha}`:"") + (ciudad?`\nCiudad: ${ciudad}`:"") + (loc?`\nLocalidad: ${loc}`:"") + (barrio?`\nBarrio: ${barrio}`:"") + (dir?`\nDirección: ${dir}`:"") + `\nIncluye 2 operadores de logística.`
+    + `\nEvento: ${tipo}` + (fecha?`\nFecha: ${fecha}`:"") + (hora?`\nHora: ${fmtHora(hora)}`:"") + (ciudad?`\nCiudad: ${ciudad}`:"") + (loc?`\nLocalidad: ${loc}`:"") + (barrio?`\nBarrio: ${barrio}`:"") + (dir?`\nDirección: ${dir}`:"") + `\nIncluye 2 operadores de logística.`
+    + (avisoCruce(fecha,hora)?"\n"+avisoCruce(fecha,hora):"")
     + `\n¿Tienen disponibilidad?`;
 }
-["tipo","fecha","ciudad","loc","barrio","dir"].forEach(id=>document.getElementById(id).addEventListener("input",render));
+["tipo","otro","fecha","hora","ciudad","loc","barrio","dir"].forEach(id=>document.getElementById(id).addEventListener("input",render));
 document.getElementById("fecha").min = new Date().toISOString().split("T")[0];
 render();
-
-document.querySelectorAll(".wa-link").forEach(a=>a.addEventListener("click",e=>{ e.preventDefault(); abrirBot(); }));
 
 const FOTOS = ["11.jpeg","14.jpeg","20.jpeg","4.jpeg","18.jpeg","WhatsApp 4.jpeg","WhatsApp 5.jpeg"];
 const show = document.getElementById("show"), dots = document.getElementById("dots");
@@ -455,6 +429,9 @@ show.onmouseenter=()=>clearInterval(timer); show.onmouseleave=iniciar; iniciar()
 </div>
 
 <script>
+/* ===== CONFIGURA ESTO: URL de tu Firebase Realtime Database ===== */
+const DB = "https://cabina-de-fotos-4f20d-default-rtdb.firebaseio.com/";
+
 const $ = id => document.getElementById(id);
 LOCALIDADES.forEach(l=>$("loc").add(new Option(l,l)));
 BARRIOS_BOGOTA.forEach(b=>$("lista-barrios").appendChild(new Option(b)));
@@ -465,39 +442,38 @@ function validar(){
   const v = id => $(id).value.trim();
   if(!sel){ $("err").textContent = "Elige el servicio que quieres cotizar."; return false; }
   if(!horas){ $("err").textContent = "Elige las horas de servicio."; return false; }
-  const campos = [["fecha","la fecha"],["ciudad","la ciudad"],["barrio","el barrio"],["dir","la dirección"]];
-  if(norm(v("ciudad"))==="bogota") campos.splice(2,0,["loc","la localidad"]);
-  ["fecha","ciudad","loc","barrio","dir"].forEach(id=>$(id).removeAttribute("aria-invalid"));
+  const campos = [["fecha","la fecha"],["hora","la hora del evento"],["ciudad","la ciudad"],["barrio","el barrio"],["dir","la dirección"]];
+  if(norm(v("ciudad"))==="bogota") campos.splice(3,0,["loc","la localidad"]);
+  if(v("tipo")==="Otro") campos.unshift(["otro","el tipo de evento"]);
+  ["otro","fecha","hora","ciudad","loc","barrio","dir"].forEach(id=>$(id).removeAttribute("aria-invalid"));
   const faltan = campos.filter(([id])=>!v(id));
   faltan.forEach(([id])=>$(id).setAttribute("aria-invalid","true"));
   const err = $("err");
   if(faltan.length){ err.textContent = "Completa "+faltan.map(f=>f[1]).join(", ")+" para continuar."; return false; }
   if(v("fecha") < new Date().toISOString().split("T")[0]){ $("fecha").setAttribute("aria-invalid","true"); err.textContent = "La fecha debe ser hoy o una fecha futura."; return false; }
-  if(sinServicio(v("loc"),v("barrio")) || FECHAS_RESERVADAS.includes(v("fecha"))){ err.textContent = MENSAJE_NO_DISPONIBLE; return false; }
+  if(sinServicio(v("loc"),v("barrio"))){ err.textContent = MENSAJE_NO_DISPONIBLE; return false; }
   err.textContent = ""; return true;
 }
 
+/* Fechas ya reservadas (las registra el asesor en su panel) */
+for(let i=0;i<48;i++){ const v=String(Math.floor(i/2)).padStart(2,"0")+":"+(i%2?"30":"00"); $("hora").add(new Option(fmtHora(v),v)); }   /* horas cada 30 min */
+fetch(`${DB}/ocupadas.json`).then(r=>r.json()).then(o=>{ if(o) Object.entries(o).forEach(([f,v])=>{ OCUPADAS[f]=(v&&typeof v==="object")?Object.values(v).map(String):[""]; }); render(); }).catch(()=>{});
+
 /* ===== Chatbot asesor de eventos ===== */
-
-/* Para agregar más asesores, añade una línea: {n:"Nombre", w:"57XXXXXXXXXX"} */
-const ASESORES = [
-  {n:"Angela",      w:"573106250804"},
-  {n:"Jose Arberi", w:"573204981495"}
-  // ,{n:"Nuevo asesor", w:"573001234567"}
-];
-const asesorAzar = () => ASESORES[Math.floor(Math.random()*ASESORES.length)];
-
-const TIPOS = ["Boda","Quince años","Cumpleaños","Evento corporativo","Grado","Otro"];
+const TIPOS = ["Boda","Quince años","Cumpleaños","Fiesta prom","Evento empresarial","Fiesta infantil","Baby shower","Grado","Otro"];
 const INV   = ["Hasta 50","De 50 a 100","De 100 a 200","Más de 200"];
 const HORAS = [1,2,3,4];
 const OBJ   = ["Videos 360 para redes","Fotos impresas","Fotos digitales (proms)","360 + fotos impresas","Las 3 máquinas"];
-const PLAN_POR_OBJ = ["basico","tira","pro","completo","premium"];   /* mismo orden que OBJ */
+const PLAN_POR_OBJ = ["basico","tira","pro","completo","premium"];
 
 const TIPS = {
  "Boda":"Consejo: activa la cabina después o antes del vals, cuando la pista ya está animada, y déjala disponible hasta el final.",
  "Quince años":"Consejo: úsala después o antes del vals y la hora loca, y pide a la quinceañera y su corte que inviten al resto.",
  "Cumpleaños":"Consejo: ábrela desde que llegan los invitados para que todos tengan su video antes del pastel.",
- "Evento corporativo":"Consejo: puedes pedir marco o tira con el logo de tu empresa; funciona muy bien en cierres de año y lanzamientos.",
+ "Fiesta prom":"Consejo: abre la cabina desde la llegada de los invitados y déjala hasta el final: los videos 360 y las fotos son lo que más comparten en redes.",
+ "Evento empresarial":"Consejo: puedes pedir marco o tira con el logo de tu empresa; funciona muy bien en cierres de año y lanzamientos.",
+ "Fiesta infantil":"Consejo: ubícala cerca de la zona de juegos y cuida que haya un adulto acompañando a los niños en la plataforma.",
+ "Baby shower":"Consejo: un marco o tira con el nombre del bebé y la fecha se convierte en un recuerdo para los papás.",
  "Grado":"Consejo: un marco con el año y el nombre de la promoción convierte los videos y fotos en recuerdo de grado.",
  "Otro":"Consejo: cuéntale a tu asesor el ambiente del evento para elegir la mejor ubicación de la cabina."};
 const AREA = {basico:"2 x 2 m",pro:"2 x 2 m",tira:"2 x 2 m",completo:"3 x 3 m",premium:"4 x 4 m"};
@@ -505,40 +481,30 @@ const espacio = id => `Para dar un buen servicio te recomiendo:\n• Un lugar lu
 const hTxt = h => h+(h===1?" hora":" horas");
 
 let ctx = {};
-let nombre = "";   /* nombre del cliente: se conserva aunque el flujo se reinicie */
-const wa = (n,t) => `https://wa.me/${n}?text=${encodeURIComponent(t)}`;
-function say(t,c){ const d=document.createElement("div"); d.className="m "+c; d.textContent=t; $("log").appendChild(d); $("log").scrollTop=1e9; }
+let nombre = "";
+function say(t,c,waNum,qr){ const d=document.createElement("div"); d.className="m "+c; d.textContent=t;
+  if(waNum){ d.appendChild(document.createElement("br")); const a=document.createElement("a"); a.href="https://wa.me/"+waNum; a.target="_blank"; a.rel="noopener"; a.textContent="Abrir WhatsApp"; d.appendChild(a); }
+  if(qr){ const i=new Image(); i.src="img/qr-reserva.png"; i.alt="QR para apartar la fecha"; i.onerror=()=>i.remove(); d.appendChild(i); }
+  $("log").appendChild(d); $("log").scrollTop=1e9; }
 function opts(list){ $("opts").innerHTML=""; list.forEach(([l,f])=>{ const b=document.createElement("button"); b.type="button"; b.textContent=l; b.onclick=()=>{ say(l,"u"); setTimeout(f,200); }; $("opts").appendChild(b); }); }
 
-/* --- Nombre del cliente: se pregunta una sola vez y luego continúa lo que estaba pendiente --- */
-function pedirNombre(luego){
-  ctx.esperando="nombre"; ctx.luego=luego;
-  say("¿Cómo te llamas?","b"); opts([]);
-}
+function pedirNombre(luego){ ctx.esperando="nombre"; ctx.luego=luego; say("¿Cómo te llamas?","b"); opts([]); }
 
-/* --- Flujo: nombre → tipo → invitados → horas → objetivo (se omite si son +200) → recomendación --- */
-function inicio(){
-  ctx={};
-  if(!nombre) pedirNombre(preguntaTipo); else preguntaTipo();
-}
+function inicio(){ ctx={}; if(!nombre) pedirNombre(preguntaTipo); else preguntaTipo(); }
 function preguntaTipo(){
   say(`¿Qué tipo de evento vas a celebrar${nombre?", "+nombre:""}?`,"b");
-  opts([...TIPOS.map(t=>[t,()=>{ctx.tipo=t;pInv();}]),["Descargar mis fotos",guiaFotos]]);
+  opts([...TIPOS.map(t=>[t,()=>{ if(t==="Otro"){ ctx.esperando="otro"; say("¿Qué tipo de evento es? Escríbelo, por ejemplo: aniversario.","b"); opts([]); } else { ctx.tipo=t; pInv(); } }]),["Hablar con un asesor",contactar],["Descargar mis fotos",guiaFotos]]);
 }
-
 function pInv(){ say("¿Cuántos invitados esperas?","b"); opts(INV.map(v=>[v,()=>{ctx.inv=v;pHoras();}])); }
-
 function pHoras(){ say("¿Cuántas horas de servicio necesitas?","b");
   opts(HORAS.map(h=>[hTxt(h),()=>{
     ctx.h=h;
-    if(ctx.inv===INV[3]){ ctx.obj=OBJ[4]; recomendar(); }   /* más de 200 → Full Premium directo */
+    if(ctx.inv===INV[3]){ ctx.obj=OBJ[4]; recomendar(); }
     else pObj();
   }])); }
-
 function pObj(){ ctx.paso="obj"; say("¿Qué quieres para tus invitados? Si no estás seguro, te recomiendo yo según tus invitados y horas.","b");
   opts([["Recomiéndame uno",recomendarAuto],...OBJ.map(v=>[v,()=>{ctx.obj=v;recomendar();}])]); }
 
-/* --- Recomendación automática según invitados, horas y tipo de evento --- */
 function planAuto(){
   const g = INV.indexOf(ctx.inv), h = ctx.h;
   let id, r;
@@ -552,7 +518,7 @@ function planAuto(){
     else { id="tira"; r="con 50 a 100 invitados la tira impresa es el recuerdo que se llevan en la mano."; }
   }
   else {
-    if(ctx.tipo==="Evento corporativo"){ id="tira"; r="para un evento corporativo la tira impresa lleva el logo de tu empresa."; }
+    if(ctx.tipo==="Evento empresarial"){ id="tira"; r="para un evento corporativo la tira impresa lleva el logo de tu empresa."; }
     else { id="pro"; r="para un grupo de hasta 50 invitados la opción digital es práctica, muy animada y de buen precio."; }
   }
   if(h===1 && g>=2) r += "\n\nOjo: con tantos invitados 1 hora puede quedarse corta; te sugiero 2 o 3 horas.";
@@ -565,7 +531,7 @@ function recomendar(){
   const auto = ctx.auto ? planAuto() : null;
   const id = ctx.inv===INV[3] ? "premium" : auto ? auto.id : PLAN_POR_OBJ[OBJ.indexOf(ctx.obj)];
   const p = PLANES.find(x=>x.id===id); ctx.plan=id;
-  let t = `${nombre?nombre+", p":"P"}ara ${ctx.tipo.toLowerCase()} con ${ctx.inv.toLowerCase()} invitados te recomiendo:\n\n${p.nombre} · ${hTxt(ctx.h)} · ${peso(p.precios[ctx.h-1])}\nIncluye: ${["2 operadores de logística",...p.incluye].join(", ")}.\nPrecio de referencia; se confirma según la ubicación del evento.\n\n${TIPS[ctx.tipo]}`;
+  let t = `${nombre?nombre+", p":"P"}ara ${ctx.tipo.toLowerCase()} con ${ctx.inv.toLowerCase()} invitados te recomiendo:\n\n${p.nombre} · ${hTxt(ctx.h)} · ${peso(p.precios[ctx.h-1])}\nIncluye: ${["2 operadores de logística",...p.incluye].join(", ")}.\nPrecio de referencia; se confirma según la ubicación del evento.\n\n${TIPS[ctx.tipo]||TIPS["Otro"]}`;
   if(ctx.inv===INV[3]){
     t += "\n\nPara más de 200 invitados el Full Premium es la mejor opción: es la experiencia más completa y más gente puede participar.";
     if(ctx.h<4) t += " Si quieres, un asesor te ayuda a revisar si conviene más tiempo.";
@@ -577,11 +543,11 @@ function recomendar(){
 
 function usarCot(){
   sel = ctx.plan; horas = ctx.h; $("p-"+sel).checked = true;
-  const t=$("tipo"); [...t.options].forEach(o=>{ if(o.text===ctx.tipo) t.value=o.text; });
+  const t=$("tipo"); const ok=[...t.options].some(o=>o.text===ctx.tipo);
+  t.value = ok ? ctx.tipo : "Otro"; $("otro").value = ok ? "" : ctx.tipo;
   render(); cerrarBot(); $("cotizar").scrollIntoView({behavior:"smooth"});
 }
 
-/* --- Descarga de fotos: el bot lleva a descargar.html --- */
 function guiaFotos(){
   say("Para descargar tus fotos y videos:\n1. Toca el botón \"Descargar mis fotos\" del menú de arriba.\n2. Sigue los pasos en esa página.\n\nEn el celular, los archivos quedan en Descargas o en tu galería.","b");
   opts([
@@ -591,10 +557,18 @@ function guiaFotos(){
   ]);
 }
 
-/* --- Datos del lugar --- */
+/* --- Datos del lugar, fecha y hora --- */
 function pLugar(){ ctx.lugar={}; say("Para enviar tu cotización necesito los datos del evento. ¿En qué localidad es?","b");
   opts(LOCALIDADES.map(l=>[l,()=>{ ctx.lugar.loc=l; ctx.esperando="barrio"; say("¿En qué barrio?","b"); opts([]); }])); }
 function bloqueado(){ ctx.esperando=null; say(MENSAJE_NO_DISPONIBLE,"b"); opts([["Cambiar fecha o ubicación",pLugar],["Empezar de nuevo",inicio]]); }
+function parseHora(t){
+  const m=t.trim().toLowerCase().replace(/\./g,"").match(/^(\d{1,2})(?:[:h](\d{2}))?\s*(am|pm)?$/);
+  if(!m) return null;
+  let h=+m[1], mi=+(m[2]||0);
+  if(m[3]==="pm"&&h<12) h+=12; if(m[3]==="am"&&h===12) h=0;
+  if(h>23||mi>59) return null;
+  return String(h).padStart(2,"0")+":"+String(mi).padStart(2,"0");
+}
 function pasoTexto(t){
   const e=ctx.esperando, L=ctx.lugar;
   if(e==="nombre"){
@@ -603,6 +577,9 @@ function pasoTexto(t){
     nombre=n; ctx.esperando=null;
     say(`Mucho gusto, ${nombre}.`,"b");
     const f=ctx.luego; ctx.luego=null; if(f) f(); }
+  else if(e==="otro"){ const o=t.replace(/\s+/g," ").trim().slice(0,50);
+    if(o.length<3) return say("Cuéntame qué tipo de evento es, por favor.","b");
+    ctx.tipo=o.charAt(0).toUpperCase()+o.slice(1); ctx.esperando=null; pInv(); }
   else if(e==="barrio"){ if(t.length<3) return say("Escribe el nombre del barrio.","b");
     L.barrio=t; if(sinServicio(L.loc,t)) return bloqueado();
     ctx.esperando="dir"; say("¿Cuál es la dirección del evento?","b"); }
@@ -611,26 +588,78 @@ function pasoTexto(t){
   else if(e==="fecha"){ const m=t.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/); let iso=null;
     if(m){ const d=new Date(+m[3],+m[2]-1,+m[1]); if(d.getMonth()===+m[2]-1 && d>=new Date(new Date().toDateString())) iso=`${m[3]}-${m[2].padStart(2,"0")}-${m[1].padStart(2,"0")}`; }
     if(!iso) return say("No pude leer esa fecha. Escríbela como dd/mm/aaaa, por ejemplo 15/12/2026, y que sea una fecha futura.","b");
-    if(FECHAS_RESERVADAS.includes(iso)) return bloqueado();
-    L.fecha=`${m[1]}/${m[2]}/${m[3]}`; ctx.esperando=null; contactar(); }
+    L.iso=iso; L.fecha=`${m[1]}/${m[2]}/${m[3]}`; ctx.esperando="hora"; say("¿A qué hora empieza el evento? Solo en punto o y media, por ejemplo: 7:00 pm o 7:30 pm.","b"); }
+  else if(e==="hora"){ const h=parseHora(t);
+    if(!h || !/:(00|30)$/.test(h)) return say("Escríbela en punto o y media, por ejemplo 7:00 pm o 7:30 pm.","b");
+    L.hora=fmtHora(h); L.h24=h; ctx.esperando=null;
+    if(avisoCruce(L.iso,h)) say("Esa fecha ya tiene otro evento reservado, pero igual envío tu cotización: el asesor confirma si hay disponibilidad.","b");
+    contactar(); }
 }
 
-/* --- Asesor al azar: el cliente no elige, solo se le dice con quién hablará --- */
+/* --- Contacto: asesor en línea si hay; si no, WhatsApp con asesor al azar --- */
 function contactar(){
-  if(!nombre) return pedirNombre(contactar);   /* si aún no tenemos el nombre, se pide primero */
-  const a = asesorAzar();
+  if(!nombre) return pedirNombre(contactar);
   let m = "Hola, vengo de la página de AJ Studio y quiero asesoría para mi evento.";
   if(ctx.msg) m = ctx.msg;
   else if(ctx.plan){ const p=PLANES.find(x=>x.id===ctx.plan);
     m = `Hola, quiero esta cotización para mi evento:\nEvento: ${ctx.tipo}\nInvitados: ${ctx.inv}\nBusco: ${ctx.obj}\nPlan: ${p.nombre}, ${hTxt(ctx.h)} (${peso(precioFinal(p,ctx.h,"Bogotá",ctx.lugar?ctx.lugar.loc:""))})\nIncluye 2 operadores de logística.`
-      +(ctx.lugar?`\nFecha: ${ctx.lugar.fecha}\nCiudad: Bogotá\nLocalidad: ${ctx.lugar.loc}\nBarrio: ${ctx.lugar.barrio}\nDirección: ${ctx.lugar.dir}`:"")
+      +(ctx.lugar?`\nFecha: ${ctx.lugar.fecha}\nHora: ${ctx.lugar.hora}\nCiudad: Bogotá\nLocalidad: ${ctx.lugar.loc}\nBarrio: ${ctx.lugar.barrio}\nDirección: ${ctx.lugar.dir}`:"")
+      +(ctx.lugar&&avisoCruce(ctx.lugar.iso,ctx.lugar.h24)?"\n"+avisoCruce(ctx.lugar.iso,ctx.lugar.h24):"")
       +`\n¿Tienen disponibilidad?`; }
-  m = m.replace(/^Hola, /, `Hola, soy ${nombre}. `);
-  const url = wa(a.w,m);
-  say(`Listo, ${nombre}, te voy a contactar con ${a.n} por WhatsApp. Ahí confirmas disponibilidad y detalles, con tu cotización ya escrita.\n\nSi no se abre solo, toca el botón.`,"b");
-  window.open(url,"_blank","noopener");
-  opts([["Abrir WhatsApp con "+a.n,()=>window.open(url,"_blank","noopener")],["Nueva recomendación",inicio]]);
+  abrirAsesor(m.replace(/^Hola, /, `Hola, soy ${nombre}. `));
 }
+
+/* ===== Asesor en línea (chat en vivo) ===== */
+let live = false, es = null, chatId = sessionStorage.getItem("ajChat") || "";
+const vistos = new Set();
+const api = (path,method,body) => fetch(`${DB}/${path}.json`,{method,body:body?JSON.stringify(body):undefined}).then(r=>r.json());
+
+let au;
+function beep(){ try{ au = au || new (window.AudioContext||window.webkitAudioContext)(); if(au.state==="suspended") au.resume();
+  const t=au.currentTime, o=au.createOscillator(), g=au.createGain(); o.type="sine";
+  o.frequency.setValueAtTime(880,t); o.frequency.setValueAtTime(1175,t+.12);
+  g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.25,t+.02); g.gain.exponentialRampToValueAtTime(.0001,t+.3);
+  o.connect(g).connect(au.destination); o.start(t); o.stop(t+.3); }catch(e){} }
+
+const enviarAsesor = t => { api(`chats/${chatId}/meta`,"PATCH",{nombre,ultimo:t.slice(0,80),ts:Date.now()});
+  return api(`chats/${chatId}/msgs`,"POST",{de:"c",t,ts:Date.now()}); };
+
+async function abrirAsesor(primer){
+  if(!chatId){ chatId="c"+Date.now().toString(36)+Math.random().toString(36).slice(2,10); sessionStorage.setItem("ajChat",chatId); }
+  if(live){ try{ await enviarAsesor(primer); }catch(e){} return; }
+  opts([]); say("Buscando un asesor en línea…","b");
+  let on=false;
+  try{ const p = await api("presence","GET"); on = !!(p && Date.now()-p.ts < 60000); }catch(e){}
+  if(!on) return porWhatsApp(primer);   /* nadie conectado → WhatsApp con asesor al azar */
+  live = true;
+  try{
+    escuchar(); await enviarAsesor(primer);
+    say(`Listo, ${nombre}. Un asesor en línea ya recibió tu mensaje y te responde aquí mismo, en este chat.`,"b");
+    opts([["Ver QR para apartar mi fecha ($50.000)",verQR],["Volver al asistente automático",salirAsesor]]);
+  }catch(e){ live=false; porWhatsApp(primer); }
+}
+function porWhatsApp(m){
+  const a = asesorAzar(), url = wa(a.w,m);
+  say(`Ahora mismo no hay asesores en línea, ${nombre}. Te voy a contactar con ${a.n} por WhatsApp, con tu cotización ya escrita.\n\nSi no se abre solo, toca el botón.`,"b");
+  window.open(url,"_blank","noopener");
+  opts([["Abrir WhatsApp con "+a.n,()=>window.open(url,"_blank","noopener")],["Ver QR para apartar mi fecha ($50.000)",verQR],["Nueva recomendación",inicio]]);
+}
+function verQR(){
+  say(`Para apartar tu fecha se hace un abono de ${peso(VALOR_APARTADO)} escaneando este QR.\n\nDespués envía el comprobante por este chat o por WhatsApp y tu fecha queda reservada.`,"b",null,true);
+  opts([["Hablar con un asesor",contactar],["Volver al inicio",inicio]]);
+}
+function escuchar(){
+  if(es) es.close();
+  es = new EventSource(`${DB}/chats/${chatId}/msgs.json`);
+  const f = ev => { const {path,data} = JSON.parse(ev.data);
+    const items = path==="/" ? (data||{}) : {[path.slice(1)]:data};
+    Object.entries(items).filter(([,m])=>m&&m.t).sort((a,b)=>a[1].ts-b[1].ts).forEach(([k,m])=>{
+      if(vistos.has(k)) return; vistos.add(k);
+      say(m.t, m.de==="c"?"u":"b", m.wa, m.qr);
+      if(m.de!=="c" && Date.now()-m.ts<15000) beep(); }); };
+  es.addEventListener("put",f); es.addEventListener("patch",f);
+}
+function salirAsesor(){ live=false; if(es) es.close(); say("Volviste al asistente automático. Puedes pedir un asesor cuando quieras.","b"); inicio(); }
 
 /* --- Preguntas libres --- */
 function faq(t){
@@ -639,14 +668,17 @@ function faq(t){
   if(/precio|cuesta|valor|cu[aá]nto|tarifa/.test(t)) return PLANES.map(p=>`${p.nombre}: ${peso(p.precios[0])} (1 h) a ${peso(p.precios[3])} (4 h)`).join("\n")+"\n\nArma tu cotización exacta en la sección Cotizar.";
   if(/incluye|trae|accesorio|props|operador/.test(t)) return PLANES.map(p=>`${p.nombre}: ${p.incluye.join(", ")}.`).join("\n\n")+"\n\nTodos los planes incluyen 2 operadores de logística.";
   if(/transporte|zona|ciudad|domicilio|lejos/.test(t)) return "El transporte y los 2 operadores están incluidos en Bogotá. Para otros municipios o ciudades, un asesor cotiza el transporte.";
-  if(/reserv|fecha|disponib|apart/.test(t)) return "Arma tu cotización, envíala por WhatsApp y un asesor confirma la disponibilidad de tu fecha.";
+  if(/reserv|fecha|disponib|apart/.test(t)) return "Arma tu cotización y envíala a un asesor para confirmar la disponibilidad. Para apartar la fecha se abonan $50.000 con un QR.";
   return null;
 }
-$("say").onsubmit = e => { e.preventDefault(); const t=$("sayIn").value.trim(); if(!t) return; $("sayIn").value=""; say(t,"u");
+$("say").onsubmit = e => { e.preventDefault(); const t=$("sayIn").value.trim(); if(!t) return; $("sayIn").value="";
+  if(live){ enviarAsesor(t).catch(()=>say("No se pudo enviar. Revisa tu conexión.","b")); return; }
+  say(t,"u");
   if(ctx.esperando){ pasoTexto(t); return; }
   if(/recomiend|sugier|aconsej|cu[aá]l me conviene|no s[eé]/i.test(t)){
     if(ctx.inv && ctx.h){ setTimeout(recomendarAuto,250); return; }
     setTimeout(()=>{ say("Con gusto. Respóndeme unas preguntas rápidas y te recomiendo el plan ideal.","b"); inicio(); },250); return; }
+  if(/\bqr\b|apartar|abono|se[ñn]a/i.test(t)){ setTimeout(verQR,250); return; }
   const r = faq(t);
   if(!r && /foto|video|descarg|c[oó]digo|galer/i.test(t)){ setTimeout(guiaFotos,250); return; }
   setTimeout(()=>{ if(r) say(r,"b"); else { say("Eso lo resuelve mejor un asesor. ¿Quieres que te contacte uno o que te recomiende según tu evento?","b"); opts([["Que me contacte un asesor",contactar],["Recomiéndame algo",inicio]]); } },250); };
@@ -661,6 +693,7 @@ function abrirBot(saludar=true){ $("bot").classList.add("on"); $("botBtn").setAt
 
 /* Botón "Enviar cotización (Reservar)" del cotizador */
 $("send").onclick = e => { e.preventDefault(); if(!validar()) return; abrirBot(false); ctx={msg:window.cotMsg}; say("Enviar la cotización que armé","u");
+  if(avisoCruce($("fecha").value,$("hora").value)) say("Esa fecha ya tiene otro evento reservado, pero igual envío tu cotización: el asesor confirma si hay disponibilidad.","b");
   contactar(); };
 </script>
 </body>
