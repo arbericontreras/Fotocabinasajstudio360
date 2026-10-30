@@ -5,28 +5,38 @@
 *{box-sizing:border-box;margin:0}[hidden]{display:none!important}
 body{font:16px system-ui,sans-serif;background:#fbfaff;color:#1b1740;height:100vh}
 #ing{max-width:320px;margin:15vh auto;display:grid;gap:10px}
-input,select,button{font:inherit;padding:10px;border:2px solid #dcd7f2;border-radius:10px}
+input,select,button{font:inherit;padding:10px;border:2px solid #dcd7f2;border-radius:10px;min-width:0}
 button{background:#e6397a;color:#fff;border:0;cursor:pointer;font-weight:600}
-#app{display:grid;grid-template-columns:260px 1fr;height:100vh}
+#app{display:grid;grid-template-columns:270px 1fr;height:100vh}
 #side{display:flex;flex-direction:column;border-right:1px solid #dcd7f2;min-height:0}
 #tabs{display:flex;gap:6px;padding:8px;border-bottom:1px solid #dcd7f2}
-#tabs button{flex:1;background:#fff;color:#1b1740;border:2px solid #dcd7f2;padding:8px}
+#tabs button{flex:1;background:#fff;color:#1b1740;border:2px solid #dcd7f2;padding:6px 4px;font-size:.8rem}
 #lista{flex:1;overflow:auto}
 .it{display:block;width:100%;text-align:left;background:#fff;color:#1b1740;border:0;border-bottom:1px solid #dcd7f2;border-radius:0;position:relative}
 .it.on{background:#fff4f8}.it small{display:block;font-weight:400;color:#5d5a7a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .it i{position:absolute;right:10px;top:12px;background:#e6397a;color:#fff;border-radius:99px;padding:0 8px;font-style:normal;font-size:.8rem}
+#yoBox{padding:8px;border-top:1px solid #dcd7f2;display:grid;gap:4px;font-size:.8rem;color:#5d5a7a}
 #main{display:flex;flex-direction:column;min-width:0;min-height:0}
 #chatv{display:flex;flex-direction:column;flex:1;min-height:0}
+#info{padding:10px 14px;border-bottom:1px solid #dcd7f2;font-weight:600}
 #log{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:8px}
 .m{max-width:75%;padding:9px 13px;border-radius:14px;white-space:pre-line}
 .m.c{background:#fff;border:1px solid #dcd7f2;align-self:flex-start}.m.a{background:#e6397a;color:#fff;align-self:flex-end}
 #bar,#say{display:flex;gap:8px;padding:10px;border-top:1px solid #dcd7f2;flex-wrap:wrap}#say input{flex:1}
-#rv{padding:18px;overflow:auto;flex:1}
-#rf{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:12px 0}
-#rf label.chk{display:flex;gap:8px;align-items:center;grid-column:1/-1}
-.rr{display:flex;justify-content:space-between;gap:10px;padding:10px;border-bottom:1px solid #dcd7f2}
-.rr button{background:#b3261e;padding:4px 10px}
-@media(max-width:700px){#app{grid-template-columns:1fr;grid-template-rows:200px 1fr}}
+.pane{padding:18px;overflow:auto;flex:1}
+.pane h2{margin-bottom:4px}
+#rf{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:14px 0;padding:14px;background:#fff;border:1px solid #dcd7f2;border-radius:14px}
+#rf label{display:grid;gap:3px;font-size:.78rem;color:#5d5a7a;font-weight:600}
+#rf label input,#rf label select{color:#1b1740;font-weight:400;font-size:1rem}
+#rf .full{grid-column:1/-1}
+#rf .chk{display:flex;gap:8px;align-items:center;font-size:.95rem}
+.rr{display:flex;justify-content:space-between;gap:10px;padding:12px;border:1px solid #dcd7f2;background:#fff;border-radius:12px;margin-bottom:10px}
+.rr span{white-space:pre-line;line-height:1.5}
+.rr .bs{display:flex;gap:6px;align-items:flex-start;flex-wrap:wrap;justify-content:flex-end}
+.rr button,.rr a.b{background:#b3261e;padding:5px 10px;font-size:.85rem;border-radius:8px;color:#fff;text-decoration:none;font-weight:600}
+.rr .ok{background:#137333}.rr a.b{background:#25d366}
+.warn{color:#b3261e;font-weight:600}
+@media(max-width:700px){#app{grid-template-columns:1fr;grid-template-rows:210px 1fr}}
 </style></head><body>
 
 <form id="ing"><h2>Panel de asesores</h2>
@@ -35,11 +45,19 @@ button{background:#e6397a;color:#fff;border:0;cursor:pointer;font-weight:600}
 
 <div id="app" hidden>
   <div id="side">
-    <div id="tabs"><button type="button" onclick="verReservas(false)">Chats</button><button type="button" onclick="verReservas(true)">📅 Reservas</button></div>
+    <div id="tabs">
+      <button type="button" onclick="vista('chat')">Chats</button>
+      <button type="button" onclick="vista('res')">📅 Reservas</button>
+      <button type="button" id="tpen" onclick="vista('pen')">🔔 Pendientes</button>
+    </div>
     <div id="lista"></div>
+    <div id="yoBox"><label for="yo">Asesor (tú):</label><select id="yo"></select></div>
+    <button type="button" id="off" style="border-radius:0;background:#5d5a7a">Desconectarme</button>
   </div>
+
   <div id="main">
     <div id="chatv">
+      <div id="info">Elige un chat de la lista</div>
       <div id="log"></div>
       <div id="bar">
         <select id="num"></select>
@@ -48,33 +66,54 @@ button{background:#e6397a;color:#fff;border:0;cursor:pointer;font-weight:600}
       </div>
       <form id="say"><input id="in" placeholder="Escribe tu respuesta" autocomplete="off"><button>Enviar</button></form>
     </div>
-    <div id="rv" hidden>
+
+    <div id="pv" class="pane" hidden>
+      <h2>Reservas por confirmar</h2>
+      <p style="color:#5d5a7a;margin:6px 0 14px">Las envía el cliente desde el bot después de hacer el abono. Verifica el pago y toca Confirmar.</p>
+      <div id="plista"></div>
+    </div>
+
+    <div id="rv" class="pane" hidden>
       <h2>Reservas</h2>
       <form id="rf">
-        <input id="rfecha" type="date" required>
-        <select id="rhora"><option value="">Hora (opcional)</option></select>
-        <input id="rcli" placeholder="Nombre del cliente" required>
-        <input id="rnota" placeholder="Nota (plan, abono…)">
-        <label class="chk"><input type="checkbox" id="rbloq" checked> Bloquear esta fecha para nuevas cotizaciones</label>
-        <button>Guardar reserva</button>
+        <label>Fecha *<input id="rfecha" type="date" required></label>
+        <label>Hora<select id="rhora"><option value="">Sin hora</option></select></label>
+        <label>Cliente *<input id="rcli" placeholder="Nombre del cliente" required></label>
+        <label>Celular de contacto *<input id="rtel" type="tel" inputmode="tel" placeholder="3001234567" required></label>
+        <label>Tipo de evento *<select id="rtipo"></select></label>
+        <label>Ciudad<input id="rciudad" value="Bogotá"></label>
+        <label>Localidad<select id="rloc"><option value="">Selecciona…</option></select></label>
+        <label>Barrio<input id="rbarrio" placeholder="Barrio"></label>
+        <label class="full">Dirección del evento *<input id="rdir" placeholder="Calle 10 # 20-30, salón comunal" required></label>
+        <label>Servicio<select id="rplan"><option value="">Sin definir</option></select></label>
+        <label>Horas<select id="rhoras"><option value="">—</option><option>1</option><option>2</option><option>3</option><option>4</option></select></label>
+        <label>Valor total del servicio<input id="rtotal" type="number" min="0" step="1000" placeholder="0"></label>
+        <label>Abono<select id="rabono"><option value="50000" selected>Abono $50.000 recibido</option><option value="0">Sin abono todavía</option><option value="otro">Otro valor…</option></select></label>
+        <label id="rabonoBox" hidden>Valor del abono<input id="rabonoV" type="number" min="0" step="1000" placeholder="Ej: 100000"></label>
+        <label>Asesor a cargo *<select id="rase" required><option value="">Selecciona…</option></select></label>
+        <label class="full">Nota<input id="rnota" placeholder="Detalles, logo, saldo pendiente…"></label>
+        <label class="chk full"><input type="checkbox" id="rbloq" checked> Bloquear esta fecha para nuevas cotizaciones</label>
+        <button class="full">Guardar reserva</button>
       </form>
       <div id="rlista"></div>
     </div>
   </div>
 </div>
 
+<script src="config.js"></script>
 <script>
-/* ===== CONFIGURA ESTO ===== */
-const DB="https://cabina-de-fotos-4f20d-default-rtdb.firebaseio.com/";   // URL de tu Realtime Database
-const API_KEY="AIzaSyD1LkAdkqpAEVBC5aZ8XemYsvMoOC2C7SM";                                    // API key de Firebase
-const ASESORES=[{n:"Angela",w:"573106250804"},{n:"Jose Arberi",w:"573204981495"}];
-/* ========================== */
-
 const $=id=>document.getElementById(id);
 let tok="",cred=null,es=null,S={},vistos=new Set(),listo=false,sel="",unread={},R={};
 
-ASESORES.forEach(a=>$("num").add(new Option(`${a.n} · +${a.w}`,a.w)));
-$("num").add(new Option("Escribir otro número…","otro"));
+/* --- listas --- */
+ASESORES.forEach(a=>$("num").add(new Option(`${a.n} · +${a.w}`,a.w))); $("num").add(new Option("Escribir otro número…","otro"));
+ASESORES.forEach(a=>{ $("yo").add(new Option(a.n,a.n)); $("rase").add(new Option(a.n,a.n)); });
+TIPOS.forEach(t=>$("rtipo").add(new Option(t,t)));
+LOCALIDADES.forEach(l=>$("rloc").add(new Option(l,l)));
+PLANES.forEach(p=>$("rplan").add(new Option(p.nombre,p.id)));
+horasMedias().forEach(([v,l])=>$("rhora").add(new Option(l,v)));
+$("yo").value=localStorage.getItem("ajYo")||ASESORES[0].n; $("rase").value=$("yo").value;
+$("yo").onchange=()=>{ localStorage.setItem("ajYo",$("yo").value); $("rase").value=$("yo").value; };
 
 let au;
 function beep(){ try{ au=au||new (window.AudioContext||window.webkitAudioContext)(); if(au.state==="suspended") au.resume();
@@ -89,6 +128,12 @@ async function login(email,pass){
 
 const latir=()=>fetch(`${DB}/presence.json?auth=${tok}`,{method:"PUT",body:JSON.stringify({ts:Date.now()})});
 
+/* --- vistas --- */
+function vista(v){ $("chatv").hidden=v!=="chat"; $("rv").hidden=v!=="res"; $("pv").hidden=v!=="pen";
+  if(v==="res"){ const m=(sel&&S[sel]&&S[sel].meta)||{}; if(!$("rcli").value) $("rcli").value=m.nombre||""; if(!$("rtel").value) $("rtel").value=m.tel||""; cargarRes(); }
+  if(v==="pen") pintarPen(); }
+
+/* --- chats --- */
 function poner(path,data,merge){
   const k=path.split("/").filter(Boolean);
   if(!k.length){ S=merge?{...S,...data}:(data||{}); return; }
@@ -117,13 +162,16 @@ function lista(){
     const b=document.createElement("button"), u=unread[id]||0; tot+=u;
     b.className="it"+(id===sel?" on":""); b.innerHTML=`<b></b><small></small>${u?`<i>${u}</i>`:""}`;
     b.children[0].textContent=(c.meta&&c.meta.nombre)||"Cliente"; b.children[1].textContent=(c.meta&&c.meta.ultimo)||"";
-    b.onclick=()=>{ sel=id; unread[id]=0; verReservas(false); lista(); chat(); }; l.appendChild(b); });
+    b.onclick=()=>{ sel=id; unread[id]=0; vista("chat"); lista(); chat(); }; l.appendChild(b); });
   document.title=(tot?`(${tot}) `:"")+"Panel de asesores"; }
 
 function chat(){
-  const log=$("log"); log.innerHTML=""; if(!sel||!S[sel]) return;
-  Object.values(S[sel].msgs||{}).sort((a,b)=>a.ts-b.ts).forEach(m=>{
-    const d=document.createElement("div"); d.className="m "+(m.de==="c"?"c":"a"); d.textContent=m.t; log.appendChild(d); });
+  const log=$("log"); log.innerHTML="";
+  const m=(sel&&S[sel]&&S[sel].meta)||{};
+  $("info").textContent = sel&&S[sel] ? `${m.nombre||"Cliente"}${m.tel?" · Cel "+m.tel:""}` : "Elige un chat de la lista";
+  if(!sel||!S[sel]) return;
+  Object.values(S[sel].msgs||{}).sort((a,b)=>a.ts-b.ts).forEach(x=>{
+    const d=document.createElement("div"); d.className="m "+(x.de==="c"?"c":"a"); d.textContent=x.t; log.appendChild(d); });
   log.scrollTop=1e9; }
 
 function enviar(t,wa,qr){
@@ -143,38 +191,90 @@ $("wa").onclick=()=>{
 $("qr").onclick=()=>enviar("Para apartar tu fecha se hace un abono de $50.000 COP escaneando este QR. Después envíame el comprobante por aquí y tu fecha queda reservada.",null,true);
 
 /* ===== Reservas ===== */
-for(let i=0;i<48;i++){ const v=String(Math.floor(i/2)).padStart(2,"0")+":"+(i%2?"30":"00"), h=+v.slice(0,2);
-  $("rhora").add(new Option((h%12||12)+":"+v.slice(3)+(h<12?" a. m.":" p. m."),v)); }   /* cada 30 min */
-function verReservas(on){ $("chatv").hidden=on; $("rv").hidden=!on;
-  if(on){ $("rcli").value=(sel&&S[sel]&&S[sel].meta&&S[sel].meta.nombre)||""; cargarRes(); } }
+const recalc=()=>{ const p=PLANES.find(x=>x.id===$("rplan").value), h=+$("rhoras").value;
+  if(p&&h) $("rtotal").value=precioFinal(p,h,$("rciudad").value||"Bogotá",$("rloc").value); };
+["rplan","rhoras","rloc","rciudad"].forEach(id=>$(id).addEventListener("change",recalc));
+$("rabono").onchange=()=>{ $("rabonoBox").hidden=$("rabono").value!=="otro"; };
+
 async function cargarRes(){ R=(await fetch(`${DB}/reservas.json?auth=${tok}`).then(r=>r.json()))||{}; pintarRes(); }
 function pintarRes(){
   const box=$("rlista"); box.innerHTML=""; const hoy=new Date().toISOString().split("T")[0];
-  Object.keys(R).sort().filter(f=>f>=hoy).forEach(f=>Object.entries(R[f]).forEach(([id,r])=>{
-    const d=document.createElement("div"); d.className="rr";
-    const s=document.createElement("span"); s.textContent=`${f}${r.hora?" · "+r.hora:""} — ${r.cliente}${r.nota?" ("+r.nota+")":""}${r.bloq===false?" · fecha abierta":""}`;
-    const b=document.createElement("button"); b.textContent="Borrar"; b.onclick=()=>borrarRes(f,id);
-    d.append(s,b); box.appendChild(d); }));
+  Object.keys(R).sort().filter(f=>f>=hoy).forEach(f=>Object.entries(R[f]).sort((a,b)=>(a[1].hora||"").localeCompare(b[1].hora||"")).forEach(([id,r])=>{
+    const total=+r.total||0, ab=+r.abono||0, d=document.createElement("div"); d.className="rr";
+    const s=document.createElement("span");
+    s.textContent=`📅 ${f}${r.hora?" · "+r.hora:""} — ${r.cliente}${r.bloq===false?" (fecha abierta)":""}\n`
+      +`Celular: ${r.tel||"—"} · Evento: ${r.tipo||"—"}\n`
+      +`Lugar: ${[r.dir,r.barrio,r.loc,r.ciudad].filter(Boolean).join(", ")||"—"}\n`
+      +`Servicio: ${r.plan||"sin definir"}${r.horas?" · "+r.horas+" h":""}${total?" · Total "+peso(total):""}\n`
+      +`Abono: ${peso(ab)}${total?" · Saldo: "+peso(Math.max(total-ab,0)):""}\n`
+      +`Asesor a cargo: ${r.asesor||"—"}${r.nota?"\nNota: "+r.nota:""}`;
+    const w=document.createElement("div"); w.className="bs";
+    if(r.tel){ const a=document.createElement("a"); a.className="b"; a.href=`https://wa.me/57${r.tel}`; a.target="_blank"; a.rel="noopener"; a.textContent="WhatsApp"; w.appendChild(a); }
+    const b=document.createElement("button"); b.textContent="Borrar"; b.onclick=()=>{ if(confirm("¿Borrar esta reserva?")) borrarRes(f,id); };
+    w.appendChild(b); d.append(s,w); box.appendChild(d); }));
   if(!box.children.length) box.textContent="No hay reservas próximas."; }
 
 $("rf").onsubmit=async e=>{ e.preventDefault();
-  const f=$("rfecha").value, bloq=$("rbloq").checked, hora=$("rhora").value;
-  const res=await fetch(`${DB}/reservas/${f}.json?auth=${tok}`,{method:"POST",body:JSON.stringify({cliente:$("rcli").value.trim().slice(0,60),hora,nota:$("rnota").value.trim().slice(0,80),bloq,ts:Date.now()})}).then(r=>r.json());
+  const f=$("rfecha").value, hora=$("rhora").value, bloq=$("rbloq").checked, tel=parseTel($("rtel").value);
+  if(!tel){ alert("Escribe un celular de 10 dígitos, por ejemplo 3001234567."); return; }
+  const p=PLANES.find(x=>x.id===$("rplan").value), ab=$("rabono").value==="otro"?(+$("rabonoV").value||0):+$("rabono").value;
+  const rec={cliente:$("rcli").value.trim().slice(0,60),tel,tipo:$("rtipo").value,hora,ciudad:$("rciudad").value.trim().slice(0,40),loc:$("rloc").value,
+    barrio:$("rbarrio").value.trim().slice(0,60),dir:$("rdir").value.trim().slice(0,120),plan:p?p.nombre:"",horas:+$("rhoras").value||0,
+    total:+$("rtotal").value||0,abono:ab,asesor:$("rase").value,nota:$("rnota").value.trim().slice(0,100),bloq,ts:Date.now()};
+  const res=await fetch(`${DB}/reservas/${f}.json?auth=${tok}`,{method:"POST",body:JSON.stringify(rec)}).then(r=>r.json());
   if(bloq&&res&&res.name) await fetch(`${DB}/ocupadas/${f}/${res.name}.json?auth=${tok}`,{method:"PUT",body:JSON.stringify(hora||"-")});
-  $("rf").reset(); $("rbloq").checked=true; cargarRes(); };
+  localStorage.setItem("ajYo",$("rase").value);
+  $("rf").reset(); $("rase").value=$("yo").value; $("rabonoBox").hidden=true; $("rbloq").checked=true; cargarRes(); };
 
 async function borrarRes(f,id){
   await fetch(`${DB}/reservas/${f}/${id}.json?auth=${tok}`,{method:"DELETE"});
   await fetch(`${DB}/ocupadas/${f}/${id}.json?auth=${tok}`,{method:"DELETE"});
   cargarRes(); }
 
-$("ing").onsubmit=async e=>{ e.preventDefault();
-  try{ await login($("em").value,$("pw").value); $("ing").hidden=true; $("app").hidden=false; conectar(); latir(); beep(); }
-  catch(x){ $("er").textContent="No se pudo ingresar: "+x.message; } };
+/* ===== Reservas por confirmar (las envía el cliente desde el bot) ===== */
+let P={}, esP=null, vistosP=new Set(), listoP=false;
+function conectarP(){
+  if(esP) esP.close();
+  esP=new EventSource(`${DB}/pendientes.json?auth=${tok}`);
+  const f=ev=>{ const {path,data}=JSON.parse(ev.data), k=path.split("/").filter(Boolean);
+    if(!k.length) P=ev.type==="patch"?{...P,...(data||{})}:(data||{});
+    else if(k.length===1){ if(data===null) delete P[k[0]]; else P[k[0]]=data; }
+    else { P[k[0]]=P[k[0]]||{}; P[k[0]][k[1]]=data; }
+    let nuevo=false; Object.keys(P).forEach(id=>{ if(!vistosP.has(id)){ vistosP.add(id); if(listoP) nuevo=true; } });
+    if(nuevo) beep();
+    if(!conectarP.t) conectarP.t=setTimeout(()=>listoP=true,1500);
+    const n=Object.keys(P).length; $("tpen").textContent="🔔 Pendientes"+(n?` (${n})`:""); pintarPen(); };
+  esP.addEventListener("put",f); esP.addEventListener("patch",f); }
+function pintarPen(){ const box=$("plista"); box.innerHTML="";
+  Object.entries(P).sort((a,b)=>a[1].ts-b[1].ts).forEach(([id,p])=>{
+    const d=document.createElement("div"); d.className="rr";
+    const s=document.createElement("span");
+    s.textContent=`${p.nombre} — ${p.fecha}${p.hora?" · "+p.hora:""}\nCelular: ${p.tel||"—"} · Evento: ${p.tipo||"—"}\nLugar: ${[p.dir,p.barrio,p.loc,p.ciudad].filter(Boolean).join(", ")||"—"}\n`
+      +`Servicio: ${p.plan||"sin definir"}${p.horas?" · "+p.horas+" h":""}${p.total?" · Total "+peso(p.total):""}\nPago / referencia: ${p.ref||"—"}${p.cruce?"\n"+p.cruce:""}`;
+    if(p.cruce) s.classList.add("warn");
+    const w=document.createElement("div"); w.className="bs";
+    const ok=document.createElement("button"); ok.className="ok"; ok.textContent="Confirmar"; ok.onclick=()=>confirmarPen(id,p);
+    const no=document.createElement("button"); no.textContent="Descartar"; no.onclick=()=>{ if(confirm("¿Descartar esta solicitud?")) fetch(`${DB}/pendientes/${id}.json?auth=${tok}`,{method:"DELETE"}); };
+    w.append(ok,no); d.append(s,w); box.appendChild(d); });
+  if(!box.children.length) box.textContent="No hay reservas por confirmar."; }
+async function confirmarPen(id,p){
+  const rec={cliente:String(p.nombre).slice(0,60),tel:p.tel||"",tipo:p.tipo||"",hora:p.hora||"",ciudad:p.ciudad||"Bogotá",loc:p.loc||"",barrio:p.barrio||"",dir:p.dir||"",
+    plan:p.plan||"",horas:+p.horas||0,total:+p.total||0,abono:VALOR_APARTADO,asesor:$("yo").value,nota:("Pago: "+(p.ref||"")).slice(0,100),bloq:true,ts:Date.now()};
+  const res=await fetch(`${DB}/reservas/${p.fecha}.json?auth=${tok}`,{method:"POST",body:JSON.stringify(rec)}).then(r=>r.json());
+  if(res&&res.name) await fetch(`${DB}/ocupadas/${p.fecha}/${res.name}.json?auth=${tok}`,{method:"PUT",body:JSON.stringify(p.hora||"-")});
+  await fetch(`${DB}/pendientes/${id}.json?auth=${tok}`,{method:"DELETE"}); }
+
+/* Desconectarme: el cliente vuelve al bot de inmediato */
+$("off").onclick=async()=>{ const t=tok; tok=""; try{ await fetch(`${DB}/presence.json?auth=${t}`,{method:"DELETE"}); }catch(e){} location.reload(); };
 
 $("olv").onclick=async()=>{ const email=$("em").value.trim(); if(!email){ $("er").textContent="Escribe tu correo arriba y vuelve a tocar «Olvidé mi clave»."; return; }
   const r=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${API_KEY}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({requestType:"PASSWORD_RESET",email})});
   $("er").style.color=r.ok?"#137333":"#b3261e"; $("er").textContent=r.ok?"Te enviamos un correo para crear una clave nueva.":"No se pudo enviar. Revisa el correo."; };
+
+$("ing").onsubmit=async e=>{ e.preventDefault();
+  try{ await login($("em").value,$("pw").value); $("ing").hidden=true; $("app").hidden=false; conectar(); conectarP(); latir(); beep(); }
+  catch(x){ $("er").style.color="#b3261e"; $("er").textContent="No se pudo ingresar: "+x.message; } };
+
 setInterval(()=>tok&&latir(),20000);   /* "asesor en línea" */
-setInterval(async()=>{ if(cred){ await login(cred.email,cred.pass); conectar(); } },50*60*1000);   /* renueva sesión */
+setInterval(async()=>{ if(cred&&tok){ await login(cred.email,cred.pass); conectar(); conectarP(); } },50*60*1000);   /* renueva sesión */
 </script></body></html>
