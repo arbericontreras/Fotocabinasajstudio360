@@ -369,7 +369,7 @@ $("say").onsubmit = e => { e.preventDefault(); clearTimeout(fotosT); const t=$("
 async function estado(){
   let on=false; try{ on = await asesorEnLinea(); }catch(e){}
   enLinea = on; $("hdr").classList.toggle("online",on);
-  $("estado").textContent = on ? "● Asesor en línea" : "Asistente automático"; }
+  $("estado").textContent = on ? "● Asesor en línea" : "Asistente"; }
 setInterval(estado,15000);
 
 /* ===== Arranque y comunicación con index.html ===== */
