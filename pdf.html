@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Formato de reserva</title>
+<link rel="icon" type="image/x-icon" href="img/logo aj studio copia.png">
 <style>
 :root{--ink:#0a0f1d;--acc:#0070f3;--mute:#475569;--bg:#f1f5f9;--line:#e2e8f0;color-scheme:light}
 *{box-sizing:border-box}
@@ -58,6 +59,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 
   <h3>2. Cliente</h3>
   <label class="f" for="nom">Nombre del contratante</label><input id="nom">
+  <label class="f" for="ced">Cédula del contratante</label><input id="ced" inputmode="numeric" placeholder="1.234.567.890">
   <label class="f" for="cel">Celular(es)</label><input id="cel" inputmode="tel" placeholder="312 000 0000">
 
   <h3>3. Evento</h3>
@@ -94,7 +96,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
   <details>
     <summary>Asesores, empresa y logo</summary>
     <label class="f" for="lst">Lista de asesores (uno por línea: Nombre, Cargo)</label>
-    <textarea id="lst" rows="4">Angela Fonseca, Asesor Comercial</textarea>
+    <textarea id="lst" rows="4">Angela Fonseca, Asesor Comercial
+Jose Arberi Contreras, Asesor Comercial</textarea>
     <label class="f" for="emp">Empresa</label><input id="emp" value="AJGeekStudio">
     <label class="f" for="nit">NIT (va en el encabezado)</label><input id="nit" placeholder="000.000.000-0">
     <label class="f" for="dir">Dirección (pie de página)</label><input id="dir" value="Kra 72m Bis B # 43-63 Sur, Bogotá">
@@ -133,7 +136,7 @@ const B={
  dig:['Las fotografías con efectos (Proms y tira de fotos digital) se envían al instante en formato digital, para lo cual se requiere conexión a internet en el lugar del evento.'],
  foto:['Las fotografías almacenadas serán retiradas del equipo y publicadas posteriormente en la página oficial del evento {emp} para su descarga, dentro de los siguientes 2 a 3 días hábiles: {web}','Los accesorios para las fotografías, tales como gafas, pelucas y demás elementos de animación, están incluidos dentro del servicio sin costo adicional, pero son de uso exclusivo durante el servicio y no podrán ser retirados ni conservados por los clientes.'],
  v360:['El servicio de Cabina 360 incluye la grabación de videos con efectos de audio y video durante el horario contratado.','Los videos serán publicados inmediatamente en la página oficial del evento {emp} para su descarga (Depende de la señal de internet) {web}','La plataforma 360 requiere un espacio plano area de 3x3 metros y despejado para su instalación.'],
- all:['El cliente debe garantizar el acceso al lugar con anticipación para la instalación del equipo y una toma de corriente cercana.','Cualquier cambio de fecha, horario o lugar debe acordarse con anticipación con el asesor comercial.']
+ all:['El cliente debe garantizar el acceso al lugar con anticipación para la instalación del equipo y una toma de corriente cercana.','Cualquier cambio de fecha, horario o lugar debe acordarse con anticipación con el asesor comercial, En caso de presentarse fenómenos naturales, condiciones climáticas adversas, riñas, actos de violencia, alteraciones del orden público o cualquier situación que represente un riesgo para la integridad física de, sus colaboradores o sus equipos de trabajo, este podrá suspender o cancelar la prestación del servicio de manera inmediata, sin que ello genere penalidades, indemnizaciones o reclamaciones en su contra.']
 };
 let pk='tira',logo='',TXT='',FOOT='',dirtyT=false;
 
@@ -157,7 +160,7 @@ function data(){
  const dur=d?(d==1?'1 hora':String(d).replace('.',',')+' horas'):'';
  $('saldo').textContent='Saldo pendiente: '+(tot?money(sal):'—');
  return[
-  ['DATOS DEL CONTRATANTE',[['Nombre',g('nom')],['Celular',g('cel')]]],
+  ['DATOS DEL CONTRATANTE',[['Nombre',g('nom')],['Cédula',g('ced')],['Celular',g('cel')]]],
   ['INFORMACIÓN DE LA RESERVA',[['Fecha de reserva',fd(g('fre'))],['Fecha del evento',fd(g('fev'))]]],
   ['SERVICIO CONTRATADO',[['Paquete',P.n],['Incluye',P.d]]],
   ['HORARIO DEL SERVICIO',[['Duración',dur],['Horario',hor]]],
@@ -287,10 +290,27 @@ $('wa').onclick=()=>{let p=((g('cel').match(/\d[\d\s]{6,}\d/)||[''])[0]).replace
 $('cp').onclick=async()=>{try{await navigator.clipboard.writeText(TXT)}catch(e){const a=document.createElement('textarea');a.value=TXT;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove()}
  $('cp').textContent='¡Copiado!';setTimeout(()=>$('cp').textContent='Copiar texto',1500)};
 const hoy=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
-function nueva(){['nom','cel','fev','hin','lug','tot','abo','rnom','rcel'].forEach(k=>$(k).value='');$('fre').value=hoy();$('dur').value=2;$('med').value='Bre-b';fillTerms();render()}
-$('nw').onclick=nueva;
+function nueva(){['nom','ced','cel','fev','hin','lug','tot','abo','rnom','rcel'].forEach(k=>$(k).value='');$('fre').value=hoy();$('dur').value=2;$('med').value='Bre-b';fillTerms();render()}
+$('nw').onclick=()=>{history.replaceState(null,'',location.pathname);const b=$('desdePanel');if(b)b.remove();nueva()};
 
 load();$('fre').value=hoy();fillTerms();render();
+
+/* ---- Datos que envía el panel de asesores (asesor.html): llegan en la dirección, como ?d=... ---- */
+(function(){
+ let o;try{const q=new URLSearchParams(location.search).get('d');if(!q)return;o=JSON.parse(q)}catch(e){return}
+ const mapa={'Impresión en tira':'tira','Digital Pro':'dig','Cabina 360':'c360','Completo':'comp','Full Premium':'full'};
+ const k=mapa[o.plan];
+ if(k){pk=k;const r=document.querySelector('input[name=pk][value='+k+']');if(r)r.checked=true}
+ const poner=(id,v)=>{if(v!==undefined&&v!==null&&v!=='')$(id).value=v};
+ poner('nom',o.cliente);poner('ced',o.cedula);poner('cel',o.tel);poner('fev',o.fecha);poner('hin',o.hora);
+ if(o.horas>=1&&o.horas<=4)$('dur').value=o.horas;
+ poner('lug',o.lugar);
+ if(o.total>0)$('tot').value=o.total;
+ if(typeof o.abono==='number')$('abo').value=o.abono;
+ if(o.asesor){const p=String(o.asesor).toLowerCase().split(' ')[0],a=advisors().find(x=>x.n.toLowerCase().startsWith(p));if(a)$('ase').value=a.n}
+ fillTerms();render();
+ document.querySelector('main').insertAdjacentHTML('afterbegin','<div id="desdePanel" class="noprint" style="background:#ecfdf5;border:1px solid #6ee7b7;color:#065f46;padding:8px 12px;border-radius:8px;margin-bottom:12px;font-size:.9rem">✓ Datos cargados desde el panel de asesores. Revisa y descarga el PDF.</div>');
+})();
 </script>
 </body>
 </html>

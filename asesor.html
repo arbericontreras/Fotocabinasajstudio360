@@ -34,7 +34,7 @@ button{background:#e6397a;color:#fff;border:0;cursor:pointer;font-weight:600}
 .rr span{white-space:pre-line;line-height:1.5}
 .rr .bs{display:flex;gap:6px;align-items:flex-start;flex-wrap:wrap;justify-content:flex-end}
 .rr button,.rr a.b{background:#b3261e;padding:5px 10px;font-size:.85rem;border-radius:8px;color:#fff;text-decoration:none;font-weight:600}
-.rr .ok{background:#137333}.rr a.b{background:#25d366}
+.rr .ok{background:#137333}.rr .pdfb{background:#0070f3}.rr a.b{background:#25d366}
 .warn{color:#b3261e;font-weight:600}
 @media(max-width:700px){#app{grid-template-columns:1fr;grid-template-rows:210px 1fr}}
 </style></head><body>
@@ -51,6 +51,7 @@ button{background:#e6397a;color:#fff;border:0;cursor:pointer;font-weight:600}
       <button type="button" id="tpen" onclick="vista('pen')">🔔 Pendientes</button>
     </div>
     <div id="lista"></div>
+    <a href="pdf.html" target="_blank" style="display:block;padding:10px;text-align:center;background:#0070f3;color:#fff;text-decoration:none;font-weight:600;font-size:.9rem">📄 Formato de reserva (PDF)</a>
     <div id="yoBox"><label for="yo">Asesor (tú):</label><select id="yo"></select></div>
     <button type="button" id="off" style="border-radius:0;background:#5d5a7a">Desconectarme</button>
   </div>
@@ -79,6 +80,7 @@ button{background:#e6397a;color:#fff;border:0;cursor:pointer;font-weight:600}
         <label>Fecha *<input id="rfecha" type="date" required></label>
         <label>Hora<select id="rhora"><option value="">Sin hora</option></select></label>
         <label>Cliente *<input id="rcli" placeholder="Nombre del cliente" required></label>
+        <label>Cédula del cliente *<input id="rced" inputmode="numeric" placeholder="1234567890" required></label>
         <label>Celular de contacto *<input id="rtel" type="tel" inputmode="tel" placeholder="3001234567" required></label>
         <label>Tipo de evento *<select id="rtipo"></select></label>
         <label>Ciudad<input id="rciudad" value="Bogotá"></label>
@@ -203,13 +205,14 @@ function pintarRes(){
     const total=+r.total||0, ab=+r.abono||0, d=document.createElement("div"); d.className="rr";
     const s=document.createElement("span");
     s.textContent=`📅 ${f}${r.hora?" · "+r.hora:""} — ${r.cliente}${r.bloq===false?" (fecha abierta)":""}\n`
-      +`Celular: ${r.tel||"—"} · Evento: ${r.tipo||"—"}\n`
+      +`Cédula: ${r.cedula||"—"} · Celular: ${r.tel||"—"} · Evento: ${r.tipo||"—"}\n`
       +`Lugar: ${[r.dir,r.barrio,r.loc,r.ciudad].filter(Boolean).join(", ")||"—"}\n`
       +`Servicio: ${r.plan||"sin definir"}${r.horas?" · "+r.horas+" h":""}${total?" · Total "+peso(total):""}\n`
       +`Abono: ${peso(ab)}${total?" · Saldo: "+peso(Math.max(total-ab,0)):""}\n`
       +`Asesor a cargo: ${r.asesor||"—"}${r.nota?"\nNota: "+r.nota:""}`;
     const w=document.createElement("div"); w.className="bs";
     if(r.tel){ const a=document.createElement("a"); a.className="b"; a.href=`https://wa.me/57${r.tel}`; a.target="_blank"; a.rel="noopener"; a.textContent="WhatsApp"; w.appendChild(a); }
+    const pb=document.createElement("button"); pb.className="pdfb"; pb.textContent="📄 Formato PDF"; pb.onclick=()=>abrirPdf(f,id,r); w.appendChild(pb);
     const b=document.createElement("button"); b.textContent="Borrar"; b.onclick=()=>{ if(confirm("¿Borrar esta reserva?")) borrarRes(f,id); };
     w.appendChild(b); d.append(s,w); box.appendChild(d); }));
   if(!box.children.length) box.textContent="No hay reservas próximas."; }
@@ -217,14 +220,30 @@ function pintarRes(){
 $("rf").onsubmit=async e=>{ e.preventDefault();
   const f=$("rfecha").value, hora=$("rhora").value, bloq=$("rbloq").checked, tel=parseTel($("rtel").value);
   if(!tel){ alert("Escribe un celular de 10 dígitos, por ejemplo 3001234567."); return; }
+  const cedula=$("rced").value.replace(/\D/g,""); if(cedula.length<6||cedula.length>12){ alert("Escribe la cédula del cliente solo con números (entre 6 y 12 dígitos)."); return; }
   const p=PLANES.find(x=>x.id===$("rplan").value), ab=$("rabono").value==="otro"?(+$("rabonoV").value||0):+$("rabono").value;
-  const rec={cliente:$("rcli").value.trim().slice(0,60),tel,tipo:$("rtipo").value,hora,ciudad:$("rciudad").value.trim().slice(0,40),loc:$("rloc").value,
+  const rec={cliente:$("rcli").value.trim().slice(0,60),cedula,tel,tipo:$("rtipo").value,hora,ciudad:$("rciudad").value.trim().slice(0,40),loc:$("rloc").value,
     barrio:$("rbarrio").value.trim().slice(0,60),dir:$("rdir").value.trim().slice(0,120),plan:p?p.nombre:"",horas:+$("rhoras").value||0,
     total:+$("rtotal").value||0,abono:ab,asesor:$("rase").value,nota:$("rnota").value.trim().slice(0,100),bloq,ts:Date.now()};
   const res=await fetch(`${DB}/reservas/${f}.json?auth=${tok}`,{method:"POST",body:JSON.stringify(rec)}).then(r=>r.json());
   if(bloq&&res&&res.name) await fetch(`${DB}/ocupadas/${f}/${res.name}.json?auth=${tok}`,{method:"PUT",body:JSON.stringify(hora||"-")});
   localStorage.setItem("ajYo",$("rase").value);
   $("rf").reset(); $("rase").value=$("yo").value; $("rabonoBox").hidden=true; $("rbloq").checked=true; cargarRes(); };
+
+/* Abre pdf.html con los datos de la reserva ya cargados (incluida la cédula).
+   Si la reserva no tiene cédula (por ejemplo, vino del bot), la pide aquí y la deja guardada. */
+function abrirPdf(f,id,r){
+  let cedula=r.cedula||"";
+  if(!cedula){
+    const v=prompt("Cédula del cliente (solo números). Déjala vacía si prefieres escribirla en el PDF:","");
+    if(v===null) return;
+    const d=v.replace(/\D/g,"");
+    if(v.trim()&&(d.length<6||d.length>12)){ alert("La cédula debe tener entre 6 y 12 números."); return; }
+    if(d){ cedula=d; r.cedula=d; fetch(`${DB}/reservas/${f}/${id}.json?auth=${tok}`,{method:"PATCH",body:JSON.stringify({cedula:d})}); }
+  }
+  const o={ts:Date.now(),plan:r.plan||"",cliente:r.cliente||"",cedula,tel:r.tel||"",fecha:f,hora:r.hora||"",horas:+r.horas||0,
+    lugar:[r.dir,r.barrio,r.loc,r.ciudad].filter(Boolean).join(", "),total:+r.total||0,abono:+r.abono||0,asesor:r.asesor||""};
+  window.open("pdf.html?d="+encodeURIComponent(JSON.stringify(o)),"_blank"); }   /* los datos viajan en la dirección */
 
 async function borrarRes(f,id){
   await fetch(`${DB}/reservas/${f}/${id}.json?auth=${tok}`,{method:"DELETE"});
