@@ -10,7 +10,7 @@ const API_KEY = "AIzaSyD1LkAdkqpAEVBC5aZ8XemYsvMoOC2C7SM";                  // C
 /* QR de pago del abono de $50.000 (Nequi, Bancolombia, etc.)
    ► AQUÍ VA LA IMAGEN DEL QR: guarda tu imagen en la carpeta img/ con el nombre qr-reserva.png
      (o cambia la ruta de abajo). Solo la envía el asesor en línea desde su panel (botón «Enviar QR de reserva»). */
-const QR_IMG = "img/qr abono.jpeg";
+const QR_IMG = "img/qr-reserva.png";
 
 /* 2) Tipos de evento */
 const TIPOS = ["Boda","Quince años","Cumpleaños","Fiesta prom","Evento empresarial","Fiesta infantil","Baby shower","Grado","Otro"];
@@ -44,12 +44,17 @@ const BARRIOS_BOGOTA = ["Castilla","Engativá","Suba","Teusaquillo","Los Mártir
 const LOCALIDADES = ["Usaquén","Chapinero","Santa Fe","San Cristóbal","Usme","Tunjuelito","Bosa","Kennedy","Fontibón","Engativá","Suba","Barrios Unidos","Teusaquillo","Los Mártires","Antonio Nariño","Puente Aranda","La Candelaria","Rafael Uribe Uribe","Ciudad Bolívar","Sumapaz"];
 const peso = n => "$" + n.toLocaleString("es-CO") + " COP";
 const fmtHora = t => { const [h,m]=t.split(":").map(Number); return (h%12||12)+":"+String(m).padStart(2,"0")+(h<12?" a. m.":" p. m."); };
-const RECARGO_NORTE = 50000;
-const LOCALIDADES_NORTE = ["Usaquén","Chapinero","Suba","La Candelaria","Teusaquillo"];
+/* Recargos por localidad de Bogotá. Se suman al total SIN mostrarse como una línea aparte: el cliente no los ve.
+   ► Para agregar una localidad o cambiar un valor, edita esta lista. */
+const RECARGOS = [
+  {valor:50000, localidades:["Usaquén","Chapinero","Suba","La Candelaria","Teusaquillo","Engativá","Barrios Unidos","Teusaquillo","Santa Fe","La Candelaria","Chapinero","San Cristóbal"]},
+  {valor:30000, localidades:["Fontibón","Puente Aranda","Bosa","Tunjuelito","Antonio Nariño","Los Mártires","Rafael Uribe Uribe"]}
+];
 const n0 = x => (x||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
-const esNorte = loc => LOCALIDADES_NORTE.some(l=>n0(l)===n0(loc));
+const recargoLoc = (ciudad,loc) => { if(n0(ciudad)!=="bogota") return 0;
+  const r = RECARGOS.find(x=>x.localidades.some(l=>n0(l)===n0(loc))); return r ? r.valor : 0; };
 function precioFinal(p,h,ciudad,loc){
-  return p.precios[h-1] + ((n0(ciudad)==="bogota" && esNorte(loc)) ? RECARGO_NORTE : 0);
+  return p.precios[h-1] + recargoLoc(ciudad,loc);
 }
 /* Asesores de respaldo: se usan por WhatsApp cuando nadie está en línea en el panel */
 const ASESORES = [
@@ -72,6 +77,9 @@ const PLANES = [
   {id:"premium", img:"img/full.jpg", nombre:"Full Premium", desc:"Cabina 360 + fotocabina digital y fotocabina impresión tira: la experiencia más completa.", precios:[380000,500000,680000,870000],
    incluye:["Tira impresa y digital con tres fotos + logo","Videos digitales inmediatos","Experiencia 360 + fotocabina de impresión + fotos con proms digitales y efectos"]}
 ];
+
+/* ¿Hay un asesor conectado? El panel de asesores marca su presencia cada 20 segundos. */
+const asesorEnLinea = () => fetch(`${DB}/presence.json`).then(r=>r.json()).then(p=>!!(p && Date.now()-p.ts<60000));
 
 /* ===== Utilidades ===== */
 const norm = n0;

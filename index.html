@@ -128,6 +128,14 @@ footer{padding:28px 0;text-align:center;color:var(--muted);font-size:.9rem;borde
 .bot-btn{display:flex;align-items:center;gap:10px;right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));max-width:calc(100vw - 36px)}
 .bot-btn:has(img){padding:8px 20px 8px 8px}
 .bot-btn img{width:44px;height:44px;border-radius:50%;object-fit:cover;background:var(--soft)}
+/* Asesor en línea: el botón se pone verde, con un punto que parpadea, y aparece un aviso */
+.bot-btn .dot{display:none;width:11px;height:11px;border-radius:50%;background:#4ade80;box-shadow:0 0 0 0 rgba(74,222,128,.7);animation:pulso 1.6s infinite}
+.bot-btn.online{background:#0f7a43}
+.bot-btn.online .dot{display:inline-block}
+@keyframes pulso{70%{box-shadow:0 0 0 10px rgba(74,222,128,0)}100%{box-shadow:0 0 0 0 rgba(74,222,128,0)}}
+.bot-aviso{display:none;position:fixed;right:18px;bottom:84px;z-index:29;max-width:240px;background:#fff;border:2px solid #16a34a;color:#0f5132;border-radius:14px;padding:10px 14px;font:600 .9rem var(--body);box-shadow:0 8px 24px rgba(0,0,0,.18);cursor:pointer}
+.bot-aviso.on{display:block}
+@media(prefers-reduced-motion:reduce){.bot-btn .dot{animation:none}}
 .err{color:#b3261e;font-size:.92rem;margin-bottom:10px}
 .err:empty{display:none}
 [aria-invalid=true]{border-color:#b3261e!important}
@@ -247,7 +255,6 @@ footer{padding:28px 0;text-align:center;color:var(--muted);font-size:.9rem;borde
             <div id="otroBox" hidden><label for="otro">¿Qué tipo de evento? *</label><input id="otro" placeholder="Ej: aniversario, despedida…" maxlength="50"></div>
             <div><label for="fecha">Fecha *</label><input type="date" id="fecha"></div>
             <div><label for="hora">Hora del evento *</label><select id="hora"><option value="">Selecciona...</option></select></div>
-            <div><label for="tel">Celular de contacto *</label><input id="tel" type="tel" inputmode="tel" placeholder="Ej: 3001234567" autocomplete="tel"></div>
             <div><label for="ciudad">Ciudad *</label><input id="ciudad" value="Bogotá" placeholder="Ej: Bogotá"></div>
             <div><label for="loc">Localidad *</label><select id="loc"><option value="">Selecciona...</option></select></div>
             <div><label for="barrio">Barrio *</label><input id="barrio" list="lista-barrios" placeholder="Castilla" autocomplete="off"><datalist id="lista-barrios"></datalist></div>
@@ -260,6 +267,7 @@ footer{padding:28px 0;text-align:center;color:var(--muted);font-size:.9rem;borde
         <div id="sname" style="font-weight:600"></div>
         <div class="total" id="total"></div>
         <div style="color:var(--muted);font-size:.9rem" id="shours"></div>
+        <div style="color:var(--muted);font-size:.85rem;margin-top:4px" id="pend"></div>
         <div class="evsum" id="sev"></div>
         <ul id="incl"></ul>
         <p class="err" id="err" role="alert"></p>
@@ -322,22 +330,26 @@ function render(){
   document.getElementById("otroBox").hidden = tipoSel!=="Otro";
   const tipo = tipoSel==="Otro" && otro ? "Otro ("+otro+")" : tipoSel;
   const fecha = document.getElementById("fecha").value;
-  const hora = document.getElementById("hora").value, tel = document.getElementById("tel").value.trim();
+  const hora = document.getElementById("hora").value;
   const ciudad = document.getElementById("ciudad").value.trim(), loc = document.getElementById("loc").value, barrio = document.getElementById("barrio").value.trim(), dir = document.getElementById("dir").value.trim();
   const listo = !!(p && horas);
   const precio = listo ? precioFinal(p,horas,ciudad,loc) : 0;
+  /* El valor se muestra al final: solo cuando el cliente ya dio los datos del evento y el lugar */
+  const datosOk = !!(fecha && hora && ciudad && barrio && dir && (n0(ciudad)==="bogota" ? loc : true));
+  const verPrecio = listo && datosOk;
   document.getElementById("sname").textContent = p ? p.nombre : "Elige un servicio";
-  document.getElementById("total").textContent = peso(precio);
+  document.getElementById("total").textContent = verPrecio ? peso(precio) : "—";
+  document.getElementById("pend").textContent = listo && !verPrecio ? "El valor aparece cuando completes los datos de tu evento: fecha, hora, ciudad, barrio y dirección." : "";
   document.getElementById("shours").textContent = horas ? horas+(horas===1?" hora":" horas")+" de servicio" : "Elige las horas de servicio";
   document.getElementById("incl").innerHTML = p ? ["2 operadores de logística","Página web de tu evento sin costo adicional",...p.incluye].map(i=>`<li>${i}</li>`).join("") : "";
   [...hoursEl.children].forEach((b,i)=>b.setAttribute("aria-pressed", i+1===horas));
-  document.getElementById("sev").textContent = `Evento: ${tipo}`+(fecha?` · ${fecha}`:"")+(hora?` · ${fmtHora(hora)}`:"")+(tel?`\nCelular: ${tel}`:"")+(ciudad?`\nCiudad: ${ciudad}`:"")+(loc?`\nLocalidad: ${loc}`:"")+(barrio?`\nBarrio: ${barrio}`:"")+(dir?`\nDirección: ${dir}`:"");
+  document.getElementById("sev").textContent = `Evento: ${tipo}`+(fecha?` · ${fecha}`:"")+(hora?` · ${fmtHora(hora)}`:"")+(ciudad?`\nCiudad: ${ciudad}`:"")+(loc?`\nLocalidad: ${loc}`:"")+(barrio?`\nBarrio: ${barrio}`:"")+(dir?`\nDirección: ${dir}`:"");
   window.cotMsg = !listo ? "" : `Hola, quiero cotizar el plan ${p.nombre} de ${horas} ${horas===1?"hora":"horas"} (${peso(precio)}).`
-    + `\nEvento: ${tipo}` + (fecha?`\nFecha: ${fecha}`:"") + (hora?`\nHora: ${fmtHora(hora)}`:"") + (tel?`\nCelular: ${tel}`:"") + (ciudad?`\nCiudad: ${ciudad}`:"") + (loc?`\nLocalidad: ${loc}`:"") + (barrio?`\nBarrio: ${barrio}`:"") + (dir?`\nDirección: ${dir}`:"") + `\nIncluye 2 operadores de logística.`
+    + `\nEvento: ${tipo}` + (fecha?`\nFecha: ${fecha}`:"") + (hora?`\nHora: ${fmtHora(hora)}`:"") + (ciudad?`\nCiudad: ${ciudad}`:"") + (loc?`\nLocalidad: ${loc}`:"") + (barrio?`\nBarrio: ${barrio}`:"") + (dir?`\nDirección: ${dir}`:"") + `\nIncluye 2 operadores de logística.`
     + (avisoCruce(fecha,hora)?"\n"+avisoCruce(fecha,hora):"")
     + `\n¿Tienen disponibilidad?`;
 }
-["tipo","otro","fecha","hora","tel","ciudad","loc","barrio","dir"].forEach(id=>document.getElementById(id).addEventListener("input",render));
+["tipo","otro","fecha","hora","ciudad","loc","barrio","dir"].forEach(id=>document.getElementById(id).addEventListener("input",render));
 document.getElementById("fecha").min = new Date().toISOString().split("T")[0];
 render();
 
@@ -353,7 +365,8 @@ FOTOS.forEach(f=>{ const i=new Image(); i.alt="Evento con la Cabina 360 de AJ St
 show.onmouseenter=()=>clearInterval(timer); show.onmouseleave=iniciar; iniciar();
 </script>
 
-<button class="bot-btn" id="botBtn" aria-expanded="false" aria-controls="bot"><img src="img/deep.png" alt="" onerror="this.remove()"><span>Asesor del evento</span></button>
+<button class="bot-btn" id="botBtn" aria-expanded="false" aria-controls="bot"><img src="img/deep.png" alt="" onerror="this.remove()"><i class="dot" aria-hidden="true"></i><span id="botTxt">Asesor del evento</span></button>
+<div class="bot-aviso" id="botAviso" role="status">🟢 Hay un asesor en línea. ¡Escríbenos!</div>
 <div class="bot" id="bot" role="dialog" aria-label="Asistente de AJ Studio">
   <iframe id="botFrame" title="Asistente AJ Studio" allow="autoplay"></iframe>
 </div>
@@ -368,15 +381,14 @@ function validar(){
   const v = id => $(id).value.trim();
   if(!sel){ $("err").textContent = "Elige el servicio que quieres cotizar."; return false; }
   if(!horas){ $("err").textContent = "Elige las horas de servicio."; return false; }
-  const campos = [["fecha","la fecha"],["hora","la hora del evento"],["tel","tu celular de contacto"],["ciudad","la ciudad"],["barrio","el barrio"],["dir","la dirección"]];
-  if(norm(v("ciudad"))==="bogota") campos.splice(4,0,["loc","la localidad"]);
+  const campos = [["fecha","la fecha"],["hora","la hora del evento"],["ciudad","la ciudad"],["barrio","el barrio"],["dir","la dirección"]];
+  if(norm(v("ciudad"))==="bogota") campos.splice(3,0,["loc","la localidad"]);
   if(v("tipo")==="Otro") campos.unshift(["otro","el tipo de evento"]);
-  ["otro","fecha","hora","tel","ciudad","loc","barrio","dir"].forEach(id=>$(id).removeAttribute("aria-invalid"));
+  ["otro","fecha","hora","ciudad","loc","barrio","dir"].forEach(id=>$(id).removeAttribute("aria-invalid"));
   const faltan = campos.filter(([id])=>!v(id));
   faltan.forEach(([id])=>$(id).setAttribute("aria-invalid","true"));
   const err = $("err");
   if(faltan.length){ err.textContent = "Completa "+faltan.map(f=>f[1]).join(", ")+" para continuar."; return false; }
-  if(!parseTel(v("tel"))){ $("tel").setAttribute("aria-invalid","true"); err.textContent = "Escribe un celular de 10 dígitos, por ejemplo 3001234567."; return false; }
   if(v("fecha") < new Date().toISOString().split("T")[0]){ $("fecha").setAttribute("aria-invalid","true"); err.textContent = "La fecha debe ser hoy o una fecha futura."; return false; }
   if(sinServicio(v("loc"),v("barrio"))){ err.textContent = MENSAJE_NO_DISPONIBLE; return false; }
   err.textContent = ""; return true;
@@ -385,10 +397,24 @@ function validar(){
 /* ===== Chatbot: vive en chatbot.html y aquí solo se muestra dentro de un iframe ===== */
 const frame = $("botFrame"), box = $("bot"); let botListo = false, cola = null;
 function abrirBot(modoCot){
+  ocultarAviso();
   if(!frame.getAttribute("src")) frame.src = "chatbot.html?embed=1" + (modoCot ? "&modo=cot" : "");
   box.classList.add("on"); $("botBtn").setAttribute("aria-expanded","true"); }
 function cerrarBot(){ box.classList.remove("on"); $("botBtn").setAttribute("aria-expanded","false"); }
 $("botBtn").onclick = () => box.classList.contains("on") ? cerrarBot() : abrirBot();
+/* Indicador de asesor en línea: color verde en el botón y un aviso al conectarse */
+let enLinea = false, avisoT;
+const ocultarAviso = () => $("botAviso").classList.remove("on");
+function mostrarAviso(){ $("botAviso").classList.add("on"); clearTimeout(avisoT); avisoT = setTimeout(ocultarAviso,10000); }
+$("botAviso").onclick = () => abrirBot();
+async function revisarPresencia(){
+  let on=false; try{ on = await asesorEnLinea(); }catch(e){}
+  if(on && !enLinea && !box.classList.contains("on")) mostrarAviso();
+  enLinea = on; $("botBtn").classList.toggle("online",on);
+  $("botTxt").textContent = on ? "Asesor en línea" : "Asesor del evento";
+  if(!on) ocultarAviso(); }
+revisarPresencia(); setInterval(revisarPresencia,15000);
+
 const aBot = m => { if(botListo) frame.contentWindow.postMessage(m,"*"); else cola = m; };
 
 window.addEventListener("message", e => {

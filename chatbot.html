@@ -13,6 +13,9 @@ body.embed{background:#fff}
 body.embed .bot{max-width:none;border:0}
 header{background:var(--ink);color:#fff;padding:14px 18px;font:800 1.05rem var(--head);display:flex;justify-content:space-between;align-items:center}
 header span{display:flex;align-items:center;gap:8px}
+header small{display:block;font:500 .72rem var(--body);opacity:.85}
+header.online{background:#0f7a43}
+.opts button.en{border-color:#16a34a;background:#ecfdf5;color:#065f46;font-weight:600}
 header button{background:none;border:0;color:#fff;font-size:1.3rem;cursor:pointer}
 header a{color:#fff;font:500 .85rem var(--body);text-decoration:none;opacity:.85}
 body.embed header a{display:none}
@@ -33,8 +36,8 @@ body:not(.embed) #botX{display:none}
 </style></head>
 <body>
 <div class="bot" id="bot">
-  <header>
-    <span><img class="av" src="img/deep.png" alt="" onerror="this.remove()">Asistente AJ Studio</span>
+  <header id="hdr">
+    <span><img class="av" src="img/deep.png" alt="" onerror="this.remove()"><div>Asistente AJ Studio<small id="estado" role="status">Asistente automático</small></div></span>
     <button id="botX" aria-label="Cerrar">×</button><a href="index.html">← Inicio</a>
   </header>
   <div class="log" id="log"></div>
@@ -68,6 +71,7 @@ const espacio = id => `Para dar un buen servicio te recomiendo:\n• Un lugar lu
 const hTxt = h => h+(h===1?" hora":" horas");
 const AVISO_CRUCE = "Esa fecha ya tiene otro evento reservado, pero igual envío tu cotización: el asesor confirma si hay disponibilidad.";
 
+let enLinea = false;   /* ¿hay un asesor conectado? */
 let fotosT;   /* temporizador de «llévame a descargas» */
 let ctx = {};
 let nombre = "";   /* se conserva aunque el flujo se reinicie */
@@ -79,7 +83,7 @@ function say(t,c,waNum,qr){ const d=document.createElement("div"); d.className="
        La ruta de la imagen se cambia en config.js (QR_IMG). */
   if(qr){ const i=new Image(); i.src=QR_IMG; i.alt="QR para apartar la fecha"; i.onerror=()=>i.remove(); d.appendChild(i); }
   $("log").appendChild(d); $("log").scrollTop=1e9; }
-function opts(list){ clearTimeout(fotosT); $("opts").innerHTML=""; list.forEach(([l,f])=>{ const b=document.createElement("button"); b.type="button"; b.textContent=l; b.onclick=()=>{ say(l,"u"); setTimeout(f,200); }; $("opts").appendChild(b); }); }
+function opts(list){ clearTimeout(fotosT); $("opts").innerHTML=""; list.forEach(([l,f,c])=>{ const b=document.createElement("button"); b.type="button"; if(c) b.className=c; b.textContent=l; b.onclick=()=>{ say(l,"u"); setTimeout(f,200); }; $("opts").appendChild(b); }); }
 function pide(paso,texto){ ctx.esperando=paso; say(texto,"b"); opts([]); }
 
 function pedirNombre(luego){ ctx.esperando="nombre"; ctx.luego=luego; say("¿Cómo te llamas?","b"); opts([]); }
@@ -89,7 +93,7 @@ function inicio(){ ctx={}; if(!nombre) pedirNombre(preguntaTipo); else preguntaT
 function preguntaTipo(){
   say(`¿Qué tipo de evento vas a celebrar${nombre?", "+nombre:""}?`,"b");
   opts([...TIPOS.map(t=>[t,()=>{ if(t==="Otro"){ pide("otro","¿Qué tipo de evento es? Escríbelo, por ejemplo: aniversario."); } else { ctx.tipo=t; pInv(); } }]),
-    ...(live?[]:[["Hablar con un asesor",contactar]]),...(live?[["Confirmar mi reserva",verQR]]:[]),["Descargar mis fotos",guiaFotos]]);
+    ...(live?[]:[[enLinea?"🟢 Hablar con un asesor en línea":"Hablar con un asesor",contactar,enLinea?"en":""]]),...(live?[["Confirmar mi reserva",verQR]]:[]),["Descargar mis fotos",guiaFotos]]);
 }
 function pInv(){ say("¿Cuántos invitados esperas?","b"); opts(INV.map(v=>[v,()=>{ctx.inv=v;pHoras();}])); }
 function pHoras(){ say("¿Cuántas horas de servicio necesitas?","b");
@@ -119,18 +123,18 @@ function recomendar(){
   const auto = ctx.auto ? planAuto() : null;
   const id = ctx.inv===INV[3] ? "premium" : auto ? auto.id : PLAN_POR_OBJ[OBJ.indexOf(ctx.obj)];
   const p = PLANES.find(x=>x.id===id); ctx.plan=id;
-  let t = `${nombre?nombre+", p":"P"}ara ${ctx.tipo.toLowerCase()} con ${ctx.inv.toLowerCase()} invitados te recomiendo:\n\n${p.nombre} · ${hTxt(ctx.h)} · ${peso(p.precios[ctx.h-1])}\nIncluye: ${["2 operadores de logística",...p.incluye].join(", ")}.\nPrecio de referencia; se confirma según la ubicación del evento.`;
+  let t = `${nombre?nombre+", p":"P"}ara ${ctx.tipo.toLowerCase()} con ${ctx.inv.toLowerCase()} invitados te recomiendo:\n\n${p.nombre} · ${hTxt(ctx.h)}\nIncluye: ${["2 operadores de logística",...p.incluye].join(", ")}.`;
   if(ctx.inv===INV[3]){
     t += "\n\nPara más de 200 invitados el Full Premium es la mejor opción: es la experiencia más completa y más gente puede participar.";
     if(ctx.h<4) t += " Si quieres, un asesor te ayuda a revisar si conviene más tiempo."; }
   if(auto && ctx.inv!==INV[3]) t += "\n\nLo elegí porque "+auto.r;
   say(t,"b");
-  opts([["Enviar cotización a un asesor",pLugar],["Ver recomendaciones",recomendaciones],["Ajustar en el cotizador",usarCot],["Empezar de nuevo",inicio]]);
+  opts([["Ver mi cotización",pLugar],["Ver recomendaciones",recomendaciones],["Ajustar en el cotizador",usarCot],["Empezar de nuevo",inicio]]);
 }
 /* Recomendaciones para dar un buen servicio: van aparte para no llenar el chat de texto */
 function recomendaciones(){
   say(`${TIPS[ctx.tipo]||TIPS["Otro"]}\n\n${espacio(ctx.plan)}`,"b");
-  opts([["Enviar cotización a un asesor",pLugar],["Ajustar en el cotizador",usarCot],["Empezar de nuevo",inicio]]);
+  opts([["Ver mi cotización",pLugar],["Ajustar en el cotizador",usarCot],["Empezar de nuevo",inicio]]);
 }
 
 /* Pasa la recomendación al cotizador de la página (o abre index.html si el bot está solo) */
@@ -149,9 +153,21 @@ function guiaFotos(){
 }
 
 /* --- Datos del lugar para la cotización: localidad → barrio → dirección → fecha → hora → celular --- */
-function pLugar(){ ctx.lugar={}; say("Para enviar tu cotización necesito los datos del evento. ¿En qué localidad es?","b");
+function pLugar(){ ctx.lugar={}; say("Para calcular tu cotización necesito los datos del evento. ¿En qué localidad es?","b");
   opts(LOCALIDADES.map(l=>[l,()=>{ ctx.lugar.loc=l; pide("barrio","¿En qué barrio?"); }])); }
 function bloqueado(){ ctx.esperando=null; say(MENSAJE_NO_DISPONIBLE,"b"); opts([["Cambiar fecha o ubicación",pLugar],["Empezar de nuevo",inicio]]); }
+/* El valor se muestra al final, cuando el cliente ya dio los datos del evento y el lugar */
+function mostrarCotizacion(){
+  const p=PLANES.find(x=>x.id===ctx.plan), L=ctx.lugar, precio=precioFinal(p,ctx.h,"Bogotá",L.loc);
+  say(`Esta es tu cotización, ${nombre}:\n\n${p.nombre} · ${hTxt(ctx.h)}\nEvento: ${ctx.tipo} · ${L.fecha} · ${L.hora}\nLugar: ${L.dir}, ${L.barrio}, ${L.loc}\n\nValor: ${peso(precio)}\nIncluye: ${["2 operadores de logística",...p.incluye].join(", ")}.\n\nPrecio de referencia; el asesor confirma la disponibilidad de tu fecha.`,"b");
+  opts([["Reservar con un asesor",reservarConAsesor],["Ver recomendaciones",recomendaciones],["Ajustar en el cotizador",usarCot],["Empezar de nuevo",inicio]]);
+}
+/* El celular se pide solo cuando el cliente quiere reservar con un asesor */
+function reservarConAsesor(){ if(!tel) pide("tel","Para pasarte con un asesor, ¿a qué número de celular te contactamos?"); else contactar(); }
+function reservarCot(){
+  if(!tel) return pide("telcot","Para pasarte con un asesor, ¿a qué número de celular te contactamos?");
+  ctx.msg=ctx.msg.replace(/\n¿Tienen disponibilidad\?$/,`\nCelular: ${tel}\n¿Tienen disponibilidad?`); contactar(); }
+
 function parseHora(t){
   const m=t.trim().toLowerCase().replace(/\./g,"").match(/^(\d{1,2})(?:[:h](\d{2}))?\s*(am|pm)?$/);
   if(!m) return null;
@@ -187,7 +203,10 @@ function pasoTexto(t){
     if(!horaOk(h)) return say("Escríbela en punto o y media, por ejemplo 7:00 pm o 7:30 pm.","b");
     L.hora=fmtHora(h); L.h24=h; ctx.esperando=null;
     if(avisoCruce(L.iso,h)) say(AVISO_CRUCE,"b");
-    if(!tel) pide("tel","¿A qué número de celular te contactamos?"); else contactar(); }
+    mostrarCotizacion(); }
+  else if(e==="telcot"){ const d=parseTel(t);
+    if(!d) return say("Escribe un celular de 10 dígitos, por ejemplo 3001234567.","b");
+    tel=d; ctx.esperando=null; reservarCot(); }
   else if(e==="tel"){ const d=parseTel(t);
     if(!d) return say("Escribe un celular de 10 dígitos, por ejemplo 3001234567.","b");
     tel=d; ctx.esperando=null; contactar(); }
@@ -328,7 +347,6 @@ async function guardarRes(){
 function faq(t){
   t=t.toLowerCase();
   if(/espacio|ilumin|luz|[aá]rea|metros|corriente|enchufe|lugar/.test(t)) return espacio(ctx.plan);
-  if(/precio|cuesta|valor|cu[aá]nto|tarifa/.test(t)) return PLANES.map(p=>`${p.nombre}: ${peso(p.precios[0])} (1 h) a ${peso(p.precios[3])} (4 h)`).join("\n")+"\n\nArma tu cotización exacta en la sección Cotizar de la página.";
   if(/incluye|trae|accesorio|props|operador/.test(t)) return PLANES.map(p=>`${p.nombre}: ${p.incluye.join(", ")}.`).join("\n\n")+"\n\nTodos los planes incluyen 2 operadores de logística.";
   if(/transporte|zona|ciudad|domicilio|lejos/.test(t)) return "El transporte y los 2 operadores están incluidos en Bogotá. Para otros municipios o ciudades, un asesor cotiza el transporte.";
   if(/reserv|fecha|disponib|apart/.test(t)) return "Arma tu cotización y envíala a un asesor para confirmar la disponibilidad. Para apartar la fecha se abonan $50.000 con un QR que te envía un asesor en línea.";
@@ -342,9 +360,17 @@ $("say").onsubmit = e => { e.preventDefault(); clearTimeout(fotosT); const t=$("
     if(ctx.inv && ctx.h){ setTimeout(recomendarAuto,250); return; }
     setTimeout(()=>{ say("Con gusto. Respóndeme unas preguntas rápidas y te recomiendo el plan ideal.","b"); inicio(); },250); return; }
   if(/\bqr\b|apartar|abono|se[ñn]a/i.test(t)){ setTimeout(verQR,250); return; }
+  if(/precio|cuesta|valor|cu[aá]nto|tarifa/i.test(t)){ setTimeout(()=>{ say("El valor depende del plan, las horas y el lugar de tu evento. Respóndeme unas preguntas y al final te muestro tu cotización.","b"); opts([["Armar mi cotización",inicio]]); },250); return; }
   const r = faq(t);
   if(!r && /foto|video|descarg|c[oó]digo|galer/i.test(t)){ setTimeout(guiaFotos,250); return; }
   setTimeout(()=>{ if(r) say(r,"b"); else { say("Eso lo resuelve mejor un asesor. ¿Quieres que te contacte uno o que te recomiende según tu evento?","b"); opts([["Que me contacte un asesor",contactar],["Recomiéndame algo",inicio]]); } },250); };
+
+/* ===== Indicador: la cabecera se pone verde cuando hay un asesor en línea ===== */
+async function estado(){
+  let on=false; try{ on = await asesorEnLinea(); }catch(e){}
+  enLinea = on; $("hdr").classList.toggle("online",on);
+  $("estado").textContent = on ? "● Asesor en línea" : "Asistente automático"; }
+setInterval(estado,15000);
 
 /* ===== Arranque y comunicación con index.html ===== */
 $("botX").onclick = () => { if(EMB) parent.postMessage({t:"cerrar"},"*"); };
@@ -355,12 +381,13 @@ window.addEventListener("message", e => {
   if(e.source !== window.parent) return;
   const d = e.data || {};
   if(d.t==="cotizacion"){
-    ctx={msg:d.msg}; say("Enviar la cotización que armé","u");
+    ctx={msg:d.msg}; say("Quiero reservar con un asesor","u");
     if(d.cruce) say(AVISO_CRUCE,"b");
-    const m = String(d.msg).match(/Celular: (\d+)/); if(m) tel = parseTel(m[1]) || tel;
-    contactar(); }
+    reservarCot(); }
 });
 if(EMB) parent.postMessage({t:"listo"},"*");
-if(new URLSearchParams(location.search).get("modo")!=="cot") saludo();   /* con modo=cot espera la cotización del cotizador */
+/* Primero se averigua si hay asesor en línea (máx. 1,5 s) para que el menú ya salga con el botón verde */
+if(new URLSearchParams(location.search).get("modo")!=="cot") Promise.race([estado(),new Promise(r=>setTimeout(r,1500))]).then(saludo);
+else estado();   /* con modo=cot espera la cotización del cotizador */
 </script>
 </body></html>
