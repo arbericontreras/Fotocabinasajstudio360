@@ -99,6 +99,7 @@ nav{display:flex;align-items:center;justify-content:space-between;height:68px;ga
 @media(max-width:520px){.fields{grid-template-columns:1fr}}
 .fields label{font-size:.9rem;font-weight:600;display:block;margin-bottom:4px}
 .fields input,.fields select{width:100%;border:2px solid var(--line);border-radius:12px;padding:11px 12px;font:1rem var(--body);background:#fff;color:var(--ink)}
+.hora3{display:flex;gap:6px}.hora3 select{flex:1;min-width:0;padding:11px 6px}
 .sum{position:sticky;top:90px}
 .sum .total{font-family:var(--head);font-size:2.6rem;font-weight:800;color:var(--pink);margin:8px 0 4px}
 .sum ul{list-style:none;padding:0;margin:14px 0 20px;color:var(--muted);font-size:.95rem}
@@ -254,7 +255,7 @@ footer{padding:28px 0;text-align:center;color:var(--muted);font-size:.9rem;borde
               <select id="tipo"><option>Boda</option><option>Quince años</option><option>Cumpleaños</option><option>Fiesta prom</option><option>Evento empresarial</option><option>Fiesta infantil</option><option>Baby shower</option><option>Grado</option><option>Otro</option></select></div>
             <div id="otroBox" hidden><label for="otro">¿Qué tipo de evento? *</label><input id="otro" placeholder="Ej: aniversario, despedida…" maxlength="50"></div>
             <div><label for="fecha">Fecha *</label><input type="date" id="fecha"></div>
-            <div><label for="hora">Hora del evento *</label><select id="hora"><option value="">Selecciona...</option></select></div>
+            <div><label for="hh">Hora del evento *</label><div class="hora3"><select id="hh" aria-label="Hora"><option value="">Hora</option></select><select id="mm" aria-label="Minutos"><option value="00">:00</option><option value="30">:30</option></select><select id="ap" aria-label="a. m. o p. m."><option value="">a. m. / p. m.</option><option value="am">a. m.</option><option value="pm">p. m.</option></select></div><input type="hidden" id="hora"></div>
             <div><label for="ciudad">Ciudad *</label><input id="ciudad" value="Bogotá" placeholder="Ej: Bogotá"></div>
             <div><label for="loc">Localidad *</label><select id="loc"><option value="">Selecciona...</option></select></div>
             <div><label for="barrio">Barrio *</label><input id="barrio" list="lista-barrios" placeholder="Castilla" autocomplete="off"><datalist id="lista-barrios"></datalist></div>
@@ -272,7 +273,7 @@ footer{padding:28px 0;text-align:center;color:var(--muted);font-size:.9rem;borde
         <ul id="incl"></ul>
         <p class="err" id="err" role="alert"></p>
         <a class="btn" id="send" href="#">Enviar cotización (Reservar)</a>
-        <p class="note">Precio de referencia. Confirmamos disponibilidad de tu fecha con un asesor.</p>
+        <p class="note">Precio de referencia. Confirmamos disponibilidad de tu fecha con un asesor. Para apartarla se abonan $50.000.</p>
       </aside>
     </div>
   </div>
@@ -375,7 +376,13 @@ show.onmouseenter=()=>clearInterval(timer); show.onmouseleave=iniciar; iniciar()
 const $ = id => document.getElementById(id);
 LOCALIDADES.forEach(l=>$("loc").add(new Option(l,l)));
 BARRIOS_BOGOTA.forEach(b=>$("lista-barrios").appendChild(new Option(b)));
-horasMedias().forEach(([v,l])=>$("hora").add(new Option(l,v)));
+/* Hora: tres listas fáciles (1 a 12, :00 o :30, a. m. o p. m.) que arman la hora real en el campo oculto #hora */
+for(let h=1;h<=12;h++) $("hh").add(new Option(h,h));
+function actualizarHora(){
+  const h=+$("hh").value, a=$("ap").value;
+  $("hora").value = (h && a) ? String((h%12)+(a==="pm"?12:0)).padStart(2,"0")+":"+$("mm").value : "";
+  $("hora").dispatchEvent(new Event("input",{bubbles:true})); }
+["hh","mm","ap"].forEach(id=>$(id).addEventListener("change",actualizarHora));
 
 function validar(){
   const v = id => $(id).value.trim();
@@ -386,7 +393,8 @@ function validar(){
   if(v("tipo")==="Otro") campos.unshift(["otro","el tipo de evento"]);
   ["otro","fecha","hora","ciudad","loc","barrio","dir"].forEach(id=>$(id).removeAttribute("aria-invalid"));
   const faltan = campos.filter(([id])=>!v(id));
-  faltan.forEach(([id])=>$(id).setAttribute("aria-invalid","true"));
+  ["hh","mm","ap"].forEach(id=>$(id).removeAttribute("aria-invalid"));
+  faltan.forEach(([id])=>{ $(id).setAttribute("aria-invalid","true"); if(id==="hora") ["hh","ap"].forEach(x=>$(x).setAttribute("aria-invalid","true")); });
   const err = $("err");
   if(faltan.length){ err.textContent = "Completa "+faltan.map(f=>f[1]).join(", ")+" para continuar."; return false; }
   if(v("fecha") < new Date().toISOString().split("T")[0]){ $("fecha").setAttribute("aria-invalid","true"); err.textContent = "La fecha debe ser hoy o una fecha futura."; return false; }
