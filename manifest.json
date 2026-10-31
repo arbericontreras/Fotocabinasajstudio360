@@ -1,0 +1,12 @@
+{
+  "name": "Panel de asesores AJ Studio",
+  "short_name": "Asesores AJ",
+  "start_url": "asesor.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#1b1740",
+  "theme_color": "#1b1740",
+  "icons": [
+    { "src": "img/logo%20aj%20studio%20copia.png", "sizes": "any", "type": "image/png", "purpose": "any" }
+  ]
+}

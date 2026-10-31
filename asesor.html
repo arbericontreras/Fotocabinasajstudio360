@@ -1,29 +1,45 @@
 <!DOCTYPE html>
-<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1b1740">
+<link rel="manifest" href="manifest.json">
 <title>Panel de asesores</title>
 <style>
 *{box-sizing:border-box;margin:0}[hidden]{display:none!important}
-body{font:16px system-ui,sans-serif;background:#fbfaff;color:#1b1740;height:100vh}
-#ing{max-width:320px;margin:15vh auto;display:grid;gap:10px}
+html,body{height:100%}
+body{font:16px system-ui,sans-serif;background:#fbfaff;color:#1b1740;height:100vh;height:100dvh;overflow:hidden}
+#ing{max-width:320px;margin:15vh auto;display:grid;gap:10px;padding:0 16px}
 input,select,button{font:inherit;padding:10px;border:2px solid #dcd7f2;border-radius:10px;min-width:0}
-button{background:#e6397a;color:#fff;border:0;cursor:pointer;font-weight:600}
-#app{display:grid;grid-template-columns:270px 1fr;height:100vh}
-#side{display:flex;flex-direction:column;border-right:1px solid #dcd7f2;min-height:0}
+button{background:#e6397a;color:#fff;border:0;cursor:pointer;font-weight:600;min-height:42px}
+#app{display:flex;flex-direction:column;height:100vh;height:100dvh}
+#top{display:flex;align-items:center;gap:10px;padding:10px 14px;padding-top:max(10px,env(safe-area-inset-top));background:#1b1740;color:#fff}
+#top b{flex:1}
+#back{display:none;background:none;border:0;color:#fff;font-size:1.5rem;padding:0 8px;min-height:0}
+#red{font-size:.78rem;padding:3px 10px;border-radius:99px;background:#137333}
+#red.off{background:#b3261e}
+#body{flex:1;min-height:0;display:grid;grid-template-columns:280px 1fr}
+#side{display:flex;flex-direction:column;border-right:1px solid #dcd7f2;min-height:0;overflow-y:auto;background:#fff}
 #tabs{display:flex;gap:6px;padding:8px;border-bottom:1px solid #dcd7f2}
 #tabs button{flex:1;background:#fff;color:#1b1740;border:2px solid #dcd7f2;padding:6px 4px;font-size:.8rem}
-#lista{flex:1;overflow:auto}
-.it{display:block;width:100%;text-align:left;background:#fff;color:#1b1740;border:0;border-bottom:1px solid #dcd7f2;border-radius:0;position:relative}
+#tabs button.on{border-color:#e6397a;color:#e6397a}
+#aj{border-bottom:1px solid #dcd7f2}
+#aj summary{padding:10px 14px;cursor:pointer;font-weight:600;font-size:.9rem;color:#5d5a7a}
+#ajc{display:grid;gap:8px;padding:4px 14px 14px;font-size:.85rem;color:#5d5a7a}
+#ajc .chk{display:flex;gap:8px;align-items:center}
+#ajc small{font-size:.75rem}
+#ajc .lnk{display:block;padding:10px;text-align:center;background:#0070f3;color:#fff;text-decoration:none;font-weight:600;border-radius:10px}
+#ajc #off{background:#5d5a7a}
+#lista{flex:1;min-height:160px;overflow:auto}
+.it{display:block;width:100%;text-align:left;background:#fff;color:#1b1740;border:0;border-bottom:1px solid #dcd7f2;border-radius:0;position:relative;padding:12px 14px;min-height:56px}
 .it.on{background:#fff4f8}.it small{display:block;font-weight:400;color:#5d5a7a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .it i{position:absolute;right:10px;top:12px;background:#e6397a;color:#fff;border-radius:99px;padding:0 8px;font-style:normal;font-size:.8rem}
-#yoBox{padding:8px;border-top:1px solid #dcd7f2;display:grid;gap:4px;font-size:.8rem;color:#5d5a7a}
 #main{display:flex;flex-direction:column;min-width:0;min-height:0}
 #chatv{display:flex;flex-direction:column;flex:1;min-height:0}
 #info{padding:10px 14px;border-bottom:1px solid #dcd7f2;font-weight:600}
 #log{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:8px}
-.m{max-width:75%;padding:9px 13px;border-radius:14px;white-space:pre-line}
+.m{max-width:75%;padding:9px 13px;border-radius:14px;white-space:pre-line;overflow-wrap:anywhere}
 .m.c{background:#fff;border:1px solid #dcd7f2;align-self:flex-start}.m.a{background:#e6397a;color:#fff;align-self:flex-end}
 #bar,#say{display:flex;gap:8px;padding:10px;border-top:1px solid #dcd7f2;flex-wrap:wrap}#say input{flex:1}
-.pane{padding:18px;overflow:auto;flex:1}
+.pane{padding:16px;overflow:auto;flex:1}
 .pane h2{margin-bottom:4px}
 #rf{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:14px 0;padding:14px;background:#fff;border:1px solid #dcd7f2;border-radius:14px}
 #rf label{display:grid;gap:3px;font-size:.78rem;color:#5d5a7a;font-weight:600}
@@ -31,12 +47,32 @@ button{background:#e6397a;color:#fff;border:0;cursor:pointer;font-weight:600}
 #rf .full{grid-column:1/-1}
 #rf .chk{display:flex;gap:8px;align-items:center;font-size:.95rem}
 .rr{display:flex;justify-content:space-between;gap:10px;padding:12px;border:1px solid #dcd7f2;background:#fff;border-radius:12px;margin-bottom:10px}
-.rr span{white-space:pre-line;line-height:1.5}
+.h3{display:flex;gap:6px}.h3 select{flex:1;min-width:0;padding:10px 4px}
+.rr span{white-space:pre-line;line-height:1.5;overflow-wrap:anywhere}
 .rr .bs{display:flex;gap:6px;align-items:flex-start;flex-wrap:wrap;justify-content:flex-end}
 .rr button,.rr a.b{background:#b3261e;padding:5px 10px;font-size:.85rem;border-radius:8px;color:#fff;text-decoration:none;font-weight:600}
 .rr .ok{background:#137333}.rr .pdfb{background:#0070f3}.rr a.b{background:#25d366}
 .warn{color:#b3261e;font-weight:600}
-@media(max-width:700px){#app{grid-template-columns:1fr;grid-template-rows:210px 1fr}}
+
+/* ===== Celular: una pantalla a la vez (lista -> chat), botones grandes y sin zoom ===== */
+@media(max-width:760px){
+  #body{display:block;position:relative}
+  #side,#main{position:absolute;inset:0;width:100%;border-right:0}
+  #app:not(.show-main) #main{display:none}
+  #app.show-main #side{display:none}
+  #app.show-main #back{display:block}
+  .m{max-width:88%}
+  #bar{flex-wrap:nowrap;overflow-x:auto}#bar button{white-space:nowrap}#bar select{max-width:170px}
+  #say{padding-bottom:max(10px,env(safe-area-inset-bottom))}
+  #say input{min-height:44px}
+  .pane{padding:12px;padding-bottom:max(12px,env(safe-area-inset-bottom))}
+  #rf{grid-template-columns:1fr;padding:12px}
+  #rf input,#rf select{min-height:44px}
+  .rr{flex-direction:column}
+  .rr .bs{justify-content:flex-start;width:100%}
+  .rr button,.rr a.b{padding:10px 14px;font-size:.95rem;min-height:44px;display:inline-flex;align-items:center}
+  #tabs button{font-size:.85rem;min-height:44px}
+}
 </style></head><body>
 
 <form id="ing"><h2>Panel de asesores</h2>
@@ -44,16 +80,30 @@ button{background:#e6397a;color:#fff;border:0;cursor:pointer;font-weight:600}
   <button>Ingresar</button><button type="button" id="olv" style="background:none;color:#5d5a7a;font-weight:400">Olvidé mi clave</button><p id="er" style="color:#b3261e"></p></form>
 
 <div id="app" hidden>
+  <header id="top">
+    <button type="button" id="back" aria-label="Volver a la lista">←</button>
+    <b>Panel de asesores</b>
+    <span id="red" role="status">● Conectado</span>
+  </header>
+  <div id="body">
   <div id="side">
     <div id="tabs">
-      <button type="button" onclick="vista('chat')">Chats</button>
-      <button type="button" onclick="vista('res')">📅 Reservas</button>
-      <button type="button" id="tpen" onclick="vista('pen')">🔔 Pendientes</button>
+      <button type="button" data-v="chat" onclick="tab('chat')">Chats</button>
+      <button type="button" data-v="res" onclick="tab('res')">📅 Reservas</button>
+      <button type="button" data-v="pen" id="tpen" onclick="tab('pen')">🔔 Pendientes</button>
     </div>
+    <details id="aj">
+      <summary>⚙ Ajustes y avisos</summary>
+      <div id="ajc">
+        <label for="yo">Asesor (tú):</label><select id="yo"></select>
+        <button type="button" id="notiB">🔔 Activar avisos del teléfono</button>
+        <label class="chk"><input type="checkbox" id="wlOn"> Mantener la pantalla encendida</label>
+        <small id="wlTxt">Evita que el teléfono se suspenda y deje de avisar. Úsalo conectado al cargador.</small>
+        <a href="pdf.html" target="_blank" class="lnk">📄 Formato de reserva (PDF)</a>
+        <button type="button" id="off">Desconectarme</button>
+      </div>
+    </details>
     <div id="lista"></div>
-    <a href="pdf.html" target="_blank" style="display:block;padding:10px;text-align:center;background:#0070f3;color:#fff;text-decoration:none;font-weight:600;font-size:.9rem">📄 Formato de reserva (PDF)</a>
-    <div id="yoBox"><label for="yo">Asesor (tú):</label><select id="yo"></select></div>
-    <button type="button" id="off" style="border-radius:0;background:#5d5a7a">Desconectarme</button>
   </div>
 
   <div id="main">
@@ -78,7 +128,7 @@ button{background:#e6397a;color:#fff;border:0;cursor:pointer;font-weight:600}
       <h2>Reservas</h2>
       <form id="rf">
         <label>Fecha *<input id="rfecha" type="date" required></label>
-        <label>Hora<select id="rhora"><option value="">Sin hora</option></select></label>
+        <label>Hora (opcional)<span class="h3"><select id="rhh" aria-label="Hora"><option value="">—</option></select><select id="rmm" aria-label="Minutos"><option value="00">:00</option><option value="30">:30</option></select><select id="rap" aria-label="a. m. o p. m."><option value="">a. m./p. m.</option><option value="am">a. m.</option><option value="pm">p. m.</option></select></span><input type="hidden" id="rhora"></label>
         <label>Cliente *<input id="rcli" placeholder="Nombre del cliente" required></label>
         <label>Cédula del cliente *<input id="rced" inputmode="numeric" placeholder="1234567890" required></label>
         <label>Celular de contacto *<input id="rtel" type="tel" inputmode="tel" placeholder="3001234567" required></label>
@@ -100,12 +150,13 @@ button{background:#e6397a;color:#fff;border:0;cursor:pointer;font-weight:600}
       <div id="rlista"></div>
     </div>
   </div>
+  </div>
 </div>
 
 <script src="config.js"></script>
 <script>
 const $=id=>document.getElementById(id);
-let tok="",cred=null,es=null,S={},vistos=new Set(),listo=false,sel="",unread={},R={};
+let tok="",cred=null,es=null,S={},vistos=new Set(),listo=false,sel="",unread={},R={},tokTs=0,wl=null;
 
 /* --- listas --- */
 ASESORES.forEach(a=>$("num").add(new Option(`${a.n} · +${a.w}`,a.w))); $("num").add(new Option("Escribir otro número…","otro"));
@@ -113,7 +164,11 @@ ASESORES.forEach(a=>{ $("yo").add(new Option(a.n,a.n)); $("rase").add(new Option
 TIPOS.forEach(t=>$("rtipo").add(new Option(t,t)));
 LOCALIDADES.forEach(l=>$("rloc").add(new Option(l,l)));
 PLANES.forEach(p=>$("rplan").add(new Option(p.nombre,p.id)));
-horasMedias().forEach(([v,l])=>$("rhora").add(new Option(l,v)));
+/* Hora: 1 a 12, :00 o :30 y a. m./p. m. -> arma la hora real en el campo oculto #rhora */
+for(let h=1;h<=12;h++) $("rhh").add(new Option(h,h));
+function horaP(){ const h=+$("rhh").value, a=$("rap").value;
+  $("rhora").value = (h && a) ? String((h%12)+(a==="pm"?12:0)).padStart(2,"0")+":"+$("rmm").value : ""; }
+["rhh","rmm","rap"].forEach(id=>$(id).addEventListener("change",horaP));
 $("yo").value=localStorage.getItem("ajYo")||ASESORES[0].n; $("rase").value=$("yo").value;
 $("yo").onchange=()=>{ localStorage.setItem("ajYo",$("yo").value); $("rase").value=$("yo").value; };
 
@@ -126,7 +181,7 @@ function beep(){ try{ au=au||new (window.AudioContext||window.webkitAudioContext
 async function login(email,pass){
   const r=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${API_KEY}`,
     {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email,password:pass,returnSecureToken:true})});
-  const j=await r.json(); if(!j.idToken) throw new Error(j.error&&j.error.message||"Error"); tok=j.idToken; cred={email,pass}; }
+  const j=await r.json(); if(!j.idToken) throw new Error(j.error&&j.error.message||"Error"); tok=j.idToken; cred={email,pass}; tokTs=Date.now(); }
 
 const latir=()=>fetch(`${DB}/presence.json?auth=${tok}`,{method:"PUT",body:JSON.stringify({ts:Date.now()})});
 
@@ -147,14 +202,16 @@ function conectar(){
   if(es) es.close();
   es=new EventSource(`${DB}/chats.json?auth=${tok}`);
   const f=ev=>{ const {path,data}=JSON.parse(ev.data); poner(path,data,ev.type==="patch"); revisar(); };
-  es.addEventListener("put",f); es.addEventListener("patch",f); }
+  es.addEventListener("put",f); es.addEventListener("patch",f);
+  es.onopen=()=>red(true);
+  es.onerror=()=>{ red(false); if(es.readyState===2) setTimeout(reanudar,4000); }; }   /* si el servidor cerró la conexión, la reabre */
 
 function revisar(){
-  let nuevo=false;
+  let nuevo=false, ult=null;
   for(const [id,c] of Object.entries(S)) for(const [k,m] of Object.entries(c.msgs||{})){
     if(vistos.has(id+k)) continue; vistos.add(id+k);
-    if(listo && m.de==="c"){ nuevo=true; if(id!==sel||document.hidden) unread[id]=(unread[id]||0)+1; } }
-  if(nuevo) beep();   /* suena cuando el cliente escribe */
+    if(listo && m.de==="c"){ nuevo=true; ult={n:(c.meta&&c.meta.nombre)||"Cliente",t:m.t}; if(id!==sel||document.hidden) unread[id]=(unread[id]||0)+1; } }
+  if(nuevo){ beep(); avisar("💬 "+ult.n, String(ult.t).slice(0,120), "chat"); }   /* sonido + vibración + aviso del teléfono */
   if(!revisar.t) revisar.t=setTimeout(()=>listo=true,1500);
   lista(); chat(); }
 
@@ -164,7 +221,7 @@ function lista(){
     const b=document.createElement("button"), u=unread[id]||0; tot+=u;
     b.className="it"+(id===sel?" on":""); b.innerHTML=`<b></b><small></small>${u?`<i>${u}</i>`:""}`;
     b.children[0].textContent=(c.meta&&c.meta.nombre)||"Cliente"; b.children[1].textContent=(c.meta&&c.meta.ultimo)||"";
-    b.onclick=()=>{ sel=id; unread[id]=0; vista("chat"); lista(); chat(); }; l.appendChild(b); });
+    b.onclick=()=>{ sel=id; unread[id]=0; tab("chat"); $("app").classList.add("show-main"); lista(); chat(); }; l.appendChild(b); });
   document.title=(tot?`(${tot}) `:"")+"Panel de asesores"; }
 
 function chat(){
@@ -228,7 +285,7 @@ $("rf").onsubmit=async e=>{ e.preventDefault();
   const res=await fetch(`${DB}/reservas/${f}.json?auth=${tok}`,{method:"POST",body:JSON.stringify(rec)}).then(r=>r.json());
   if(bloq&&res&&res.name) await fetch(`${DB}/ocupadas/${f}/${res.name}.json?auth=${tok}`,{method:"PUT",body:JSON.stringify(hora||"-")});
   localStorage.setItem("ajYo",$("rase").value);
-  $("rf").reset(); $("rase").value=$("yo").value; $("rabonoBox").hidden=true; $("rbloq").checked=true; cargarRes(); };
+  $("rf").reset(); horaP(); $("rase").value=$("yo").value; $("rabonoBox").hidden=true; $("rbloq").checked=true; cargarRes(); };
 
 /* Abre pdf.html con los datos de la reserva ya cargados (incluida la cédula).
    Si la reserva no tiene cédula (por ejemplo, vino del bot), la pide aquí y la deja guardada. */
@@ -260,10 +317,11 @@ function conectarP(){
     else if(k.length===1){ if(data===null) delete P[k[0]]; else P[k[0]]=data; }
     else { P[k[0]]=P[k[0]]||{}; P[k[0]][k[1]]=data; }
     let nuevo=false; Object.keys(P).forEach(id=>{ if(!vistosP.has(id)){ vistosP.add(id); if(listoP) nuevo=true; } });
-    if(nuevo) beep();
+    if(nuevo){ beep(); avisar("🔔 Nueva reserva por confirmar","Revisa la pestaña Pendientes","pen"); }
     if(!conectarP.t) conectarP.t=setTimeout(()=>listoP=true,1500);
     const n=Object.keys(P).length; $("tpen").textContent="🔔 Pendientes"+(n?` (${n})`:""); pintarPen(); };
-  esP.addEventListener("put",f); esP.addEventListener("patch",f); }
+  esP.addEventListener("put",f); esP.addEventListener("patch",f);
+  esP.onerror=()=>{ if(esP.readyState===2) setTimeout(reanudar,4000); }; }
 function pintarPen(){ const box=$("plista"); box.innerHTML="";
   Object.entries(P).sort((a,b)=>a[1].ts-b[1].ts).forEach(([id,p])=>{
     const d=document.createElement("div"); d.className="rr";
@@ -290,10 +348,49 @@ $("olv").onclick=async()=>{ const email=$("em").value.trim(); if(!email){ $("er"
   const r=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${API_KEY}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({requestType:"PASSWORD_RESET",email})});
   $("er").style.color=r.ok?"#137333":"#b3261e"; $("er").textContent=r.ok?"Te enviamos un correo para crear una clave nueva.":"No se pudo enviar. Revisa el correo."; };
 
+/* ===== Navegación en el celular ===== */
+function tab(v){ vista(v); $("app").classList.toggle("show-main",v!=="chat");
+  document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.v===v)); }
+$("back").onclick=()=>$("app").classList.remove("show-main");
+
+/* ===== Avisos del teléfono, pantalla encendida y reconexión ===== */
+if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
+function red(ok){ const r=$("red"); r.textContent=ok?"● Conectado":"● Sin conexión"; r.classList.toggle("off",!ok); }
+
+function estadoNoti(){ const b=$("notiB");
+  if(!("Notification" in window)){ b.textContent="Este navegador no admite avisos"; b.disabled=true; return; }
+  b.textContent = Notification.permission==="granted" ? "🔔 Avisos del teléfono activados ✓" : Notification.permission==="denied" ? "🔕 Avisos bloqueados (actívalos en el navegador)" : "🔔 Activar avisos del teléfono"; }
+$("notiB").onclick=async()=>{ if(!("Notification" in window)) return;
+  try{ await Notification.requestPermission(); }catch(e){} estadoNoti();
+  if(Notification.permission==="granted") avisar("Avisos activados","Así te avisaremos de nuevos mensajes y reservas","test",true); };
+async function avisar(titulo,cuerpo,tag,siempre){
+  try{ if(navigator.vibrate) navigator.vibrate([200,100,200]); }catch(e){}
+  if(!("Notification" in window)||Notification.permission!=="granted") return;
+  if(!document.hidden && !siempre) return;      /* con el panel a la vista ya suena y vibra */
+  try{ const reg=await navigator.serviceWorker.getRegistration();
+    if(reg) reg.showNotification(titulo,{body:cuerpo,tag,renotify:true,vibrate:[200,100,200]}); else new Notification(titulo,{body:cuerpo,tag}); }catch(e){} }
+
+/* Pantalla encendida: el teléfono no se suspende mientras el panel está abierto */
+async function pantallaActiva(){
+  if(!$("wlOn").checked || !("wakeLock" in navigator) || wl || document.hidden) return;
+  try{ wl=await navigator.wakeLock.request("screen"); wl.addEventListener("release",()=>{ wl=null; }); }catch(e){} }
+$("wlOn").checked = localStorage.getItem("ajWl")!=="0";
+$("wlOn").onchange=()=>{ localStorage.setItem("ajWl",$("wlOn").checked?"1":"0");
+  if($("wlOn").checked) pantallaActiva(); else if(wl){ wl.release(); wl=null; } };
+if(!("wakeLock" in navigator)) $("wlTxt").textContent="Tu navegador no permite mantener la pantalla encendida: deja el panel abierto y el teléfono sin bloquear.";
+
+/* Al volver al panel (o recuperar internet) se reconecta todo y se recogen los mensajes que llegaron */
+async function reanudar(){ if(!tok) return;
+  if(Date.now()-tokTs>40*60*1000){ try{ await login(cred.email,cred.pass); }catch(e){ red(false); return; } }
+  conectar(); conectarP(); latir().then(()=>red(true)).catch(()=>red(false)); pantallaActiva(); }
+document.addEventListener("visibilitychange",()=>{ if(!document.hidden) reanudar(); });
+window.addEventListener("online",reanudar); window.addEventListener("offline",()=>red(false));
+
 $("ing").onsubmit=async e=>{ e.preventDefault();
-  try{ await login($("em").value,$("pw").value); $("ing").hidden=true; $("app").hidden=false; conectar(); conectarP(); latir(); beep(); }
+  if("Notification" in window && Notification.permission==="default") Notification.requestPermission().then(estadoNoti).catch(()=>{});
+  try{ await login($("em").value,$("pw").value); $("ing").hidden=true; $("app").hidden=false; tab("chat"); estadoNoti(); pantallaActiva(); conectar(); conectarP(); latir(); beep(); }
   catch(x){ $("er").style.color="#b3261e"; $("er").textContent="No se pudo ingresar: "+x.message; } };
 
-setInterval(()=>tok&&latir(),20000);   /* "asesor en línea" */
-setInterval(async()=>{ if(cred&&tok){ await login(cred.email,cred.pass); conectar(); conectarP(); } },50*60*1000);   /* renueva sesión */
+setInterval(()=>tok&&latir().catch(()=>red(false)),15000);   /* "asesor en línea" */
+setInterval(()=>{ if(cred&&tok&&Date.now()-tokTs>40*60*1000) reanudar(); },60*1000);   /* renueva la sesión antes de que venza */
 </script></body></html>
