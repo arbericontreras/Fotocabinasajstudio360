@@ -54,12 +54,13 @@
     .bar small { display: block; font: 500 .85rem var(--body); color: var(--muted); letter-spacing: 0; margin-top: 4px; }
     .bar-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 
-    /* ===== Pestañas Fotos / Videos ===== */
+    /* ===== Pestañas Tiras impresas / Videos 360 / Fotos ===== */
     .tabs { display: flex; gap: 8px; margin: 0 0 20px; flex-wrap: wrap; }
     .tabs button { font: 600 .98rem var(--body); padding: 10px 22px; border-radius: 999px; border: 2px solid var(--line); background: #fff; color: var(--ink); cursor: pointer; }
     .tabs button:hover { background: var(--soft); }
     .tabs button[aria-selected="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
     .vacio { grid-column: 1 / -1; color: var(--muted); padding: 30px 0; text-align: center; }
+    #masBox { text-align: center; margin-top: 22px; }
 
     .items { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 16px; }
     .item { background: #fff; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(var(--sombra),0.06); }
@@ -189,12 +190,15 @@
             </div>
           </div>
 
+          <!-- Cada pestaña carga solo lo suyo: así no tarda en abrir -->
           <div class="tabs" role="tablist" aria-label="Tipo de archivo">
+            <button type="button" role="tab" id="tabTiras" aria-selected="false">Tiras impresas</button>
+            <button type="button" role="tab" id="tabVideos" aria-selected="false">Videos 360</button>
             <button type="button" role="tab" id="tabFotos" aria-selected="true">Fotos</button>
-            <button type="button" role="tab" id="tabVideos" aria-selected="false">Videos</button>
           </div>
 
           <div class="items" id="items"></div>
+          <div id="masBox"></div>
         </div>
       </div>
     </section>
@@ -414,8 +418,29 @@ const TEMAS = [
 
     let archivos = [];
     let codigoActual = "";
-    let pestana = "foto";   /* "foto" o "video" */
+
+    /* ===== CATEGORÍAS: cada pestaña muestra (y carga) solo lo suyo =====
+       - Videos 360:    los archivos de tipo video.
+       - Tiras impresas: las fotos cuyo nombre trae la palabra "tira" seguida de un número (tira 12, tira_12, Tira12...).
+       - Fotos:         todas las demás fotos.
+       Para cambiar cómo se reconocen las tiras, edita la expresión de esTira. */
+    const TAB = {
+      tira:  { id: "tabTiras",  nombre: "Tiras impresas", vacio: "Todavía no hay tiras impresas en este evento." },
+      video: { id: "tabVideos", nombre: "Videos 360",     vacio: "Todavía no hay videos 360 en este evento." },
+      foto:  { id: "tabFotos",  nombre: "Fotos",          vacio: "Todavía no hay fotos en este evento." }
+    };
+    const POR_PAGINA = 24;   /* cuántos se cargan de una vez; el resto sale con «Ver más» */
     const esVideo = a => a.tipo === "video";
+    const esTira  = a => !esVideo(a) && /(?:^|[^a-záéíóú])tiras?[\s_\-]*\d+/i.test(String(a.nombre || ""));
+    const categoria = a => esVideo(a) ? "video" : esTira(a) ? "tira" : "foto";
+    let pestana = "foto";
+    let porCat = { tira: [], video: [], foto: [] };
+    let mostrados = { tira: POR_PAGINA, video: POR_PAGINA, foto: POR_PAGINA };
+    function clasificar(){
+      porCat = { tira: [], video: [], foto: [] };
+      archivos.forEach(a => porCat[categoria(a)].push(a));
+    }
+
     const esIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform==="MacIntel" && navigator.maxTouchPoints>1);
     const EXPIRATION_TIME = 60 * 60 * 1000;
 
@@ -441,37 +466,56 @@ const TEMAS = [
       location.href = a.descargar;
     }
 
-    /* ===== Pintar la galería (se usa al buscar y en cada actualización automática) ===== */
+    /* ===== Pintar la galería (se usa al buscar, al cambiar de pestaña y en cada actualización automática) ===== */
     let eventoActual = "", pollTimer = null;
-    function pintar(){
-      const fotos = archivos.filter(a=>!esVideo(a));
-      const videos = archivos.filter(esVideo);
-      $("evName").textContent = eventoActual + " · " + archivos.length + " archivos";
-      $("tabFotos").textContent = "Fotos (" + fotos.length + ")";
-      $("tabVideos").textContent = "Videos (" + videos.length + ")";
-      $("tabFotos").setAttribute("aria-selected", pestana==="foto");
-      $("tabVideos").setAttribute("aria-selected", pestana==="video");
 
-      const lista = pestana==="video" ? videos : fotos;
-      $("items").innerHTML = "";
+    function tarjeta(a){
+      const el = document.createElement("div"); el.className = "item";
+      el.innerHTML = `<button class="thumb" type="button" aria-label="Ver ${a.nombre}"><img src="${a.thumb}" alt="" loading="lazy" decoding="async">${esVideo(a)?"<b>Video</b>":""}</button>
+        <div class="acts"><button type="button" class="ver">Ver</button><button type="button" class="dl">Descargar</button></div>`;
+      const abrir = ()=>{ $("dlgF").src = a.ver; $("dlg").showModal(); };
+      el.querySelector(".thumb").onclick = abrir;
+      el.querySelector(".ver").onclick = abrir;
+      el.querySelector(".dl").onclick = e => descargar(a, e.currentTarget);
+      return el;
+    }
+
+    /* Botón «Ver más»: añade la siguiente tanda sin volver a cargar las que ya se ven */
+    function actualizarMas(){
+      const lista = porCat[pestana], yaVistos = $("items").querySelectorAll(".item").length, box = $("masBox");
+      box.innerHTML = "";
+      if(yaVistos >= lista.length) return;
+      const b = document.createElement("button"); b.type = "button"; b.className = "btn ghost";
+      b.textContent = "Ver más (" + (lista.length - yaVistos) + " restantes)";
+      b.onclick = () => {
+        const desde = $("items").querySelectorAll(".item").length;
+        lista.slice(desde, desde + POR_PAGINA).forEach(a => $("items").appendChild(tarjeta(a)));
+        mostrados[pestana] = $("items").querySelectorAll(".item").length;
+        actualizarMas();
+      };
+      box.appendChild(b);
+    }
+
+    function pintar(){
+      clasificar();
+      $("evName").textContent = eventoActual + " · " + archivos.length + " archivos";
+      Object.keys(TAB).forEach(k => {
+        const b = $(TAB[k].id);
+        b.textContent = TAB[k].nombre + " (" + porCat[k].length + ")";
+        b.setAttribute("aria-selected", pestana===k);
+      });
+
+      const lista = porCat[pestana];
+      $("items").innerHTML = ""; $("masBox").innerHTML = "";
       if(!lista.length){
-        const p = document.createElement("p"); p.className = "vacio";
-        p.textContent = pestana==="video" ? "Todavía no hay videos en este evento." : "Todavía no hay fotos en este evento.";
+        const p = document.createElement("p"); p.className = "vacio"; p.textContent = TAB[pestana].vacio;
         $("items").appendChild(p); return;
       }
-      lista.forEach(a=>{
-        const el = document.createElement("div"); el.className = "item";
-        el.innerHTML = `<button class="thumb" type="button" aria-label="Ver ${a.nombre}"><img src="${a.thumb}" alt="" loading="lazy">${esVideo(a)?"<b>Video</b>":""}</button>
-          <div class="acts"><button type="button" class="ver">Ver</button><button type="button" class="dl">Descargar</button></div>`;
-        const abrir = ()=>{ $("dlgF").src = a.ver; $("dlg").showModal(); };
-        el.querySelector(".thumb").onclick = abrir;
-        el.querySelector(".ver").onclick = abrir;
-        el.querySelector(".dl").onclick = e => descargar(a, e.currentTarget);
-        $("items").appendChild(el);
-      });
+      /* Solo se crean las tarjetas (y se piden las miniaturas) de la pestaña elegida y de la primera tanda */
+      lista.slice(0, Math.min(mostrados[pestana], lista.length)).forEach(a => $("items").appendChild(tarjeta(a)));
+      actualizarMas();
     }
-    $("tabFotos").onclick = () => { pestana = "foto"; pintar(); };
-    $("tabVideos").onclick = () => { pestana = "video"; pintar(); };
+    Object.keys(TAB).forEach(k => { $(TAB[k].id).onclick = () => { pestana = k; pintar(); }; });
 
     const idsDe = l => l.map(a=>a.id).join(",");
     function aviso(t){
@@ -522,7 +566,10 @@ const TEMAS = [
         }
 
         archivos = ordenar(d.archivos);
-        pestana = archivos.some(a=>!esVideo(a)) || !archivos.length ? "foto" : "video";  /* abre en la pestaña que tenga contenido */
+        clasificar();
+        mostrados = { tira: POR_PAGINA, video: POR_PAGINA, foto: POR_PAGINA };
+        /* Abre en la primera pestaña que tenga contenido: tiras, luego fotos y al final videos (que pesan más) */
+        pestana = porCat.tira.length ? "tira" : porCat.foto.length ? "foto" : porCat.video.length ? "video" : "foto";
         msg.textContent = "";
         codigoActual = codigo;
         aplicarTema(codigo, d.evento);
