@@ -462,7 +462,10 @@ const TEMAS = [
       }
     }
     const borrarGaleria = c => { try{ localStorage.removeItem(CLAVE_GAL(c)); }catch(e){} };
-    const pedir = c => fetch(API + "?codigo=" + encodeURIComponent(c)).then(r => r.json());
+    /* Con «desde», el servidor responde solo los archivos subidos después de esa fecha (parcial:true) */
+    const pedir = (c, desde) => fetch(API + "?codigo=" + encodeURIComponent(c) + (desde ? "&desde=" + desde : "")).then(r => r.json());
+    /* Fecha del archivo más reciente que ya se tiene, con 5 min de margen por si alguno tardó en subir */
+    const desdeActual = () => { const t = Math.max(0, ...archivos.map(a => fechaDe(a) || 0)); return t ? t - 5*60*1000 : 0; };
 
     const esIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform==="MacIntel" && navigator.maxTouchPoints>1);
     const EXPIRATION_TIME = 60 * 60 * 1000;
@@ -563,7 +566,8 @@ const TEMAS = [
     /* Aplica la lista que llegó del servidor: solo agrega los archivos nuevos y quita los borrados,
        sin volver a crear (ni a descargar) los que la persona ya está viendo */
     function actualizarCon(d, avisarSiIgual){
-      const nuevos = ordenar(d.archivos);
+      /* Respuesta parcial: solo trae lo nuevo, se junta con lo que ya se tenía */
+      const nuevos = ordenar(d.parcial ? [...new Map([...archivos, ...d.archivos].map(a => [a.id, a])).values()] : d.archivos);
       eventoActual = d.evento || eventoActual;
       guardarGaleria(codigoActual, eventoActual, nuevos);
       if(idsDe(nuevos)!==idsDe(archivos)){
@@ -582,13 +586,17 @@ const TEMAS = [
       repararMiniaturas();
     }
 
-    /* Vuelve a pedir la galería y, solo si hay cambios, la actualiza (sin cerrar la vista previa) */
+    /* Vuelve a pedir la galería y, solo si hay cambios, la actualiza (sin cerrar la vista previa).
+       Las revisiones automáticas piden solo lo nuevo; el botón «Actualizar» y una de cada 10 automáticas
+       piden la lista completa, para notar también los archivos que se borraron. */
+    let revisiones = 0;
     async function refrescar(manual=false){
       if(!codigoActual) return;
       const cod = codigoActual, btn=$("btnAct");
       if(manual){ btn.disabled=true; btn.textContent="Actualizando..."; }
+      const completa = manual || ++revisiones % 10 === 0;
       try{
-        const d = await pedir(cod);
+        const d = await pedir(cod, completa ? 0 : desdeActual());
         if(d.ok && cod===codigoActual) actualizarCon(d, manual);
       }catch(e){ if(manual) aviso("No pudimos actualizar. Intenta de nuevo."); }
       if(manual){ btn.disabled=false; btn.textContent="Actualizar"; }
@@ -641,7 +649,7 @@ const TEMAS = [
       }
 
       try{
-        const d = await pedir(codigo);
+        const d = await pedir(codigo, guardada ? desdeActual() : 0);
         if(mia !== busqueda) return;
         if(!d.ok){
           msg.className="err";
