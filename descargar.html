@@ -435,11 +435,34 @@ const TEMAS = [
     const categoria = a => esVideo(a) ? "video" : esTira(a) ? "tira" : "foto";
     let pestana = "foto";
     let porCat = { tira: [], video: [], foto: [] };
+    let porId = new Map();
     let mostrados = { tira: POR_PAGINA, video: POR_PAGINA, foto: POR_PAGINA };
     function clasificar(){
       porCat = { tira: [], video: [], foto: [] };
+      porId = new Map(archivos.map(a => [a.id, a]));
       archivos.forEach(a => porCat[categoria(a)].push(a));
     }
+
+    /* ===== MEMORIA DE LA GALERÍA =====
+       La última lista de cada evento se guarda en el teléfono: al volver a entrar se ve al instante
+       y mientras tanto se buscan, en segundo plano, solo los archivos nuevos. */
+    const CLAVE_GAL = c => "aj_gal_" + c;
+    function leerGaleria(c){
+      try{ const d = JSON.parse(localStorage.getItem(CLAVE_GAL(c))); return d && Array.isArray(d.archivos) ? d : null; }
+      catch(e){ return null; }
+    }
+    function guardarGaleria(c, evento, lista){
+      const v = JSON.stringify({ evento, archivos: lista, ts: Date.now() });
+      try{ localStorage.setItem(CLAVE_GAL(c), v); }
+      catch(e){ /* sin espacio: se borran las galerías de otros eventos y se intenta otra vez */
+        try{
+          Object.keys(localStorage).filter(k => k.startsWith("aj_gal_") && k !== CLAVE_GAL(c)).forEach(k => localStorage.removeItem(k));
+          localStorage.setItem(CLAVE_GAL(c), v);
+        }catch(e2){}
+      }
+    }
+    const borrarGaleria = c => { try{ localStorage.removeItem(CLAVE_GAL(c)); }catch(e){} };
+    const pedir = c => fetch(API + "?codigo=" + encodeURIComponent(c)).then(r => r.json());
 
     const esIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform==="MacIntel" && navigator.maxTouchPoints>1);
     const EXPIRATION_TIME = 60 * 60 * 1000;
@@ -468,16 +491,30 @@ const TEMAS = [
 
     /* ===== Pintar la galería (se usa al buscar, al cambiar de pestaña y en cada actualización automática) ===== */
     let eventoActual = "", pollTimer = null;
+    let nodos = new Map();   /* id -> tarjeta ya creada: se reutiliza para no volver a cargar su miniatura */
 
     function tarjeta(a){
+      if(nodos.has(a.id)) return nodos.get(a.id);
       const el = document.createElement("div"); el.className = "item";
       el.innerHTML = `<button class="thumb" type="button" aria-label="Ver ${a.nombre}"><img src="${a.thumb}" alt="" loading="lazy" decoding="async">${esVideo(a)?"<b>Video</b>":""}</button>
         <div class="acts"><button type="button" class="ver">Ver</button><button type="button" class="dl">Descargar</button></div>`;
-      const abrir = ()=>{ $("dlgF").src = a.ver; $("dlg").showModal(); };
+      /* Siempre usa los enlaces más recientes (los guardados en el teléfono pueden haber vencido) */
+      const ultimo = () => porId.get(a.id) || a;
+      const img = el.querySelector("img");
+      img.onerror = () => { const t = ultimo().thumb; if(t && img.getAttribute("src") !== t) img.src = t; };
+      const abrir = ()=>{ $("dlgF").src = ultimo().ver; $("dlg").showModal(); };
       el.querySelector(".thumb").onclick = abrir;
       el.querySelector(".ver").onclick = abrir;
-      el.querySelector(".dl").onclick = e => descargar(a, e.currentTarget);
+      el.querySelector(".dl").onclick = e => descargar(ultimo(), e.currentTarget);
+      nodos.set(a.id, el);
       return el;
+    }
+    /* Miniaturas que fallaron con un enlace viejo: se reintentan con el enlace nuevo */
+    function repararMiniaturas(){
+      nodos.forEach((el, id) => {
+        const img = el.querySelector("img"), a = porId.get(id);
+        if(a && a.thumb && img.complete && !img.naturalWidth && img.getAttribute("src") !== a.thumb) img.src = a.thumb;
+      });
     }
 
     /* Botón «Ver más»: añade la siguiente tanda sin volver a cargar las que ya se ven */
@@ -506,13 +543,14 @@ const TEMAS = [
       });
 
       const lista = porCat[pestana];
-      $("items").innerHTML = ""; $("masBox").innerHTML = "";
+      $("masBox").innerHTML = "";
       if(!lista.length){
         const p = document.createElement("p"); p.className = "vacio"; p.textContent = TAB[pestana].vacio;
-        $("items").appendChild(p); return;
+        $("items").replaceChildren(p); return;
       }
-      /* Solo se crean las tarjetas (y se piden las miniaturas) de la pestaña elegida y de la primera tanda */
-      lista.slice(0, Math.min(mostrados[pestana], lista.length)).forEach(a => $("items").appendChild(tarjeta(a)));
+      /* Solo se crean las tarjetas (y se piden las miniaturas) de la pestaña elegida y de la primera tanda.
+         Las que ya existían se reacomodan tal cual: solo los archivos nuevos cargan su miniatura. */
+      $("items").replaceChildren(...lista.slice(0, Math.min(mostrados[pestana], lista.length)).map(tarjeta));
       actualizarMas();
     }
     Object.keys(TAB).forEach(k => { $(TAB[k].id).onclick = () => { pestana = k; pintar(); }; });
@@ -522,23 +560,36 @@ const TEMAS = [
       const el=$("aviso"); el.textContent=t; el.classList.add("on");
       clearTimeout(aviso.t); aviso.t=setTimeout(()=>el.classList.remove("on"),4500);
     }
+    /* Aplica la lista que llegó del servidor: solo agrega los archivos nuevos y quita los borrados,
+       sin volver a crear (ni a descargar) los que la persona ya está viendo */
+    function actualizarCon(d, avisarSiIgual){
+      const nuevos = ordenar(d.archivos);
+      eventoActual = d.evento || eventoActual;
+      guardarGaleria(codigoActual, eventoActual, nuevos);
+      if(idsDe(nuevos)!==idsDe(archivos)){
+        const antes = new Set(archivos.map(a=>a.id));
+        const recientes = nuevos.filter(a=>!antes.has(a.id));
+        recientes.forEach(a => mostrados[categoria(a)]++);   /* entran arriba sin esconder los que ya se veían */
+        const quedan = new Set(nuevos.map(a=>a.id));
+        nodos.forEach((el, id) => { if(!quedan.has(id)) nodos.delete(id); });
+        archivos = nuevos; pintar();
+        const n = recientes.length;
+        if(n) aviso(n===1 ? "¡Hay 1 archivo nuevo!" : "¡Hay "+n+" archivos nuevos!");
+      } else {
+        archivos = nuevos; clasificar();   /* mismos archivos: solo se renuevan los enlaces */
+        if(avisarSiIgual) aviso("Ya tienes todo al día");
+      }
+      repararMiniaturas();
+    }
+
     /* Vuelve a pedir la galería y, solo si hay cambios, la actualiza (sin cerrar la vista previa) */
     async function refrescar(manual=false){
       if(!codigoActual) return;
-      const btn=$("btnAct");
+      const cod = codigoActual, btn=$("btnAct");
       if(manual){ btn.disabled=true; btn.textContent="Actualizando..."; }
       try{
-        const r = await fetch(API + "?codigo=" + encodeURIComponent(codigoActual));
-        const d = await r.json();
-        if(d.ok){
-          const nuevos = ordenar(d.archivos);
-          const antes = new Set(archivos.map(a=>a.id));
-          const n = nuevos.filter(a=>!antes.has(a.id)).length;
-          if(idsDe(nuevos)!==idsDe(archivos)){
-            archivos = nuevos; eventoActual = d.evento || eventoActual; pintar();
-            if(n) aviso(n===1 ? "¡Hay 1 archivo nuevo!" : "¡Hay "+n+" archivos nuevos!");
-          } else if(manual){ aviso("Ya tienes todo al día"); }
-        }
+        const d = await pedir(cod);
+        if(d.ok && cod===codigoActual) actualizarCon(d, manual);
       }catch(e){ if(manual) aviso("No pudimos actualizar. Intenta de nuevo."); }
       if(manual){ btn.disabled=false; btn.textContent="Actualizar"; }
     }
@@ -549,42 +600,65 @@ const TEMAS = [
     }
     document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible" && codigoActual && !$("dlg").open) refrescar(); });
 
+    /* Muestra la galería completa de un evento (desde la memoria del teléfono o desde el servidor) */
+    function mostrarGaleria(codigo, evento, lista, guardarSesion){
+      if(codigo !== codigoActual) nodos = new Map();
+      archivos = ordenar(lista);
+      clasificar();
+      mostrados = { tira: POR_PAGINA, video: POR_PAGINA, foto: POR_PAGINA };
+      /* Abre en la primera pestaña que tenga contenido: tiras, luego fotos y al final videos (que pesan más) */
+      pestana = porCat.tira.length ? "tira" : porCat.foto.length ? "foto" : porCat.video.length ? "video" : "foto";
+      codigoActual = codigo;
+      aplicarTema(codigo, evento);
+
+      if(guardarSesion) {
+        localStorage.setItem("aj_codigo", codigo);
+        localStorage.setItem("aj_tiempo", new Date().getTime());
+      }
+
+      $("codigo").value = codigo;
+      eventoActual = evento;
+      pintar();
+      programar();
+      $("result").hidden = false;
+    }
+
+    let busqueda = 0;   /* si se busca otro código mientras tanto, la respuesta vieja se ignora */
     async function buscar(codigo, guardarSesion = true){
-      const msg = $("msg"); msg.className = ""; $("result").hidden = true;
+      const msg = $("msg"); msg.className = "";
       codigo = codigo.trim().toUpperCase();
       if(!codigo){ msg.textContent = "Escribe el código de tu evento."; return; }
-      msg.textContent = "Espera un momento...";
+      const mia = ++busqueda;
+
+      /* Si ya se había abierto este evento, se ve al instante y solo se buscan los archivos nuevos */
+      const guardada = leerGaleria(codigo);
+      if(guardada){
+        mostrarGaleria(codigo, guardada.evento, guardada.archivos, guardarSesion);
+        msg.textContent = "Buscando archivos nuevos...";
+      } else {
+        $("result").hidden = true;
+        msg.textContent = "Espera un momento...";
+      }
+
       try{
-        const r = await fetch(API + "?codigo=" + encodeURIComponent(codigo));
-        const d = await r.json();
+        const d = await pedir(codigo);
+        if(mia !== busqueda) return;
         if(!d.ok){
           msg.className="err";
           msg.textContent = d.error || "No encontramos ese código. Revisa que esté bien escrito.";
+          $("result").hidden = true;
+          codigoActual = ""; clearInterval(pollTimer);
+          borrarGaleria(codigo);
           localStorage.removeItem("aj_codigo");
           localStorage.removeItem("aj_tiempo");
           return;
         }
-
-        archivos = ordenar(d.archivos);
-        clasificar();
-        mostrados = { tira: POR_PAGINA, video: POR_PAGINA, foto: POR_PAGINA };
-        /* Abre en la primera pestaña que tenga contenido: tiras, luego fotos y al final videos (que pesan más) */
-        pestana = porCat.tira.length ? "tira" : porCat.foto.length ? "foto" : porCat.video.length ? "video" : "foto";
         msg.textContent = "";
-        codigoActual = codigo;
-        aplicarTema(codigo, d.evento);
-
-        if(guardarSesion) {
-          localStorage.setItem("aj_codigo", codigo);
-          localStorage.setItem("aj_tiempo", new Date().getTime());
-        }
-
-        $("codigo").value = codigo;
-        eventoActual = d.evento;
-        pintar();
-        programar();
-        $("result").hidden = false;
+        if(guardada) actualizarCon(d, false);
+        else { mostrarGaleria(codigo, d.evento, d.archivos, guardarSesion); guardarGaleria(codigo, d.evento, archivos); }
       }catch(e){
+        if(mia !== busqueda) return;
+        if(guardada){ msg.textContent = "Sin conexión: estás viendo lo último que se cargó."; return; }
         msg.className="err";
         msg.textContent = "No pudimos cargar la galería. Intenta de nuevo en un momento.";
       }
