@@ -55,7 +55,18 @@
     .bar-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 
     /* ===== Pestañas Tiras impresas / Videos 360 / Fotos ===== */
-    .tabs { display: flex; gap: 8px; margin: 0 0 20px; flex-wrap: wrap; }
+    /* Quedan fijas debajo del encabezado al bajar por la galería */
+    .tabs { display: flex; gap: 8px; margin: 0 -20px 20px; padding: 10px 20px; flex-wrap: wrap;
+      position: sticky; top: 68px; z-index: 15; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(8px); }
+    .tabs.pegada { border-bottom: 1px solid var(--line); box-shadow: 0 6px 14px rgba(var(--sombra),.08); }
+    /* En el celular, las tres en una sola fila para que ocupen poco */
+    @media (max-width: 600px) {
+      .tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 8px 16px; margin: 0 -20px 16px; }
+      .tabs[role] button { padding: 7px 6px; font-size: .85rem; line-height: 1.25; border-radius: 14px; }
+      .tabs button small { display: block; font: inherit; opacity: .8; }
+      .tabs .largo { display: none; }
+    }
+    @media (min-width: 601px) { .tabs .corto { display: none; } }
     .tabs button { font: 600 .98rem var(--body); padding: 10px 22px; border-radius: 999px; border: 2px solid var(--line); background: #fff; color: var(--ink); cursor: pointer; }
     .tabs button:hover { background: var(--soft); }
     .tabs button[aria-selected="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
@@ -425,7 +436,7 @@ const TEMAS = [
        - Fotos:         todas las demás fotos.
        Para cambiar cómo se reconocen las tiras, edita la expresión de esTira. */
     const TAB = {
-      tira:  { id: "tabTiras",  nombre: "Tiras impresas", vacio: "Todavía no hay tiras impresas en este evento." },
+      tira:  { id: "tabTiras",  nombre: "Tiras impresas", corto: "Tiras", vacio: "Todavía no hay tiras impresas en este evento." },
       video: { id: "tabVideos", nombre: "Videos 360",     vacio: "Todavía no hay videos 360 en este evento." },
       foto:  { id: "tabFotos",  nombre: "Fotos",          vacio: "Todavía no hay fotos en este evento." }
     };
@@ -541,7 +552,8 @@ const TEMAS = [
       $("evName").textContent = eventoActual + " · " + archivos.length + " archivos";
       Object.keys(TAB).forEach(k => {
         const b = $(TAB[k].id);
-        b.textContent = TAB[k].nombre + " (" + porCat[k].length + ")";
+        const t = TAB[k], nombre = t.corto ? `<span class="largo">${t.nombre}</span><span class="corto">${t.corto}</span>` : t.nombre;
+        b.innerHTML = nombre + " <small>(" + porCat[k].length + ")</small>";
         b.setAttribute("aria-selected", pestana===k);
       });
 
@@ -556,7 +568,17 @@ const TEMAS = [
       $("items").replaceChildren(...lista.slice(0, Math.min(mostrados[pestana], lista.length)).map(tarjeta));
       actualizarMas();
     }
-    Object.keys(TAB).forEach(k => { $(TAB[k].id).onclick = () => { pestana = k; pintar(); }; });
+    /* Al cambiar de pestaña estando abajo, se vuelve al inicio de la galería */
+    const tabsBar = document.querySelector(".tabs");
+    Object.keys(TAB).forEach(k => { $(TAB[k].id).onclick = () => {
+      pestana = k; pintar();
+      if(tabsBar.classList.contains("pegada"))
+        scrollTo({ top: $("items").getBoundingClientRect().top + scrollY - 68 - tabsBar.offsetHeight - 10 });
+    }; });
+    /* Sombra cuando las pestañas ya van pegadas arriba */
+    addEventListener("scroll", () => {
+      tabsBar.classList.toggle("pegada", !$("result").hidden && tabsBar.getBoundingClientRect().top <= 68.5 && scrollY > 0);
+    }, { passive: true });
 
     const idsDe = l => l.map(a=>a.id).join(",");
     function aviso(t){
