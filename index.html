@@ -251,13 +251,14 @@ footer{padding:28px 0;text-align:center;color:var(--muted);font-size:.9rem;borde
         <div class="panel">
           <h3>3. Tu evento</h3>
           <div class="fields">
+            <div style="grid-column:1/-1"><label for="nombre" id="nombreLbl">Tu nombre (opcional)</label><input id="nombre" placeholder="Nombre y apellido" maxlength="60" autocomplete="name"></div>
             <div><label for="tipo">Tipo de evento *</label>
               <select id="tipo"><option>Boda</option><option>Quince años</option><option>Cumpleaños</option><option>Fiesta prom</option><option>Evento empresarial</option><option>Fiesta infantil</option><option>Baby shower</option><option>Grado</option><option>Otro</option></select></div>
             <div id="otroBox" hidden><label for="otro">¿Qué tipo de evento? *</label><input id="otro" placeholder="Ej: aniversario, despedida…" maxlength="50"></div>
             <div><label for="fecha">Fecha *</label><input type="date" id="fecha"></div>
             <div><label for="hh">Hora del evento *</label><div class="hora3"><select id="hh" aria-label="Hora"><option value="">Hora</option></select><select id="mm" aria-label="Minutos"><option value="00">:00</option><option value="30">:30</option></select><select id="ap" aria-label="a. m. o p. m."><option value="">a. m. / p. m.</option><option value="am">a. m.</option><option value="pm">p. m.</option></select></div><input type="hidden" id="hora"></div>
-            <div><label for="ciudad">Ciudad *</label><input id="ciudad" value="Bogotá" placeholder="Ej: Bogotá"></div>
-            <div><label for="loc">Localidad *</label><select id="loc"><option value="">Selecciona...</option></select></div>
+            <div><label for="ciudad">Ciudad *</label><select id="ciudad"><option>Bogotá</option><option>Zipaquirá</option><option>Cajicá</option><option>Chía</option><option>Soacha</option></select></div>
+            <div id="locBox"><label for="loc">Localidad *</label><select id="loc"><option value="">Selecciona...</option></select></div>
             <div><label for="barrio">Barrio *</label><input id="barrio" list="lista-barrios" placeholder="Castilla" autocomplete="off"><datalist id="lista-barrios"></datalist></div>
             <div style="grid-column:1/-1"><label for="dir">Dirección del evento *</label><input id="dir" placeholder="Ej: Calle 10 # 20-30, salón comunal"></div>
           </div>
@@ -311,6 +312,13 @@ if(!matchMedia("(prefers-reduced-motion: reduce)").matches) setInterval(()=>hero
 /* La configuración (zonas, precios, asesores, Firebase) está ahora en config.js */
 let sel = null, horas = 0;
 
+/* Modo cabina: si el nombre escrito es "cabina", el cotizador no exige los datos del evento */
+const esModoCabinaAJ = () => n0(document.getElementById("nombre").value.trim())==="cabina";
+
+/* Tarifa adicional por ciudad (se suma al precio del paquete) */
+const RECARGO_CIUDADES_AJ = { zipaquira:250000, cajica:200000, chia:200000, soacha:50000 };
+const recargoCiudadAJ = c => RECARGO_CIUDADES_AJ[n0(c)] || 0;
+
 const plansEl = document.getElementById("plans");
 PLANES.forEach(p=>{
   const d = document.createElement("div"); d.className = "plan";
@@ -327,30 +335,36 @@ const hoursEl = document.getElementById("hours");
 
 function render(){
   const p = PLANES.find(x=>x.id===sel);
+  const nombre = document.getElementById("nombre").value.trim(), cab = esModoCabinaAJ();
   const tipoSel = document.getElementById("tipo").value, otro = document.getElementById("otro").value.trim();
   document.getElementById("otroBox").hidden = tipoSel!=="Otro";
   const tipo = tipoSel==="Otro" && otro ? "Otro ("+otro+")" : tipoSel;
   const fecha = document.getElementById("fecha").value;
   const hora = document.getElementById("hora").value;
-  const ciudad = document.getElementById("ciudad").value.trim(), loc = document.getElementById("loc").value, barrio = document.getElementById("barrio").value.trim(), dir = document.getElementById("dir").value.trim();
+  const ciudad = document.getElementById("ciudad").value.trim(), loc = n0(document.getElementById("ciudad").value)==="bogota" ? document.getElementById("loc").value : "", barrio = document.getElementById("barrio").value.trim(), dir = document.getElementById("dir").value.trim();
   const listo = !!(p && horas);
-  const precio = listo ? precioFinal(p,horas,ciudad,loc) : 0;
-  /* El valor se muestra al final: solo cuando el cliente ya dio los datos del evento y el lugar */
+  document.getElementById("locBox").hidden = n0(ciudad)!=="bogota"; /* la localidad solo aplica en Bogotá */
+  const extra = listo ? recargoCiudadAJ(ciudad) : 0;
+  const precio = listo ? precioFinal(p,horas,ciudad,loc) + extra : 0;
+  /* Solo el nombre "cabina" ve el precio de una; los demás lo ven cuando completan los datos del evento */
   const datosOk = !!(fecha && hora && ciudad && barrio && dir && (n0(ciudad)==="bogota" ? loc : true));
-  const verPrecio = listo && datosOk;
+  const verPrecio = listo && (cab || datosOk);
   document.getElementById("sname").textContent = p ? p.nombre : "Elige un servicio";
   document.getElementById("total").textContent = verPrecio ? peso(precio) : "—";
-  document.getElementById("pend").textContent = listo && !verPrecio ? "El valor aparece cuando completes los datos de tu evento: fecha, hora, ciudad, barrio y dirección." : "";
+  document.getElementById("pend").textContent = !listo ? "" :
+    !verPrecio ? "El valor aparece cuando completes los datos de tu evento: fecha, hora, ciudad, barrio y dirección." :
+    extra ? `Incluye recargo de transporte a ${ciudad}: ${peso(extra)}` :
+    "Si tu evento es fuera de Bogotá puede aplicar un recargo de transporte.";
   document.getElementById("shours").textContent = horas ? horas+(horas===1?" hora":" horas")+" de servicio" : "Elige las horas de servicio";
   document.getElementById("incl").innerHTML = p ? ["2 operadores de logística","Página web de tu evento sin costo adicional",...p.incluye].map(i=>`<li>${i}</li>`).join("") : "";
   [...hoursEl.children].forEach((b,i)=>b.setAttribute("aria-pressed", i+1===horas));
-  document.getElementById("sev").textContent = `Evento: ${tipo}`+(fecha?` · ${fecha}`:"")+(hora?` · ${fmtHora(hora)}`:"")+(ciudad?`\nCiudad: ${ciudad}`:"")+(loc?`\nLocalidad: ${loc}`:"")+(barrio?`\nBarrio: ${barrio}`:"")+(dir?`\nDirección: ${dir}`:"");
-  window.cotMsg = !listo ? "" : `Hola, quiero cotizar el plan ${p.nombre} de ${horas} ${horas===1?"hora":"horas"} (${peso(precio)}).`
+  document.getElementById("sev").textContent = (nombre?`Nombre: ${nombre}\n`:"")+`Evento: ${tipo}`+(fecha?` · ${fecha}`:"")+(hora?` · ${fmtHora(hora)}`:"")+(ciudad?`\nCiudad: ${ciudad}`:"")+(loc?`\nLocalidad: ${loc}`:"")+(barrio?`\nBarrio: ${barrio}`:"")+(dir?`\nDirección: ${dir}`:"");
+  window.cotMsg = !listo ? "" : `Hola, ${nombre&&!cab?`soy ${nombre}, `:""}quiero cotizar el plan ${p.nombre} de ${horas} ${horas===1?"hora":"horas"} (${peso(precio)}${extra?`, incluye recargo de ${peso(extra)} por ${ciudad}`:""}).`
     + `\nEvento: ${tipo}` + (fecha?`\nFecha: ${fecha}`:"") + (hora?`\nHora: ${fmtHora(hora)}`:"") + (ciudad?`\nCiudad: ${ciudad}`:"") + (loc?`\nLocalidad: ${loc}`:"") + (barrio?`\nBarrio: ${barrio}`:"") + (dir?`\nDirección: ${dir}`:"") + `\nIncluye 2 operadores de logística.`
     + (avisoCruce(fecha,hora)?"\n"+avisoCruce(fecha,hora):"")
     + `\n¿Tienen disponibilidad?`;
 }
-["tipo","otro","fecha","hora","ciudad","loc","barrio","dir"].forEach(id=>document.getElementById(id).addEventListener("input",render));
+["nombre","tipo","otro","fecha","hora","ciudad","loc","barrio","dir"].forEach(id=>document.getElementById(id).addEventListener("input",render));
 document.getElementById("fecha").min = new Date().toISOString().split("T")[0];
 render();
 
@@ -388,17 +402,18 @@ function validar(){
   const v = id => $(id).value.trim();
   if(!sel){ $("err").textContent = "Elige el servicio que quieres cotizar."; return false; }
   if(!horas){ $("err").textContent = "Elige las horas de servicio."; return false; }
+  if(esModoCabinaAJ()){ $("err").textContent = ""; return true; } /* nombre "cabina": solo servicio y horas */
   const campos = [["fecha","la fecha"],["hora","la hora del evento"],["ciudad","la ciudad"],["barrio","el barrio"],["dir","la dirección"]];
   if(norm(v("ciudad"))==="bogota") campos.splice(3,0,["loc","la localidad"]);
   if(v("tipo")==="Otro") campos.unshift(["otro","el tipo de evento"]);
-  ["otro","fecha","hora","ciudad","loc","barrio","dir"].forEach(id=>$(id).removeAttribute("aria-invalid"));
+  ["nombre","otro","fecha","hora","ciudad","loc","barrio","dir"].forEach(id=>$(id).removeAttribute("aria-invalid"));
   const faltan = campos.filter(([id])=>!v(id));
   ["hh","mm","ap"].forEach(id=>$(id).removeAttribute("aria-invalid"));
   faltan.forEach(([id])=>{ $(id).setAttribute("aria-invalid","true"); if(id==="hora") ["hh","ap"].forEach(x=>$(x).setAttribute("aria-invalid","true")); });
   const err = $("err");
   if(faltan.length){ err.textContent = "Completa "+faltan.map(f=>f[1]).join(", ")+" para continuar."; return false; }
   if(v("fecha") < new Date().toISOString().split("T")[0]){ $("fecha").setAttribute("aria-invalid","true"); err.textContent = "La fecha debe ser hoy o una fecha futura."; return false; }
-  if(sinServicio(v("loc"),v("barrio"))){ err.textContent = MENSAJE_NO_DISPONIBLE; return false; }
+  if(norm(v("ciudad"))==="bogota" && sinServicio(v("loc"),v("barrio"))){ err.textContent = MENSAJE_NO_DISPONIBLE; return false; }
   err.textContent = ""; return true;
 }
 
