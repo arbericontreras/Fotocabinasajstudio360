@@ -356,7 +356,7 @@ function render(){
     extra ? `Incluye recargo de transporte a ${ciudad}: ${peso(extra)}` :
     "Si tu evento es fuera de Bogotá puede aplicar un recargo de transporte.";
   document.getElementById("shours").textContent = horas ? horas+(horas===1?" hora":" horas")+" de servicio" : "Elige las horas de servicio";
-  document.getElementById("incl").innerHTML = p ? ["2 operadores de logística","Página web de tu evento sin costo adicional",...p.incluye].map(i=>`<li>${i}</li>`).join("") : "";
+  document.getElementById("incl").innerHTML = p ? ["2 operadores de logística",...p.incluye].map(i=>`<li>${i}</li>`).join("") : "";
   [...hoursEl.children].forEach((b,i)=>b.setAttribute("aria-pressed", i+1===horas));
   document.getElementById("sev").textContent = (nombre?`Nombre: ${nombre}\n`:"")+`Evento: ${tipo}`+(fecha?` · ${fecha}`:"")+(hora?` · ${fmtHora(hora)}`:"")+(ciudad?`\nCiudad: ${ciudad}`:"")+(loc?`\nLocalidad: ${loc}`:"")+(barrio?`\nBarrio: ${barrio}`:"")+(dir?`\nDirección: ${dir}`:"");
   window.cotMsg = !listo ? "" : `Hola, ${nombre&&!cab?`soy ${nombre}, `:""}quiero cotizar el plan ${p.nombre} de ${horas} ${horas===1?"hora":"horas"} (${peso(precio)}${extra?`, incluye recargo de ${peso(extra)} por ${ciudad}`:""}).`
