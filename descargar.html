@@ -55,10 +55,29 @@
     .bar-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 
     /* ===== Pestañas Tiras impresas / Videos 360 / Fotos ===== */
-    .tabs { display: flex; gap: 8px; margin: 0 0 20px; flex-wrap: wrap; }
+    /* Quedan fijas debajo del encabezado al bajar por la galería */
+    .tabs { display: flex; gap: 8px; margin: 0 -20px 20px; padding: 10px 20px; flex-wrap: wrap;
+      position: sticky; top: 68px; z-index: 15; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(8px); }
+    .tabs.pegada { border-bottom: 1px solid var(--line); box-shadow: 0 6px 14px rgba(var(--sombra),.08); }
+    /* En el celular, las tres en una sola fila para que ocupen poco */
+    @media (max-width: 600px) {
+      .tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 8px 16px; margin: 0 -20px 16px; }
+      .tabs[role] button { padding: 7px 6px; font-size: .85rem; line-height: 1.25; border-radius: 14px; }
+      .tabs button small { display: block; font: inherit; opacity: .8; }
+      .tabs .largo { display: none; }
+    }
+    @media (min-width: 601px) { .tabs .corto { display: none; } }
     .tabs button { font: 600 .98rem var(--body); padding: 10px 22px; border-radius: 999px; border: 2px solid var(--line); background: #fff; color: var(--ink); cursor: pointer; }
     .tabs button:hover { background: var(--soft); }
     .tabs button[aria-selected="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+    /* Globo rojo con la cantidad de archivos nuevos */
+    .tabs button { position: relative; }
+    .globo { position: absolute; top: -9px; right: -7px; min-width: 24px; height: 24px; padding: 0 6px; border-radius: 999px;
+      background: #e53935; color: #fff; border: 2px solid #fff; font: 700 .8rem/20px var(--body); text-align: center;
+      box-shadow: 0 3px 8px rgba(0,0,0,.25); animation: globo .35s ease-out; }
+    @keyframes globo { from { transform: scale(0); } 70% { transform: scale(1.2); } to { transform: scale(1); } }
+    .item.nuevo .thumb::after { content: "Nuevo"; position: absolute; top: 10px; left: 10px; background: #e53935; color: #fff;
+      border-radius: 999px; font: 700 .75rem var(--body); padding: 4px 10px; }
     .vacio { grid-column: 1 / -1; color: var(--muted); padding: 30px 0; text-align: center; }
     #masBox { text-align: center; margin-top: 22px; }
 
@@ -80,6 +99,9 @@
     dialog .x { position: absolute; top: 12px; right: 12px; z-index: 10; border: 0; background: rgba(0,0,0,0.6); color: #fff; border-radius: 999px; padding: 8px 16px; font: 600 .9rem var(--body); cursor: pointer; }
     dialog .x:hover { background: var(--pink); }
 
+    .enapp { display: grid; gap: 8px; justify-items: start; margin: 0 0 18px; padding: 16px 18px; border-radius: 16px;
+      background: #fff4e5; border: 2px solid #f5b041; color: #5c3b00; font-size: .95rem; line-height: 1.45; }
+    .enapp .btn { padding: 9px 18px; font-size: .9rem; }
     #aviso { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); z-index: 60; background: var(--ink); color: #fff; padding: 12px 22px; border-radius: 999px; font: 600 .95rem var(--body); box-shadow: 0 10px 28px rgba(0,0,0,.3); opacity: 0; pointer-events: none; transition: opacity .3s, transform .3s; }
     #aviso.on { opacity: 1; transform: translate(-50%, 0); }
 
@@ -180,6 +202,13 @@
         </form>
 
         <p id="msg" role="status"></p>
+
+        <!-- Solo aparece dentro de Instagram, Facebook, TikTok...: esos navegadores no dejan guardar archivos -->
+        <div id="enApp" class="enapp" hidden>
+          <b>Para guardar tus fotos y videos, abre esta página en Chrome o Safari.</b>
+          <span>Toca los tres puntos ( ⋯ ) arriba y elige «Abrir en el navegador», o copia el enlace y pégalo allá.</span>
+          <button type="button" class="btn" id="copiarEnlace">Copiar enlace</button>
+        </div>
 
         <div id="result" hidden>
           <div class="bar">
@@ -425,7 +454,7 @@ const TEMAS = [
        - Fotos:         todas las demás fotos.
        Para cambiar cómo se reconocen las tiras, edita la expresión de esTira. */
     const TAB = {
-      tira:  { id: "tabTiras",  nombre: "Tiras impresas", vacio: "Todavía no hay tiras impresas en este evento." },
+      tira:  { id: "tabTiras",  nombre: "Tiras impresas", corto: "Tiras", vacio: "Todavía no hay tiras impresas en este evento." },
       video: { id: "tabVideos", nombre: "Videos 360",     vacio: "Todavía no hay videos 360 en este evento." },
       foto:  { id: "tabFotos",  nombre: "Fotos",          vacio: "Todavía no hay fotos en este evento." }
     };
@@ -470,26 +499,84 @@ const TEMAS = [
     const esIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform==="MacIntel" && navigator.maxTouchPoints>1);
     const EXPIRATION_TIME = 60 * 60 * 1000;
 
-    async function descargar(a, btn){
-      if(esIOS && navigator.canShare){
-        const txt = btn.textContent; btn.textContent = "Preparando..."; btn.disabled = true;
-        try{
-          const r = await fetch(`${API}?codigo=${encodeURIComponent(codigoActual)}&archivo=${a.id}`);
-          const d = await r.json();
-          if(d.ok){
-            const bytes = Uint8Array.from(atob(d.b64), c=>c.charCodeAt(0));
-            const file = new File([bytes], d.nombre, {type:d.mime});
-            if(navigator.canShare({files:[file]})){
-              await navigator.share({files:[file]});
-              btn.textContent = txt; btn.disabled = false; return;
-            }
+    /* ===== DESCARGAR A LA GALERÍA =====
+       - iPhone/iPad: se prepara el archivo y se abre «Compartir» → «Guardar imagen / Guardar video» (va a Fotos).
+         Si Safari no deja abrirlo solo (pasa cuando el archivo tarda en prepararse), el botón cambia a
+         «Guardar en Fotos» y basta con tocarlo otra vez.
+       - Android y computador: se descarga como archivo con su nombre y extensión; en Android aparece en la galería
+         (álbum «Download» / «Descargas»).
+       - Navegadores dentro de Instagram, Facebook, TikTok... no permiten descargar: se pide abrir en Chrome o Safari. */
+    /* Enlace directo de descarga: el de drive.google.com abre la app de Drive en el celular y pide cuenta de Gmail */
+    const enlaceDirecto = a => "https://drive.usercontent.google.com/download?id=" + encodeURIComponent(a.id) + "&export=download&confirm=t";
+    const enApp = /FBAN|FBAV|FB_IAB|Instagram|TikTok|musical_ly|Snapchat|Line\/|Twitter|Pinterest/i.test(navigator.userAgent);
+    const EXT = { "image/jpeg":"jpg", "image/png":"png", "image/heic":"heic", "image/webp":"webp", "image/gif":"gif",
+                  "video/mp4":"mp4", "video/quicktime":"mov", "video/webm":"webm", "video/3gpp":"3gp" };
+    function nombreArchivo(a, mime){
+      const n = String(a.nombre || "AJ-Studio").replace(/[\\/:*?"<>|]/g, "_");
+      return /\.[a-z0-9]{2,4}$/i.test(n) ? n : n + "." + (EXT[mime] || (esVideo(a) ? "mp4" : "jpg"));
+    }
+
+    /* Trae el archivo al teléfono mostrando el avance; si Drive no responde, lo pide al servidor (Apps Script) */
+    async function traerArchivo(a, alAvanzar){
+      try{
+        const r = await fetch(enlaceDirecto(a));
+        const mime = (r.headers.get("Content-Type") || "").split(";")[0];
+        if(!r.ok || mime.startsWith("text/")) throw new Error("sin acceso");   /* página de Google en vez del archivo */
+        const total = +r.headers.get("Content-Length") || 0;
+        let blob;
+        if(r.body && total){
+          const lector = r.body.getReader(), partes = []; let llevo = 0;
+          for(;;){
+            const { done, value } = await lector.read(); if(done) break;
+            partes.push(value); llevo += value.length; alAvanzar(Math.min(99, Math.round(llevo*100/total)));
           }
-        }catch(err){
-          if(err && err.name==="AbortError"){ btn.textContent = txt; btn.disabled = false; return; }
-        }
-        btn.textContent = txt; btn.disabled = false;
+          blob = new Blob(partes, { type: mime });
+        } else blob = await r.blob();
+        return new File([blob], nombreArchivo(a, mime), { type: mime || blob.type });
+      }catch(e){
+        const d = await (await fetch(`${API}?codigo=${encodeURIComponent(codigoActual)}&archivo=${a.id}`)).json();
+        if(!d.ok) throw new Error(d.error || "sin archivo");
+        const bytes = Uint8Array.from(atob(d.b64), c=>c.charCodeAt(0));
+        return new File([bytes], nombreArchivo({ nombre: d.nombre, tipo: a.tipo }, d.mime), { type: d.mime });
       }
-      location.href = a.descargar;
+    }
+
+    function guardarComoArchivo(file){
+      const url = URL.createObjectURL(file), link = document.createElement("a");
+      link.href = url; link.download = file.name; document.body.appendChild(link); link.click(); link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+    }
+
+    async function descargar(a, btn){
+      if(enApp){ $("enApp").hidden = false; $("enApp").scrollIntoView({ block: "center" }); return; }
+      if(btn.disabled) return;
+      marcarVisto(a);
+      const txt = "Descargar";
+      const listo = () => { btn.textContent = txt; btn.disabled = false; btn.onclick = e => descargar(a, e.currentTarget); };
+      btn.disabled = true; btn.textContent = "Preparando...";
+      let file;
+      try{ file = await traerArchivo(a, p => btn.textContent = "Preparando " + p + "%"); }
+      catch(e){ listo(); location.href = enlaceDirecto(a); return; }   /* último recurso: el enlace de siempre */
+
+      const compartir = esIOS && navigator.canShare && navigator.canShare({ files: [file] });
+      if(!compartir){
+        guardarComoArchivo(file); listo();
+        aviso(esVideo(a) ? "Video descargado ✓ Lo encuentras en tu galería o en Descargas" : "Foto descargada ✓ La encuentras en tu galería o en Descargas");
+        return;
+      }
+      const abrirHoja = async () => {
+        try{
+          await navigator.share({ files: [file] }); listo();
+        }catch(err){
+          if(err && err.name === "NotAllowedError"){
+            /* Safari pide que el toque sea justo antes: el siguiente toque abre «Guardar» al instante */
+            btn.textContent = esVideo(a) ? "Guardar video en Fotos" : "Guardar foto en Fotos";
+            btn.disabled = false; btn.onclick = () => { btn.disabled = true; abrirHoja(); };
+          } else listo();   /* la persona cerró la hoja */
+        }
+      };
+      aviso(esVideo(a) ? "Elige «Guardar video»" : "Elige «Guardar imagen»");
+      abrirHoja();
     }
 
     /* ===== Pintar la galería (se usa al buscar, al cambiar de pestaña y en cada actualización automática) ===== */
@@ -505,12 +592,20 @@ const TEMAS = [
       const ultimo = () => porId.get(a.id) || a;
       const img = el.querySelector("img");
       img.onerror = () => { const t = ultimo().thumb; if(t && img.getAttribute("src") !== t) img.src = t; };
-      const abrir = ()=>{ $("dlgF").src = ultimo().ver; $("dlg").showModal(); };
+      const abrir = ()=>{ marcarVisto(a); $("dlgF").src = ultimo().ver; $("dlg").showModal(); };
       el.querySelector(".thumb").onclick = abrir;
       el.querySelector(".ver").onclick = abrir;
       el.querySelector(".dl").onclick = e => descargar(ultimo(), e.currentTarget);
       nodos.set(a.id, el);
       return el;
+    }
+    /* Al descargar o ver un archivo nuevo, deja de ser «Nuevo» y baja el globo de su pestaña */
+    function marcarVisto(a){
+      const el = nodos.get(a.id);
+      if(!el || !el.classList.contains("nuevo")) return;
+      el.classList.remove("nuevo");
+      const k = categoria(a);
+      if(sinVer[k] > 0){ sinVer[k]--; pintarPestanas(); }
     }
     /* Miniaturas que fallaron con un enlace viejo: se reintentan con el enlace nuevo */
     function repararMiniaturas(){
@@ -536,14 +631,23 @@ const TEMAS = [
       box.appendChild(b);
     }
 
+    /* Globo rojo en cada pestaña con los archivos nuevos que aún no se han visto */
+    let sinVer = { tira: 0, video: 0, foto: 0 };
+    function pintarPestanas(){
+      Object.keys(TAB).forEach(k => {
+        const b = $(TAB[k].id);
+        const t = TAB[k], nombre = t.corto ? `<span class="largo">${t.nombre}</span><span class="corto">${t.corto}</span>` : t.nombre;
+        const n = sinVer[k];
+        b.innerHTML = nombre + " <small>(" + porCat[k].length + ")</small>" +
+          (n ? `<span class="globo" aria-label="${n} ${n===1?"nuevo":"nuevos"}">${n>99?"99+":n}</span>` : "");
+        b.setAttribute("aria-selected", pestana===k);
+      });
+    }
+
     function pintar(){
       clasificar();
       $("evName").textContent = eventoActual + " · " + archivos.length + " archivos";
-      Object.keys(TAB).forEach(k => {
-        const b = $(TAB[k].id);
-        b.textContent = TAB[k].nombre + " (" + porCat[k].length + ")";
-        b.setAttribute("aria-selected", pestana===k);
-      });
+      pintarPestanas();
 
       const lista = porCat[pestana];
       $("masBox").innerHTML = "";
@@ -556,7 +660,17 @@ const TEMAS = [
       $("items").replaceChildren(...lista.slice(0, Math.min(mostrados[pestana], lista.length)).map(tarjeta));
       actualizarMas();
     }
-    Object.keys(TAB).forEach(k => { $(TAB[k].id).onclick = () => { pestana = k; pintar(); }; });
+    /* Al cambiar de pestaña estando abajo, se vuelve al inicio de la galería */
+    const tabsBar = document.querySelector(".tabs");
+    Object.keys(TAB).forEach(k => { $(TAB[k].id).onclick = () => {
+      pestana = k; pintar();
+      if(tabsBar.classList.contains("pegada"))
+        scrollTo({ top: $("items").getBoundingClientRect().top + scrollY - 68 - tabsBar.offsetHeight - 10 });
+    }; });
+    /* Sombra cuando las pestañas ya van pegadas arriba */
+    addEventListener("scroll", () => {
+      tabsBar.classList.toggle("pegada", !$("result").hidden && tabsBar.getBoundingClientRect().top <= 68.5 && scrollY > 0);
+    }, { passive: true });
 
     const idsDe = l => l.map(a=>a.id).join(",");
     function aviso(t){
@@ -573,10 +687,15 @@ const TEMAS = [
       if(idsDe(nuevos)!==idsDe(archivos)){
         const antes = new Set(archivos.map(a=>a.id));
         const recientes = nuevos.filter(a=>!antes.has(a.id));
-        recientes.forEach(a => mostrados[categoria(a)]++);   /* entran arriba sin esconder los que ya se veían */
+        recientes.forEach(a => {
+          const k = categoria(a);
+          mostrados[k]++;   /* entran arriba sin esconder los que ya se veían */
+          sinVer[k]++;   /* globo rojo en su pestaña, hasta que se descargue o se vea */
+        });
         const quedan = new Set(nuevos.map(a=>a.id));
-        nodos.forEach((el, id) => { if(!quedan.has(id)) nodos.delete(id); });
+        nodos.forEach((el, id) => { if(!quedan.has(id)){ marcarVisto(porId.get(id) || { id }); nodos.delete(id); } });   /* borrados: tampoco cuentan como nuevos */
         archivos = nuevos; pintar();
+        recientes.forEach(a => tarjeta(a).classList.add("nuevo"));
         const n = recientes.length;
         if(n) aviso(n===1 ? "¡Hay 1 archivo nuevo!" : "¡Hay "+n+" archivos nuevos!");
       } else {
@@ -610,7 +729,7 @@ const TEMAS = [
 
     /* Muestra la galería completa de un evento (desde la memoria del teléfono o desde el servidor) */
     function mostrarGaleria(codigo, evento, lista, guardarSesion){
-      if(codigo !== codigoActual) nodos = new Map();
+      if(codigo !== codigoActual){ nodos = new Map(); sinVer = { tira: 0, video: 0, foto: 0 }; }
       archivos = ordenar(lista);
       clasificar();
       mostrados = { tira: POR_PAGINA, video: POR_PAGINA, foto: POR_PAGINA };
@@ -674,6 +793,11 @@ const TEMAS = [
 
     $("codeForm").onsubmit = e => { e.preventDefault(); buscar($("codigo").value, true); };
     $("btnAct").onclick = () => refrescar(true);
+    $("enApp").hidden = !enApp;
+    $("copiarEnlace").onclick = () => {
+      const u = new URL(location.href); if(codigoActual) u.searchParams.set("codigo", codigoActual);
+      copiar(u.toString(), "Enlace copiado: pégalo en Chrome o Safari");
+    };
     $("dlgX").onclick = () => $("dlg").close();
     $("dlg").addEventListener("close", () => $("dlgF").src = "about:blank");
 
