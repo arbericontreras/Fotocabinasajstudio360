@@ -8,9 +8,9 @@ const DB = "https://cabina-de-fotos-4f20d-default-rtdb.firebaseio.com";   // URL
 const API_KEY = "AIzaSyD1LkAdkqpAEVBC5aZ8XemYsvMoOC2C7SM";                  // Clave de API web
 
 /* QR de pago del abono de $50.000 (Nequi, Bancolombia, etc.)
-   ► AQUÍ VA LA IMAGEN DEL QR: guarda tu imagen en la carpeta img/ con el nombre qr-reserva.png
-     (o cambia la ruta de abajo). Solo la envía el asesor en línea desde su panel (botón «Enviar QR de reserva»). */
-const QR_IMG = "img/qr-reserva.png";
+   ► AQUÍ VA LA IMAGEN DEL QR: está en la carpeta img/ con el nombre «qr abono.jpeg»
+     (si la cambias, cambia también la ruta de abajo). Solo la envía el asesor en línea desde su panel (botón «Enviar QR de reserva»). */
+const QR_IMG = "img/qr%20abono.jpeg";
 
 /* 2) Tipos de evento */
 const TIPOS = ["Boda","Quince años","Cumpleaños","Fiesta prom","Evento empresarial","Fiesta infantil","Baby shower","Grado","Otro"];

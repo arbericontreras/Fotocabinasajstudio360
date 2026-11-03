@@ -37,6 +37,7 @@ button{background:#e6397a;color:#fff;border:0;cursor:pointer;font-weight:600;min
 #info{padding:10px 14px;border-bottom:1px solid #dcd7f2;font-weight:600}
 #log{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:8px}
 .m{max-width:75%;padding:9px 13px;border-radius:14px;white-space:pre-line;overflow-wrap:anywhere}
+.m img{display:block;width:100%;max-width:160px;border-radius:10px;margin-top:8px;background:#fff}
 .m.c{background:#fff;border:1px solid #dcd7f2;align-self:flex-start}.m.a{background:#e6397a;color:#fff;align-self:flex-end}
 #bar,#say{display:flex;gap:8px;padding:10px;border-top:1px solid #dcd7f2;flex-wrap:wrap}#say input{flex:1}
 .pane{padding:16px;overflow:auto;flex:1}
@@ -230,7 +231,9 @@ function chat(){
   $("info").textContent = sel&&S[sel] ? `${m.nombre||"Cliente"}${m.tel?" · Cel "+m.tel:""}` : "Elige un chat de la lista";
   if(!sel||!S[sel]) return;
   Object.values(S[sel].msgs||{}).sort((a,b)=>a.ts-b.ts).forEach(x=>{
-    const d=document.createElement("div"); d.className="m "+(x.de==="c"?"c":"a"); d.textContent=x.t; log.appendChild(d); });
+    const d=document.createElement("div"); d.className="m "+(x.de==="c"?"c":"a"); d.textContent=x.t;
+    if(x.qr){ const i=new Image(); i.src=QR_IMG; i.alt="QR del abono"; i.onerror=()=>i.remove(); d.appendChild(i); }   /* el asesor ve el QR que envió */
+    log.appendChild(d); });
   log.scrollTop=1e9; }
 
 function enviar(t,wa,qr){
