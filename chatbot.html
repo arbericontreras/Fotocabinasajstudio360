@@ -249,6 +249,7 @@ function contactar(){
 /* ===== Asesor en línea (chat en vivo) ===== */
 let live = false, es = null, chatId = sessionStorage.getItem("ajChat") || "", presT;
 const vistos = new Set();
+let yaMostrado = null;   /* mensaje que ya se pintó antes de abrir el chat: no se repite cuando llega del servidor */
 const api = (path,method,body) => fetch(`${DB}/${path}.json`,{method,body:body?JSON.stringify(body):undefined}).then(r=>r.json());
 
 let au;
@@ -272,7 +273,7 @@ async function abrirAsesor(primer){
   try{
     escuchar(); await enviarAsesor(primer); vigilar();
     say(`Listo, ${nombre}. Un asesor en línea ya recibió tu mensaje y te responde aquí mismo, en este chat.`,"b");
-    opts([["Apartar / confirmar mi reserva",verQR],["Descargar mis fotos",guiaFotos],["Volver al asistente automático",salirAsesor]]);
+    opts([]);   /* con asesor no hay sugerencias: todo lo que escriba le llega a él */
   }catch(e){ live=false; porWhatsApp(primer); }
 }
 /* Si el asesor se desconecta, el cliente vuelve al bot */
@@ -296,6 +297,7 @@ function escuchar(){
     const items = path==="/" ? (data||{}) : {[path.slice(1)]:data};
     Object.entries(items).filter(([,m])=>m&&m.t).sort((a,b)=>a[1].ts-b[1].ts).forEach(([k,m])=>{
       if(vistos.has(k)) return; vistos.add(k);
+      if(m.de==="c" && m.t===yaMostrado){ yaMostrado=null; return; }
       say(m.t, m.de==="c"?"u":"b", m.wa, m.qr);
       if(m.de!=="c" && Date.now()-m.ts<15000) beep(); }); };
   es.addEventListener("put",f); es.addEventListener("patch",f);
@@ -354,6 +356,10 @@ function faq(t){
 }
 $("say").onsubmit = e => { e.preventDefault(); clearTimeout(fotosT); const t=$("sayIn").value.trim(); if(!t) return; $("sayIn").value="";
   if(live && !ctx.esperando){ enviarAsesor(t).catch(()=>say("No se pudo enviar. Revisa tu conexión.","b")); return; }
+  /* Hay un asesor conectado: lo que escriba le llega a él (el mensaje aparece en el chat cuando se envía) */
+  if(enLinea && !ctx.esperando){
+    if(!nombre){ say(t,"u"); ctx.pendiente=t; return pedirNombre(()=>{ const m=ctx.pendiente; ctx.pendiente=null; yaMostrado=m; abrirAsesor(m); }); }
+    abrirAsesor(t); return; }
   say(t,"u");
   if(ctx.esperando){ pasoTexto(t); return; }
   if(/recomiend|sugier|aconsej|cu[aá]l me conviene|no s[eé]/i.test(t)){
@@ -368,13 +374,28 @@ $("say").onsubmit = e => { e.preventDefault(); clearTimeout(fotosT); const t=$("
 /* ===== Indicador: la cabecera se pone verde cuando hay un asesor en línea ===== */
 async function estado(){
   let on=false; try{ on = await asesorEnLinea(); }catch(e){}
+  const antes = enLinea;
   enLinea = on; $("hdr").classList.toggle("online",on);
-  $("estado").textContent = on ? "● Asesor en línea" : "Asistente"; }
+  $("estado").textContent = on ? "● Asesor en línea" : "Asistente";
+  /* Esperaba para escribirle al asesor, pero se desconectó antes: sigue el asistente automático */
+  if(antes && !on && ctx.conAsesor && !live && !ctx.esperando){
+    say("El asesor se desconectó. Sigo yo, el asistente automático.","b"); inicio(); } }
 setInterval(estado,15000);
 
 /* ===== Arranque y comunicación con index.html ===== */
 $("botX").onclick = () => { if(EMB) parent.postMessage({t:"cerrar"},"*"); };
-const saludo = () => { say("¡Hola! Soy el asistente de AJ Studio. Te ayudo a elegir el plan ideal para tu evento.","b"); inicio(); };
+const saludo = () => {
+  if(enLinea) return saludoAsesor();
+  say("¡Hola! Soy el asistente de AJ Studio. Te ayudo a elegir el plan ideal para tu evento.","b"); inicio(); };
+/* Con un asesor conectado no se muestran sugerencias: solo se pide el nombre y lo que escriba le llega al asesor */
+function saludoAsesor(){
+  ctx={}; opts([]);
+  say("¡Hola! Bienvenido a AJ Studio. 🟢 Hay un asesor en línea para atenderte.","b");
+  if(!nombre) pedirNombre(listoAsesor); else listoAsesor(); }
+function listoAsesor(){
+  ctx.conAsesor=true; opts([]);
+  say(`${nombre}, escribe aquí abajo lo que necesites y el asesor te responde en este chat.`,"b");
+  $("sayIn").placeholder="Escribe tu mensaje para el asesor"; }
 
 /* El cotizador de la página le entrega la cotización ya armada */
 window.addEventListener("message", e => {
