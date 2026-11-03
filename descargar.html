@@ -550,6 +550,7 @@ const TEMAS = [
     async function descargar(a, btn){
       if(enApp){ $("enApp").hidden = false; $("enApp").scrollIntoView({ block: "center" }); return; }
       if(btn.disabled) return;
+      marcarVisto(a);
       const txt = "Descargar";
       const listo = () => { btn.textContent = txt; btn.disabled = false; btn.onclick = e => descargar(a, e.currentTarget); };
       btn.disabled = true; btn.textContent = "Preparando...";
@@ -591,12 +592,20 @@ const TEMAS = [
       const ultimo = () => porId.get(a.id) || a;
       const img = el.querySelector("img");
       img.onerror = () => { const t = ultimo().thumb; if(t && img.getAttribute("src") !== t) img.src = t; };
-      const abrir = ()=>{ $("dlgF").src = ultimo().ver; $("dlg").showModal(); };
+      const abrir = ()=>{ marcarVisto(a); $("dlgF").src = ultimo().ver; $("dlg").showModal(); };
       el.querySelector(".thumb").onclick = abrir;
       el.querySelector(".ver").onclick = abrir;
       el.querySelector(".dl").onclick = e => descargar(ultimo(), e.currentTarget);
       nodos.set(a.id, el);
       return el;
+    }
+    /* Al descargar o ver un archivo nuevo, deja de ser «Nuevo» y baja el globo de su pestaña */
+    function marcarVisto(a){
+      const el = nodos.get(a.id);
+      if(!el || !el.classList.contains("nuevo")) return;
+      el.classList.remove("nuevo");
+      const k = categoria(a);
+      if(sinVer[k] > 0){ sinVer[k]--; pintarPestanas(); }
     }
     /* Miniaturas que fallaron con un enlace viejo: se reintentan con el enlace nuevo */
     function repararMiniaturas(){
@@ -654,16 +663,13 @@ const TEMAS = [
     /* Al cambiar de pestaña estando abajo, se vuelve al inicio de la galería */
     const tabsBar = document.querySelector(".tabs");
     Object.keys(TAB).forEach(k => { $(TAB[k].id).onclick = () => {
-      pestana = k; sinVer[k] = 0; pintar();   /* al abrir la pestaña, sus nuevos quedan vistos */
+      pestana = k; pintar();
       if(tabsBar.classList.contains("pegada"))
         scrollTo({ top: $("items").getBoundingClientRect().top + scrollY - 68 - tabsBar.offsetHeight - 10 });
     }; });
-    /* ¿La persona está viendo el inicio de la pestaña abierta? (ahí aparecen los nuevos) */
-    const viendoInicio = () => !$("result").hidden && document.visibilityState === "visible" && !tabsBar.classList.contains("pegada");
     /* Sombra cuando las pestañas ya van pegadas arriba */
     addEventListener("scroll", () => {
       tabsBar.classList.toggle("pegada", !$("result").hidden && tabsBar.getBoundingClientRect().top <= 68.5 && scrollY > 0);
-      if(sinVer[pestana] && viendoInicio()){ sinVer[pestana] = 0; pintarPestanas(); }   /* subió a verlos */
     }, { passive: true });
 
     const idsDe = l => l.map(a=>a.id).join(",");
@@ -684,10 +690,10 @@ const TEMAS = [
         recientes.forEach(a => {
           const k = categoria(a);
           mostrados[k]++;   /* entran arriba sin esconder los que ya se veían */
-          if(!(k === pestana && viendoInicio())) sinVer[k]++;   /* globo rojo en su pestaña */
+          sinVer[k]++;   /* globo rojo en su pestaña, hasta que se descargue o se vea */
         });
         const quedan = new Set(nuevos.map(a=>a.id));
-        nodos.forEach((el, id) => { if(!quedan.has(id)) nodos.delete(id); });
+        nodos.forEach((el, id) => { if(!quedan.has(id)){ marcarVisto(porId.get(id) || { id }); nodos.delete(id); } });   /* borrados: tampoco cuentan como nuevos */
         archivos = nuevos; pintar();
         recientes.forEach(a => tarjeta(a).classList.add("nuevo"));
         const n = recientes.length;
