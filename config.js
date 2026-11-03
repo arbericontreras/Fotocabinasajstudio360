@@ -66,15 +66,15 @@ const wa = (n,t) => `https://wa.me/${n}?text=${encodeURIComponent(t)}`;
 const VALOR_APARTADO = 50000;
 
 const PLANES = [
-  {id:"basico", img:"img/cabina3601.png", nombre:"Cabina 360", desc:"Grabacion de tu video con efectos de audio y video", precios:[180000,300000,450000,580000],
+  {id:"basico", img:"img/cabina3601.png", nombre:"Cabina 360", desc:"Grabacion de tu video con efectos de audio y video + Página web del evento", precios:[180000,300000,450000,580000],
    incluye:["Página web de tu evento para descargar fotos y videos, sin costo adicional","Qr para descarga inmediata del video","Plataforma estable de 60 cm"]},
-  {id:"pro", img:"img/digital.jpg", nombre:"Digital Pro", desc:"Cabina Digital con efectos(Proms y tira de fotos digital), enviado al instante.", precios:[200000,370000,540000,680000],
+  {id:"pro", img:"img/digital.jpg", nombre:"Digital Pro", desc:"Cabina Digital con efectos(Proms y tira de fotos digital), enviado al instante + Página web del evento", precios:[200000,370000,540000,680000],
    incluye:["Página web de tu evento para descargar fotos y videos, sin costo adicional","Efectos: confeti, burbujas, corazones, estrellas","Música y cámara lenta","Envío inmediato  (requiere internet)"]},
-  {id:"tira", img:"img/impresion-tira.jpg", nombre:"Impresión en tira", desc:"Fotocabina con recuerdos físicos impresos al momento.", precios:[220000,390000,560000,700000],
+  {id:"tira", img:"img/impresion-tira.jpg", nombre:"Impresión en tira", desc:"Fotocabina con recuerdos físicos impresos al momento + Página web del evento", precios:[220000,390000,560000,700000],
    incluye:["Página web de tu evento para descargar fotos y videos, sin costo adicional","Tira impresa con tres fotos","Personalización con el logo del evento","Accesorios (props) incluidos"]},
-  {id:"completo", img:"img/fusion.png", nombre:"Completo", desc:"Cabina 360 y fotocabina impresión tira: la experiencia completa.", precios:[300000,420000,600000,790000],
+  {id:"completo", img:"img/fusion.png", nombre:"Completo", desc:"Cabina 360 y fotocabina impresión tira: la experiencia completa + Página web del evento", precios:[300000,420000,600000,790000],
    incluye:["Página web de tu evento para descargar fotos y videos, sin costo adicional","Tira impresa con tres fotos + logo","Videos digitales inmediatos","Experiencia 360 + fotocabina de impresión"]},
-  {id:"premium", img:"img/full.jpg", nombre:"Full Premium", desc:"Cabina 360 + fotocabina digital y fotocabina impresión tira: la experiencia más completa.", precios:[380000,500000,680000,870000],
+  {id:"premium", img:"img/full.jpg", nombre:"Full Premium", desc:"Cabina 360 + fotocabina digital y fotocabina impresión tira: la experiencia más completa + Página web del evento", precios:[380000,500000,680000,870000],
    incluye:["Página web de tu evento para descargar fotos y videos, sin costo adicional","Tira impresa y digital con tres fotos + logo","Videos digitales inmediatos","Experiencia 360 + fotocabina de impresión + fotos con proms digitales y efectos"]}
 ];
 
