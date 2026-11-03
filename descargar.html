@@ -500,7 +500,8 @@ const TEMAS = [
         }
         btn.textContent = txt; btn.disabled = false;
       }
-      location.href = a.descargar;
+      /* Enlace directo de descarga: el de drive.google.com abre la app de Drive en el celular y pide cuenta de Gmail */
+      location.href = "https://drive.usercontent.google.com/download?id=" + encodeURIComponent(a.id) + "&export=download&confirm=t";
     }
 
     /* ===== Pintar la galería (se usa al buscar, al cambiar de pestaña y en cada actualización automática) ===== */
