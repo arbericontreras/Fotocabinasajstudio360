@@ -394,6 +394,13 @@ $("ing").onsubmit=async e=>{ e.preventDefault();
   try{ await login($("em").value,$("pw").value); $("ing").hidden=true; $("app").hidden=false; tab("chat"); estadoNoti(); pantallaActiva(); conectar(); conectarP(); latir(); beep(); }
   catch(x){ $("er").style.color="#b3261e"; $("er").textContent="No se pudo ingresar: "+x.message; } };
 
+/* Al cerrar la pestaña o ventana: borra la presencia para que el sitio muestre "fuera de línea" */
+function salir(){ if(!tok) return;
+  try{ fetch(`${DB}/presence.json?auth=${tok}`,{method:"DELETE",keepalive:true}); }catch(e){} }
+window.addEventListener("pagehide",salir);
+/* Si el navegador restaura la página desde su memoria, vuelve a marcarte en línea */
+window.addEventListener("pageshow",e=>{ if(e.persisted) reanudar(); });
+
 setInterval(()=>tok&&latir().catch(()=>red(false)),15000);   /* "asesor en línea" */
 setInterval(()=>{ if(cred&&tok&&Date.now()-tokTs>40*60*1000) reanudar(); },60*1000);   /* renueva la sesión antes de que venza */
 </script></body></html>
