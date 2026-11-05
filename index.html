@@ -95,6 +95,7 @@ nav{display:flex;align-items:center;justify-content:space-between;height:68px;ga
 .hours{display:flex;gap:10px;flex-wrap:wrap}
 .hours button{flex:1;min-width:70px;border:2px solid var(--line);background:#fff;border-radius:12px;padding:12px;font:600 1rem var(--body);cursor:pointer;color:var(--ink)}
 .hours button[aria-pressed=true]{border-color:var(--pink);background:#fff4f8}
+.hours button:disabled{opacity:.4;cursor:not-allowed;background:var(--soft)}
 .fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media(max-width:520px){.fields{grid-template-columns:1fr}}
 .fields label{font-size:.9rem;font-weight:600;display:block;margin-bottom:4px}
@@ -247,7 +248,8 @@ footer{padding:28px 0;text-align:center;color:var(--muted);font-size:.9rem;borde
     <div class="quote">
       <div>
         <div class="panel"><h3>1. Servicio</h3><div class="plans" id="plans"></div></div>
-        <div class="panel"><h3>2. Horas de servicio</h3><div class="hours" id="hours"></div></div>
+        <div class="panel"><h3>2. Horas de servicio</h3><div class="hours" id="hours"></div>
+          <p class="note" id="minHoras" hidden>Para eventos fuera de Bogotá el servicio se alquila por mínimo 2 horas.</p></div>
         <div class="panel">
           <h3>3. Tu evento</h3>
           <div class="fields">
@@ -342,6 +344,9 @@ function render(){
   const fecha = document.getElementById("fecha").value;
   const hora = document.getElementById("hora").value;
   const ciudad = document.getElementById("ciudad").value.trim(), loc = n0(document.getElementById("ciudad").value)==="bogota" ? document.getElementById("loc").value : "", barrio = document.getElementById("barrio").value.trim(), dir = document.getElementById("dir").value.trim();
+  /* Fuera de Bogotá el servicio se alquila por mínimo 2 horas */
+  const fuera = n0(ciudad)!=="bogota";
+  if(fuera && horas===1) horas = 0;
   const listo = !!(p && horas);
   document.getElementById("locBox").hidden = n0(ciudad)!=="bogota"; /* la localidad solo aplica en Bogotá */
   const extra = listo ? recargoCiudadAJ(ciudad) : 0;
@@ -357,7 +362,11 @@ function render(){
     "Si tu evento es fuera de Bogotá puede aplicar un recargo de transporte.";
   document.getElementById("shours").textContent = horas ? horas+(horas===1?" hora":" horas")+" de servicio" : "Elige las horas de servicio";
   document.getElementById("incl").innerHTML = p ? ["2 operadores de logística",...p.incluye].map(i=>`<li>${i}</li>`).join("") : "";
-  [...hoursEl.children].forEach((b,i)=>b.setAttribute("aria-pressed", i+1===horas));
+  [...hoursEl.children].forEach((b,i)=>{
+    b.setAttribute("aria-pressed", i+1===horas);
+    b.disabled = fuera && i+1===1;
+  });
+  document.getElementById("minHoras").hidden = !fuera;
   document.getElementById("sev").textContent = (nombre?`Nombre: ${nombre}\n`:"")+`Evento: ${tipo}`+(fecha?` · ${fecha}`:"")+(hora?` · ${fmtHora(hora)}`:"")+(ciudad?`\nCiudad: ${ciudad}`:"")+(loc?`\nLocalidad: ${loc}`:"")+(barrio?`\nBarrio: ${barrio}`:"")+(dir?`\nDirección: ${dir}`:"");
   window.cotMsg = !listo ? "" : `Hola, ${nombre&&!cab?`soy ${nombre}, `:""}quiero cotizar el plan ${p.nombre} de ${horas} ${horas===1?"hora":"horas"} (${peso(precio)}${extra?`, incluye recargo de ${peso(extra)} por ${ciudad}`:""}).`
     + `\nEvento: ${tipo}` + (fecha?`\nFecha: ${fecha}`:"") + (hora?`\nHora: ${fmtHora(hora)}`:"") + (ciudad?`\nCiudad: ${ciudad}`:"") + (loc?`\nLocalidad: ${loc}`:"") + (barrio?`\nBarrio: ${barrio}`:"") + (dir?`\nDirección: ${dir}`:"") + `\nIncluye 2 operadores de logística.`
@@ -402,6 +411,7 @@ function validar(){
   const v = id => $(id).value.trim();
   if(!sel){ $("err").textContent = "Elige el servicio que quieres cotizar."; return false; }
   if(!horas){ $("err").textContent = "Elige las horas de servicio."; return false; }
+  if(norm($("ciudad").value.trim())!=="bogota" && horas<2){ $("err").textContent = "Fuera de Bogotá el servicio es por mínimo 2 horas."; return false; }
   if(esModoCabinaAJ()){ $("err").textContent = ""; return true; } /* nombre "cabina": solo servicio y horas */
   const campos = [["fecha","la fecha"],["hora","la hora del evento"],["ciudad","la ciudad"],["barrio","el barrio"],["dir","la dirección"]];
   if(norm(v("ciudad"))==="bogota") campos.splice(3,0,["loc","la localidad"]);
@@ -453,7 +463,9 @@ function usarCot(d){
   sel = d.plan; horas = d.h; const r = $("p-"+sel); if(r) r.checked = true;
   const t = $("tipo"), ok = [...t.options].some(o=>o.text===d.tipo);
   t.value = ok ? d.tipo : "Otro"; $("otro").value = ok ? "" : d.tipo;
-  render(); cerrarBot(); $("cotizar").scrollIntoView({behavior:"smooth"}); }
+  render(); cerrarBot();
+  if(d.h===1 && n0($("ciudad").value)!=="bogota") $("err").textContent = "Fuera de Bogotá el servicio es por mínimo 2 horas. Elige las horas en el cotizador.";
+  $("cotizar").scrollIntoView({behavior:"smooth"}); }
 
 /* Botón "Enviar cotización (Reservar)": se la entrega al bot */
 $("send").onclick = e => { e.preventDefault(); if(!validar()) return;
