@@ -398,7 +398,16 @@ show.onmouseenter=()=>clearInterval(timer); show.onmouseleave=iniciar; iniciar()
 <script>
 const $ = id => document.getElementById(id);
 LOCALIDADES.forEach(l=>$("loc").add(new Option(l,l)));
-BARRIOS_BOGOTA.forEach(b=>$("lista-barrios").appendChild(new Option(b)));
+/* Las sugerencias de barrio son de Bogotá: solo se muestran cuando la ciudad es Bogotá */
+function actualizarBarrios(){
+  const bog = n0($("ciudad").value)==="bogota", dl = $("lista-barrios");
+  dl.innerHTML = "";
+  if(bog) BARRIOS_BOGOTA.forEach(b=>dl.appendChild(new Option(b)));
+  else if(BARRIOS_BOGOTA.some(b=>n0(b)===n0($("barrio").value))) $("barrio").value = ""; /* borra un barrio de Bogotá que quedó escrito */
+  $("barrio").placeholder = bog ? "Castilla" : "Barrio o vereda";
+}
+actualizarBarrios();
+$("ciudad").addEventListener("change",()=>{ actualizarBarrios(); render(); });
 /* Hora: tres listas fáciles (1 a 12, :00 o :30, a. m. o p. m.) que arman la hora real en el campo oculto #hora */
 for(let h=1;h<=12;h++) $("hh").add(new Option(h,h));
 function actualizarHora(){
