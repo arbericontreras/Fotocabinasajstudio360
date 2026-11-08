@@ -350,7 +350,7 @@ function render(){
   const listo = !!(p && horas);
   document.getElementById("locBox").hidden = n0(ciudad)!=="bogota"; /* la localidad solo aplica en Bogotá */
   const extra = listo ? recargoCiudadAJ(ciudad) : 0;
-  const precio = listo ? precioFinal(p,horas,ciudad,loc) + extra : 0;
+  const precio = listo ? precioFinal(p,horas,ciudad,loc,fecha) + extra : 0;
   /* Solo el nombre "cabina" ve el precio de una; los demás lo ven cuando completan los datos del evento */
   const datosOk = !!(fecha && hora && ciudad && barrio && dir && (n0(ciudad)==="bogota" ? loc : true));
   const verPrecio = listo && (cab || datosOk);

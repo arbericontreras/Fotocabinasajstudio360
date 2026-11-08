@@ -18,8 +18,8 @@ button{background:#e6397a;color:#fff;border:0;cursor:pointer;font-weight:600;min
 #red.off{background:#b3261e}
 #body{flex:1;min-height:0;display:grid;grid-template-columns:280px 1fr}
 #side{display:flex;flex-direction:column;border-right:1px solid #dcd7f2;min-height:0;overflow-y:auto;background:#fff}
-#tabs{display:flex;gap:6px;padding:8px;border-bottom:1px solid #dcd7f2}
-#tabs button{flex:1;background:#fff;color:#1b1740;border:2px solid #dcd7f2;padding:6px 4px;font-size:.8rem}
+#tabs{display:flex;flex-wrap:wrap;gap:6px;padding:8px;border-bottom:1px solid #dcd7f2}
+#tabs button{flex:1 1 40%;background:#fff;color:#1b1740;border:2px solid #dcd7f2;padding:6px 4px;font-size:.8rem}
 #tabs button.on{border-color:#e6397a;color:#e6397a}
 #aj{border-bottom:1px solid #dcd7f2}
 #aj summary{padding:10px 14px;cursor:pointer;font-weight:600;font-size:.9rem;color:#5d5a7a}
@@ -55,6 +55,15 @@ button{background:#e6397a;color:#fff;border:0;cursor:pointer;font-weight:600;min
 .rr .ok{background:#137333}.rr .pdfb{background:#0070f3}.rr a.b{background:#25d366}
 .warn{color:#b3261e;font-weight:600}
 
+/* ===== Pestaña de precios ===== */
+#prf{display:grid;gap:10px;max-width:720px}
+.pr{flex-direction:column;gap:8px}
+.pr small{color:#5d5a7a}
+.prg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.pr label{display:grid;gap:3px;font-size:.78rem;color:#5d5a7a;font-weight:600}
+.pr label input{color:#1b1740;font-weight:400;font-size:1rem;width:100%}
+#prmsg{font-weight:600}
+
 /* ===== Celular: una pantalla a la vez (lista -> chat), botones grandes y sin zoom ===== */
 @media(max-width:760px){
   #body{display:block;position:relative}
@@ -73,6 +82,8 @@ button{background:#e6397a;color:#fff;border:0;cursor:pointer;font-weight:600;min
   .rr .bs{justify-content:flex-start;width:100%}
   .rr button,.rr a.b{padding:10px 14px;font-size:.95rem;min-height:44px;display:inline-flex;align-items:center}
   #tabs button{font-size:.85rem;min-height:44px}
+  .prg{grid-template-columns:1fr 1fr}
+  .pr input{min-height:44px}
 }
 </style></head><body>
 
@@ -92,6 +103,7 @@ button{background:#e6397a;color:#fff;border:0;cursor:pointer;font-weight:600;min
       <button type="button" data-v="chat" onclick="tab('chat')">Chats</button>
       <button type="button" data-v="res" onclick="tab('res')">📅 Reservas</button>
       <button type="button" data-v="pen" id="tpen" onclick="tab('pen')">🔔 Pendientes</button>
+      <button type="button" data-v="pre" onclick="tab('pre')">💲 Precios</button>
     </div>
     <details id="aj">
       <summary>⚙ Ajustes y avisos</summary>
@@ -123,6 +135,21 @@ button{background:#e6397a;color:#fff;border:0;cursor:pointer;font-weight:600;min
       <h2>Reservas por confirmar</h2>
       <p style="color:#5d5a7a;margin:6px 0 14px">Las envía el cliente desde el bot después de hacer el abono. Verifica el pago y toca Confirmar.</p>
       <div id="plista"></div>
+    </div>
+
+    <div id="prv" class="pane" hidden>
+      <h2>Precios</h2>
+      <p style="color:#5d5a7a;margin:6px 0 14px">Precio de cada servicio por 1, 2, 3 y 4 horas (sin recargos de zona). Al guardar, el cotizador de la página y el bot usan los valores nuevos.</p>
+      <form id="prf">
+        <div id="prlista"></div>
+        <div class="rr pr">
+          <b>Recargo de lunes a viernes en días pares</b>
+          <small>Se suma al total sin mostrarse al cliente. Aplica a eventos de lunes a viernes cuyo día del mes es par (2, 4, 6…). Pon 0 para quitarlo.</small>
+          <label>Valor del recargo<input id="prrec" type="number" min="0" step="1000"></label>
+        </div>
+        <button>Guardar precios</button>
+        <p id="prmsg" role="status"></p>
+      </form>
     </div>
 
     <div id="rv" class="pane" hidden>
@@ -187,9 +214,10 @@ async function login(email,pass){
 const latir=()=>fetch(`${DB}/presence.json?auth=${tok}`,{method:"PUT",body:JSON.stringify({ts:Date.now()})});
 
 /* --- vistas --- */
-function vista(v){ $("chatv").hidden=v!=="chat"; $("rv").hidden=v!=="res"; $("pv").hidden=v!=="pen";
+function vista(v){ $("chatv").hidden=v!=="chat"; $("rv").hidden=v!=="res"; $("pv").hidden=v!=="pen"; $("prv").hidden=v!=="pre";
   if(v==="res"){ const m=(sel&&S[sel]&&S[sel].meta)||{}; if(!$("rcli").value) $("rcli").value=m.nombre||""; if(!$("rtel").value) $("rtel").value=m.tel||""; cargarRes(); }
-  if(v==="pen") pintarPen(); }
+  if(v==="pen") pintarPen();
+  if(v==="pre") pintarPre(); }
 
 /* --- chats --- */
 function poner(path,data,merge){
@@ -253,9 +281,10 @@ $("wa").onclick=()=>{
 $("qr").onclick=()=>enviar("Para apartar tu fecha se hace un abono de $50.000 COP escaneando este QR. Después envíame el comprobante por aquí y tu fecha queda reservada.",null,true);
 
 /* ===== Reservas ===== */
+/* El total sugerido incluye el recargo oculto de días pares (si la fecha ya está elegida) */
 const recalc=()=>{ const p=PLANES.find(x=>x.id===$("rplan").value), h=+$("rhoras").value;
-  if(p&&h) $("rtotal").value=precioFinal(p,h,$("rciudad").value||"Bogotá",$("rloc").value); };
-["rplan","rhoras","rloc","rciudad"].forEach(id=>$(id).addEventListener("change",recalc));
+  if(p&&h) $("rtotal").value=precioFinal(p,h,$("rciudad").value||"Bogotá",$("rloc").value,$("rfecha").value); };
+["rplan","rhoras","rloc","rciudad","rfecha"].forEach(id=>$(id).addEventListener("change",recalc));
 $("rabono").onchange=()=>{ $("rabonoBox").hidden=$("rabono").value!=="otro"; };
 
 async function cargarRes(){ R=(await fetch(`${DB}/reservas.json?auth=${tok}`).then(r=>r.json()))||{}; pintarRes(); }
@@ -309,6 +338,37 @@ async function borrarRes(f,id){
   await fetch(`${DB}/reservas/${f}/${id}.json?auth=${tok}`,{method:"DELETE"});
   await fetch(`${DB}/ocupadas/${f}/${id}.json?auth=${tok}`,{method:"DELETE"});
   cargarRes(); }
+
+/* ===== Precios: el asesor los cambia aquí y se guardan en Firebase (/tarifas) ===== */
+async function pintarPre(){
+  /* Trae lo último guardado para no editar sobre datos viejos */
+  try{ aplicarTarifas(await fetch(`${DB}/tarifas.json`).then(r=>r.json())); }catch(e){}
+  const box=$("prlista"); box.innerHTML="";
+  PLANES.forEach(p=>{
+    const d=document.createElement("div"); d.className="rr pr";
+    const t=document.createElement("b"); t.textContent=p.nombre; d.appendChild(t);
+    const g=document.createElement("div"); g.className="prg";
+    p.precios.forEach((v,i)=>{
+      const l=document.createElement("label"); l.append((i+1)+(i?" horas":" hora"));
+      const inp=document.createElement("input"); inp.type="number"; inp.min=0; inp.step=1000; inp.id=`pr-${p.id}-${i}`; inp.value=v;
+      l.appendChild(inp); g.appendChild(l); });
+    d.appendChild(g); box.appendChild(d); });
+  $("prrec").value=RECARGO_PAR_LV; $("prmsg").textContent=""; }
+
+$("prf").onsubmit=async e=>{ e.preventDefault();
+  const msg=$("prmsg"); msg.style.color="#b3261e";
+  const planes={};
+  PLANES.forEach(p=>{ planes[p.id]=[0,1,2,3].map(i=>Math.round(+$(`pr-${p.id}-${i}`).value)); });
+  if(Object.values(planes).some(a=>a.some(n=>!(n>0)))){ msg.textContent="Todos los precios deben ser mayores a 0."; return; }
+  const rec=Math.round(+$("prrec").value);
+  if(!(rec>=0)){ msg.textContent="El recargo debe ser 0 o más."; return; }
+  try{
+    if(cred && Date.now()-tokTs>40*60*1000) await login(cred.email,cred.pass);   /* renueva la sesión si ya venció */
+    const r=await fetch(`${DB}/tarifas.json?auth=${tok}`,{method:"PUT",body:JSON.stringify({planes,recargoPar:rec,ts:Date.now()})});
+    if(!r.ok) throw new Error(r.status);
+    aplicarTarifas({planes,recargoPar:rec});
+    msg.style.color="#137333"; msg.textContent="Precios guardados ✓ Ya se ven en el cotizador.";
+  }catch(x){ msg.textContent="No se pudieron guardar los precios. Revisa tu conexión y las reglas de Firebase."; } };
 
 /* ===== Reservas por confirmar (las envía el cliente desde el bot) ===== */
 let P={}, esP=null, vistosP=new Set(), listoP=false;

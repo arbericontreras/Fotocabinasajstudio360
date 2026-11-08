@@ -53,8 +53,20 @@ const RECARGOS = [
 const n0 = x => (x||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
 const recargoLoc = (ciudad,loc) => { if(n0(ciudad)!=="bogota") return 0;
   const r = RECARGOS.find(x=>x.localidades.some(l=>n0(l)===n0(loc))); return r ? r.valor : 0; };
-function precioFinal(p,h,ciudad,loc){
-  return p.precios[h-1] + recargoLoc(ciudad,loc);
+
+/* Recargo por fecha: de lunes a viernes, en días PARES del mes (2, 4, 6…), se suma al total.
+   El cliente no lo ve: queda incluido en el precio. El valor se puede cambiar desde la pestaña de precios del panel del asesor. */
+let RECARGO_PAR_LV = 100000;
+const recargoFecha = iso => {
+  if(!iso) return 0;
+  const [y,m,d] = String(iso).split("-").map(Number);
+  if(!y || !m || !d) return 0;
+  const dia = new Date(y,m-1,d).getDay();   /* 0 = domingo … 6 = sábado */
+  return (dia>=1 && dia<=5 && d%2===0) ? RECARGO_PAR_LV : 0;
+};
+
+function precioFinal(p,h,ciudad,loc,iso){
+  return p.precios[h-1] + recargoLoc(ciudad,loc) + recargoFecha(iso);
 }
 /* Asesores de respaldo: se usan por WhatsApp cuando nadie está en línea en el panel */
 const ASESORES = [
@@ -65,6 +77,8 @@ const asesorAzar = () => ASESORES[Math.floor(Math.random()*ASESORES.length)];
 const wa = (n,t) => `https://wa.me/${n}?text=${encodeURIComponent(t)}`;
 const VALOR_APARTADO = 50000;
 
+/* Precios por defecto (1, 2, 3 y 4 horas). Si el asesor los cambia en su panel, esos valores
+   se guardan en Firebase (/tarifas) y reemplazan a estos al cargar la página. */
 const PLANES = [
   {id:"basico", img:"img/cabina3601.png", nombre:"Cabina 360", desc:"Grabacion de tu video con efectos de audio y video + Página web del evento.", precios:[180000,300000,450000,580000],
    incluye:["Página web de tu evento para descargar fotos y videos, sin costo adicional","Qr para descarga inmediata del video","Plataforma estable de 60 cm"]},
@@ -86,6 +100,22 @@ const norm = n0;
 const sinServicio = (loc,b) => NO_SERVICIO.localidades.some(l=>norm(l)===norm(loc)) || NO_SERVICIO.barrios.some(x=>norm(x)===norm(b));
 const horasMedias = () => Array.from({length:48},(_,i)=>{ const v=String(i>>1).padStart(2,"0")+":"+(i%2?"30":"00"); return [v,fmtHora(v)]; });
 function parseTel(t){ let d=String(t||"").replace(/\D/g,""); if(d.length===12&&d.startsWith("57")) d=d.slice(2); return /^\d{10}$/.test(d)?d:null; }
+
+/* Precios editados por el asesor: /tarifas = { planes:{ basico:[p1,p2,p3,p4], pro:[...], ... }, recargoPar: 100000 }
+   Se valida todo: si algo viene mal (vacío, texto, negativo), se ignora y quedan los precios por defecto. */
+function aplicarTarifas(t){
+  if(!t || typeof t!=="object") return;
+  if(t.planes) PLANES.forEach(p=>{
+    let a = t.planes[p.id];
+    if(a && !Array.isArray(a) && typeof a==="object") a = Object.values(a);
+    if(Array.isArray(a) && a.length===4 && a.every(n=>Number.isFinite(n) && n>0)) p.precios = a.slice();
+  });
+  if(Number.isFinite(t.recargoPar) && t.recargoPar>=0) RECARGO_PAR_LV = t.recargoPar;
+}
+fetch(`${DB}/tarifas.json`).then(r=>r.json()).then(t=>{
+  aplicarTarifas(t);
+  if(typeof render==="function") render();
+}).catch(()=>{});
 
 /* Fechas ya reservadas (las registra el asesor en su panel) */
 fetch(`${DB}/ocupadas.json`).then(r=>r.json()).then(o=>{
