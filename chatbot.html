@@ -156,9 +156,10 @@ function guiaFotos(){
 function pLugar(){ ctx.lugar={}; say("Para calcular tu cotización necesito los datos del evento. ¿En qué localidad es?","b");
   opts(LOCALIDADES.map(l=>[l,()=>{ ctx.lugar.loc=l; pide("barrio","¿En qué barrio?"); }])); }
 function bloqueado(){ ctx.esperando=null; say(MENSAJE_NO_DISPONIBLE,"b"); opts([["Cambiar fecha o ubicación",pLugar],["Empezar de nuevo",inicio]]); }
-/* El valor se muestra al final, cuando el cliente ya dio los datos del evento y el lugar */
+/* El valor se muestra al final, cuando el cliente ya dio los datos del evento y el lugar.
+   precioFinal recibe la fecha (L.iso) para sumar, sin mostrarlo, el recargo de días pares entre semana. */
 function mostrarCotizacion(){
-  const p=PLANES.find(x=>x.id===ctx.plan), L=ctx.lugar, precio=precioFinal(p,ctx.h,"Bogotá",L.loc);
+  const p=PLANES.find(x=>x.id===ctx.plan), L=ctx.lugar, precio=precioFinal(p,ctx.h,"Bogotá",L.loc,L.iso);
   say(`Esta es tu cotización, ${nombre}:\n\n${p.nombre} · ${hTxt(ctx.h)}\nEvento: ${ctx.tipo} · ${L.fecha} · ${L.hora}\nLugar: ${L.dir}, ${L.barrio}, ${L.loc}\n\nValor: ${peso(precio)}\nIncluye: ${["2 operadores de logística",...p.incluye].join(", ")}.\n\nPrecio de referencia; el asesor confirma la disponibilidad de tu fecha.`,"b");
   opts([["Reservar con un asesor",reservarConAsesor],["Ver recomendaciones",recomendaciones],["Ajustar en el cotizador",usarCot],["Empezar de nuevo",inicio]]);
 }
@@ -239,7 +240,7 @@ function contactar(){
   let m = "Hola, vengo de la página de AJ Studio y quiero asesoría para mi evento.";
   if(ctx.msg) m = ctx.msg;
   else if(ctx.plan){ const p=PLANES.find(x=>x.id===ctx.plan);
-    m = `Hola, quiero esta cotización para mi evento:\nEvento: ${ctx.tipo}\nInvitados: ${ctx.inv}\nBusco: ${ctx.obj}\nPlan: ${p.nombre}, ${hTxt(ctx.h)} (${peso(precioFinal(p,ctx.h,"Bogotá",ctx.lugar?ctx.lugar.loc:""))})\nIncluye 2 operadores de logística.`
+    m = `Hola, quiero esta cotización para mi evento:\nEvento: ${ctx.tipo}\nInvitados: ${ctx.inv}\nBusco: ${ctx.obj}\nPlan: ${p.nombre}, ${hTxt(ctx.h)} (${peso(precioFinal(p,ctx.h,"Bogotá",ctx.lugar?ctx.lugar.loc:"",ctx.lugar?ctx.lugar.iso:""))})\nIncluye 2 operadores de logística.`
       +(ctx.lugar?`\nFecha: ${ctx.lugar.fecha}\nHora: ${ctx.lugar.hora}${tel?`\nCelular: ${tel}`:""}\nCiudad: Bogotá\nLocalidad: ${ctx.lugar.loc}\nBarrio: ${ctx.lugar.barrio}\nDirección: ${ctx.lugar.dir}`:"")
       +(ctx.lugar&&avisoCruce(ctx.lugar.iso,ctx.lugar.h24)?"\n"+avisoCruce(ctx.lugar.iso,ctx.lugar.h24):"")
       +`\n¿Tienen disponibilidad?`; }
@@ -333,7 +334,7 @@ function siguienteRes(){
 }
 async function guardarRes(){
   const R=ctx.res, p=ctx.plan?PLANES.find(x=>x.id===ctx.plan):null, info=`${R.fecha} · ${fmtHora(R.h24)}`, cr=avisoCruce(R.iso,R.h24);
-  const total = p&&ctx.h ? precioFinal(p,ctx.h,"Bogotá",R.loc) : 0;
+  const total = p&&ctx.h ? precioFinal(p,ctx.h,"Bogotá",R.loc,R.iso) : 0;
   const msg=`Hola, soy ${nombre}. Hice el abono de ${peso(VALOR_APARTADO)} para confirmar mi reserva.\nEvento: ${R.tipo}\nFecha: ${R.fecha}\nHora: ${fmtHora(R.h24)}\nCelular: ${R.tel}\nLugar: ${R.dir}, ${R.barrio}, ${R.loc}\nReferencia del pago: ${R.ref}`+(cr?`\n${cr}`:"");
   try{
     await api("pendientes","POST",{nombre,tel:R.tel,tipo:R.tipo,fecha:R.iso,hora:R.h24,ciudad:"Bogotá",loc:R.loc,barrio:R.barrio,dir:R.dir,
@@ -350,7 +351,7 @@ function faq(t){
   t=t.toLowerCase();
   if(/espacio|ilumin|luz|[aá]rea|metros|corriente|enchufe|lugar/.test(t)) return espacio(ctx.plan);
   if(/incluye|trae|accesorio|props|operador/.test(t)) return PLANES.map(p=>`${p.nombre}: ${p.incluye.join(", ")}.`).join("\n\n")+"\n\nTodos los planes incluyen 2 operadores de logística.";
-  if(/transporte|zona|ciudad|domicilio|lejos/.test(t)) return "El transporte y los 2 operadores están incluidos en Bogotá. Para otros municipios o ciudades, un asesor cotiza el transporte.";
+  if(/transporte|zona|ciudad|domicilio|lejos/.test(t)) return "El transporte y los 2 operadores están incluidos en Bogotá. Para otros municipios o ciudades (Zipaquirá, Cajicá, Chía, Soacha) el servicio es por mínimo 2 horas y se suma un recargo de transporte; el cotizador de la página lo calcula.";
   if(/reserv|fecha|disponib|apart/.test(t)) return "Arma tu cotización y envíala a un asesor para confirmar la disponibilidad. Para apartar la fecha se abonan $50.000 con un QR que te envía un asesor en línea.";
   return null;
 }
