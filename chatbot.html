@@ -54,8 +54,8 @@ const irA = u => { (EMB ? window.top : window).location.href = u; };
 
 const INV   = ["Hasta 50","De 50 a 100","De 100 a 200","Más de 200"];
 const HORAS = [1,2,3,4];
-const OBJ   = ["Videos 360 para redes","Fotos impresas","Fotos digitales (proms)","360 + fotos impresas","Las 3 máquinas"];
-const PLAN_POR_OBJ = ["basico","tira","pro","completo","premium"];   /* mismo orden que OBJ */
+const OBJ   = ["Videos 360 para redes","Fotos impresas","Fotos digitales (proms)","360 + fotos impresas","Las 3 máquinas","2 cabinas con impresión (NUEVO)"];
+const PLAN_POR_OBJ = ["basico","tira","pro","completo","premium","duo"];   /* mismo orden que OBJ */
 const TIPS = {
  "Boda":"Consejo: activa la cabina después o antes del vals, cuando la pista ya está animada, y déjala disponible hasta el final.",
  "Quince años":"Consejo: úsala después o antes del vals y la hora loca, y pide a la quinceañera y su corte que inviten al resto.",
@@ -66,7 +66,7 @@ const TIPS = {
  "Baby shower":"Consejo: un marco o tira con el nombre del bebé y la fecha se convierte en un recuerdo para los papás.",
  "Grado":"Consejo: un marco con el año y el nombre de la promoción convierte los videos y fotos en recuerdo de grado.",
  "Otro":"Consejo: cuéntale a tu asesor el ambiente del evento para elegir la mejor ubicación de la cabina."};
-const AREA = {basico:"2 x 2 m",pro:"2 x 2 m",tira:"2 x 2 m",completo:"3 x 3 m",premium:"4 x 4 m"};
+const AREA = {basico:"2 x 2 m",pro:"2 x 2 m",tira:"2 x 2 m",completo:"3 x 3 m",premium:"4 x 4 m",duo:"4 x 3 m"};
 const espacio = id => `Para dar un buen servicio te recomiendo:\n• Un lugar luminoso, sin luces de colores fuertes.\n• Un área libre de unos ${AREA[id||"pro"]}, sin mesas ni columnas alrededor.\n• Un tomacorriente a menos de 3 m de la cabina.\n• Piso firme y plano, lejos del paso de meseros o del baño.`;
 const hTxt = h => h+(h===1?" hora":" horas");
 const AVISO_CRUCE = "Esa fecha ya tiene otro evento reservado, pero igual envío tu cotización: el asesor confirma si hay disponibilidad.";

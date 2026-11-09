@@ -89,7 +89,11 @@ const PLANES = [
   {id:"completo", img:"img/fusion.png", nombre:"Completo", desc:"Cabina 360 y fotocabina impresión tira: la experiencia completa + Página web del evento.", precios:[300000,420000,600000,790000],
    incluye:["Página web de tu evento para descargar fotos y videos, sin costo adicional","Tira impresa con tres fotos + logo","Videos digitales inmediatos","Experiencia 360 + fotocabina de impresión"]},
   {id:"premium", img:"img/full.jpg", nombre:"Full Premium", desc:"Cabina 360 + fotocabina digital y fotocabina impresión tira: la experiencia más completa + Página web del evento.", precios:[380000,500000,680000,870000],
-   incluye:["Página web de tu evento para descargar fotos y videos, sin costo adicional","Tira impresa y digital con tres fotos + logo","Videos digitales inmediatos","Experiencia 360 + fotocabina de impresión + fotos con proms digitales y efectos"]}
+   incluye:["Página web de tu evento para descargar fotos y videos, sin costo adicional","Tira impresa y digital con tres fotos + logo","Videos digitales inmediatos","Experiencia 360 + fotocabina de impresión + fotos con proms digitales y efectos"]},
+  /* ► SERVICIO NUEVO. La foto va en la carpeta img/ con el nombre «doble-cabina.jpg» (si usas otro nombre o formato, cámbialo aquí en img).
+       «nuevo:true» muestra la insignia NUEVO en el cotizador. Para quitarla más adelante, borra «nuevo:true,». */
+  {id:"duo", nuevo:true, img:"img/doble-cabina.jpg", nombre:"Doble Cabina", desc:"2 cabinas con impresión en tira funcionando al mismo tiempo + foto digital + Página web del evento.", precios:[360000,540000,720000,900000],
+   incluye:["Página web de tu evento para descargar fotos y videos, sin costo adicional","2 cabinas con impresión en tira al mismo tiempo: menos espera para tus invitados","Tira impresa con tres fotos + logo en cada cabina","Foto digital enviada al instante al celular","Accesorios (props) incluidos"]}
 ];
 
 /* ¿Hay un asesor conectado? El panel de asesores marca su presencia cada 20 segundos. */

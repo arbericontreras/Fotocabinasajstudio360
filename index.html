@@ -92,6 +92,11 @@ nav{display:flex;align-items:center;justify-content:space-between;height:68px;ga
 .plan input:checked+label{border-color:var(--pink);background:#fff4f8}
 .plan input:focus-visible+label{outline:3px solid var(--cyan);outline-offset:2px}
 .plan label .pimg{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:10px;margin-bottom:10px;background:var(--soft)}
+/* Servicio nuevo: insignia y resplandor suave */
+.tag{display:inline-block;background:var(--pink);color:#fff;font:700 .68rem var(--body);letter-spacing:.08em;padding:4px 10px;border-radius:999px;vertical-align:middle}
+.plan label .tag{position:absolute;top:10px;right:10px;z-index:1;margin:0;color:#fff;font-size:.68rem;box-shadow:0 4px 10px rgba(230,57,122,.35)}
+.plan.nuevo label{box-shadow:0 0 0 3px rgba(230,57,122,.18)}
+.feats .tag{margin-left:8px}
 .hours{display:flex;gap:10px;flex-wrap:wrap}
 .hours button{flex:1;min-width:70px;border:2px solid var(--line);background:#fff;border-radius:12px;padding:12px;font:600 1rem var(--body);cursor:pointer;color:var(--ink)}
 .hours button[aria-pressed=true]{border-color:var(--pink);background:#fff4f8}
@@ -196,6 +201,7 @@ footer{padding:28px 0;text-align:center;color:var(--muted);font-size:.9rem;borde
   <div><h3>Cabina digital con props</h3><p>Fotos con props digitales (sombreros, gafas, marcos y más) y efectos, enviadas al instante al celular de cada invitado.</p></div>
   <div><h3>Impresión en tira</h3><p>Tira de tres fotos con el logo de tu evento, impresa y entregada al momento. Un recuerdo que se llevan en la mano.</p></div>
   <div><h3>Logística incluida</h3><p>Transporte en Bogotá y 2 operadores calificados durante todo el evento.</p></div>
+  <div><h3>Doble cabina <span class="tag">NUEVO</span></h3><p>Dos cabinas con impresión en tira funcionando al mismo tiempo, más foto digital y la página web de tu evento. Menos espera para tus invitados.</p></div>
 </div>
 </section>
 
@@ -323,9 +329,9 @@ const recargoCiudadAJ = c => RECARGO_CIUDADES_AJ[n0(c)] || 0;
 
 const plansEl = document.getElementById("plans");
 PLANES.forEach(p=>{
-  const d = document.createElement("div"); d.className = "plan";
+  const d = document.createElement("div"); d.className = "plan"+(p.nuevo?" nuevo":"");
   d.innerHTML = `<input type="radio" name="plan" id="p-${p.id}" value="${p.id}" ${p.id===sel?"checked":""}>
-    <label for="p-${p.id}">${p.img?`<img class="pimg" src="${p.img}" alt="Referencia: ${p.nombre}" loading="lazy" onerror="this.remove()">`:""}<strong>${p.nombre}</strong><span>${p.desc}</span></label>`;
+    <label for="p-${p.id}">${p.nuevo?`<span class="tag">NUEVO</span>`:""}${p.img?`<img class="pimg" src="${p.img}" alt="Referencia: ${p.nombre}" loading="lazy" onerror="this.remove()">`:""}<strong>${p.nombre}</strong><span>${p.desc}</span></label>`;
   d.querySelector("input").addEventListener("change",()=>{sel=p.id;render()});
   plansEl.appendChild(d);
 });
@@ -359,7 +365,7 @@ function render(){
   document.getElementById("pend").textContent = !listo ? "" :
     !verPrecio ? "El valor aparece cuando completes los datos de tu evento: fecha, hora, ciudad, barrio y dirección." :
     extra ? `Incluye recargo de transporte a ${ciudad}: ${peso(extra)}` :
-    "Si tu evento es fuera de Bogotá puede aplicar un recargo de transporte.";
+    "Los precios solo se mantienen con la reserva, estan sujetos a cambios.";
   document.getElementById("shours").textContent = horas ? horas+(horas===1?" hora":" horas")+" de servicio" : "Elige las horas de servicio";
   document.getElementById("incl").innerHTML = p ? ["2 operadores de logística",...p.incluye].map(i=>`<li>${i}</li>`).join("") : "";
   [...hoursEl.children].forEach((b,i)=>{
