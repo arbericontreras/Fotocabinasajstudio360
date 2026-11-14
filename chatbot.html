@@ -351,7 +351,7 @@ function faq(t){
   t=t.toLowerCase();
   if(/espacio|ilumin|luz|[aá]rea|metros|corriente|enchufe|lugar/.test(t)) return espacio(ctx.plan);
   if(/incluye|trae|accesorio|props|operador/.test(t)) return PLANES.map(p=>`${p.nombre}: ${p.incluye.join(", ")}.`).join("\n\n")+"\n\nTodos los planes incluyen 2 operadores de logística.";
-  if(/transporte|zona|ciudad|domicilio|lejos/.test(t)) return "El transporte y los 2 operadores están incluidos en Bogotá. Para otros municipios o ciudades (Zipaquirá, Cajicá, Chía, Soacha) el servicio es por mínimo 2 horas y se suma un recargo de transporte; el cotizador de la página lo calcula.";
+  if(/transporte|zona|ciudad|domicilio|lejos/.test(t)) return `El transporte y los 2 operadores están incluidos en Bogotá. Para otros municipios o ciudades (${CIUDADES.filter(c=>n0(c)!=="bogota").join(", ")}) el servicio es por mínimo 2 horas y se suma un recargo de transporte; el cotizador de la página lo calcula.`;
   if(/reserv|fecha|disponib|apart/.test(t)) return "Arma tu cotización y envíala a un asesor para confirmar la disponibilidad. Para apartar la fecha se abonan $50.000 con un QR que te envía un asesor en línea.";
   return null;
 }

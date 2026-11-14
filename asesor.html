@@ -210,7 +210,7 @@ button{background:#e6397a;color:#fff;border:0;cursor:pointer;font-weight:600;min
         <label>Hora del evento<input id="chora" type="time"></label>
         <label>Ciudad<select id="cciudad"></select></label>
         <label id="clocBox">Localidad<select id="cloc"><option value="">Selecciona…</option></select></label>
-        <label>Barrio<input id="cbarrio" placeholder="Barrio" maxlength="60"></label>
+        <label>Barrio<input id="cbarrio" list="clista-barrios" placeholder="Barrio" maxlength="60" autocomplete="off"><datalist id="clista-barrios"></datalist></label>
         <label class="full">Dirección del evento<input id="cdir" placeholder="Calle 10 # 20-30, salón comunal" maxlength="120"></label>
         <label>Servicio<select id="cplan"><option value="">Elige un servicio</option></select></label>
         <label>Horas<select id="choras"><option value="">—</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select><small id="cmin" hidden>Fuera de Bogotá: mínimo 2 horas.</small></label>
@@ -224,7 +224,7 @@ button{background:#e6397a;color:#fff;border:0;cursor:pointer;font-weight:600;min
       <p id="qmsg" role="status"></p>
       <div id="qwrap"><div id="qvista"><div id="qhoja">
         <div class="top">
-          <div class="brand"><img src="img/logo%20aj%20studio%20copia.png" alt="" onerror="this.remove()"><div><b>AJ Studio</b><small> NIT 1030551314-1 <br> Cabina 360 y fotocabina con impresión</small></div></div>
+          <div class="brand"><img src="img/logo%20aj%20studio%20copia.png" alt="" onerror="this.remove()"><div><b>AJ Studio</b><small>Cabina 360 y fotocabina con impresión</small></div></div>
           <div class="meta"><h1>COTIZACIÓN</h1><p id="qnum"></p><p id="qemi"></p></div>
         </div>
         <h2 class="s">Datos del evento</h2>
@@ -263,7 +263,7 @@ button{background:#e6397a;color:#fff;border:0;cursor:pointer;font-weight:600;min
         <label>Tipo de evento *<select id="rtipo"></select></label>
         <label>Ciudad<input id="rciudad" value="Bogotá"></label>
         <label>Localidad<select id="rloc"><option value="">Selecciona…</option></select></label>
-        <label>Barrio<input id="rbarrio" placeholder="Barrio"></label>
+        <label>Barrio<input id="rbarrio" list="rlista-barrios" placeholder="Barrio" autocomplete="off"><datalist id="rlista-barrios"></datalist></label>
         <label class="full">Dirección del evento *<input id="rdir" placeholder="Calle 10 # 20-30, salón comunal" required></label>
         <label>Servicio<select id="rplan"><option value="">Sin definir</option></select></label>
         <label>Horas<select id="rhoras"><option value="">—</option><option>1</option><option>2</option><option>3</option><option>4</option></select></label>
@@ -388,6 +388,8 @@ const recalc=()=>{ const p=PLANES.find(x=>x.id===$("rplan").value), h=+$("rhoras
   if(p&&h) $("rtotal").value=precioFinal(p,h,$("rciudad").value||"Bogotá",$("rloc").value,$("rfecha").value); };
 ["rplan","rhoras","rloc","rciudad","rfecha"].forEach(id=>$(id).addEventListener("change",recalc));
 $("rabono").onchange=()=>{ $("rabonoBox").hidden=$("rabono").value!=="otro"; };
+const resBarrios = () => llenarBarrios($("rlista-barrios"),$("rbarrio"),$("rciudad").value,$("rloc").value);
+$("rloc").addEventListener("change",resBarrios); $("rciudad").addEventListener("input",resBarrios); resBarrios();
 
 async function cargarRes(){ R=(await fetch(`${DB}/reservas.json?auth=${tok}`).then(r=>r.json()))||{}; pintarRes(); }
 function pintarRes(){
@@ -419,7 +421,7 @@ $("rf").onsubmit=async e=>{ e.preventDefault();
   const res=await fetch(`${DB}/reservas/${f}.json?auth=${tok}`,{method:"POST",body:JSON.stringify(rec)}).then(r=>r.json());
   if(bloq&&res&&res.name) await fetch(`${DB}/ocupadas/${f}/${res.name}.json?auth=${tok}`,{method:"PUT",body:JSON.stringify(hora||"-")});
   localStorage.setItem("ajYo",$("rase").value);
-  $("rf").reset(); horaP(); $("rase").value=$("yo").value; $("rabonoBox").hidden=true; $("rbloq").checked=true; cargarRes(); };
+  $("rf").reset(); horaP(); resBarrios(); $("rase").value=$("yo").value; $("rabonoBox").hidden=true; $("rbloq").checked=true; cargarRes(); };
 
 /* Abre pdf.html con los datos de la reserva ya cargados (incluida la cédula).
    Si la reserva no tiene cédula (por ejemplo, vino del bot), la pide aquí y la deja guardada. */
@@ -479,7 +481,7 @@ let qNum = "";
 const hT = h => h+(h===1?" hora":" horas");
 const qLim = (v,n) => String(v==null?"":v).replace(/\s+/g," ").trim().slice(0,n||120);
 
-["Bogotá","Zipaquirá","Cajicá","Chía","Soacha"].forEach(c=>$("cciudad").add(new Option(c,c)));
+CIUDADES.forEach(c=>$("cciudad").add(new Option(c,c)));
 TIPOS.forEach(t=>$("ctipo").add(new Option(t,t)));
 LOCALIDADES.forEach(l=>$("cloc").add(new Option(l,l)));
 PLANES.forEach(p=>$("cplan").add(new Option(p.nombre,p.id)));
@@ -563,10 +565,13 @@ async function cotInit(){
   try{ aplicarTarifas(await fetch(`${DB}/tarifas.json`).then(r=>r.json())); }catch(e){} }   /* precios vigentes */
 
 ["cplan","choras","cciudad","cloc","cfecha"].forEach(id=>$(id).addEventListener("change",()=>{ if(id==="cciudad") cotCiudad(); cotTotalAuto(); cotRender(); }));
+const cotBarrios = () => llenarBarrios($("clista-barrios"),$("cbarrio"),$("cciudad").value,$("cloc").value);
+["cciudad","cloc"].forEach(id=>$(id).addEventListener("change",()=>{ cotBarrios(); cotRender(); }));
+cotBarrios();
 ["ccli","cced","ctel","ctipo","chora","cbarrio","cdir","ctotal","cabonoV","cvend","cnota"].forEach(id=>$(id).addEventListener("input",cotRender));
 $("cabono").addEventListener("change",()=>{ $("cabonoBox").hidden=$("cabono").value!=="otro"; cotRender(); });
 
-$("qlimp").onclick=()=>{ $("cf").reset(); qNum=""; $("choras").value="2"; $("cvend").value=asesorCompleto($("yo").value); $("cabonoBox").hidden=true; cotCiudad(); $("qmsg").textContent=""; cotRender(); };
+$("qlimp").onclick=()=>{ $("cf").reset(); qNum=""; $("choras").value="2"; $("cvend").value=asesorCompleto($("yo").value); $("cabonoBox").hidden=true; cotCiudad(); cotBarrios(); $("qmsg").textContent=""; cotRender(); };
 
 $("qdl").onclick=async()=>{
   const msg=$("qmsg"); msg.style.color="#b3261e"; msg.textContent="";

@@ -15,6 +15,10 @@ const QR_IMG = "img/qr%20abono.jpeg";
 /* 2) Tipos de evento */
 const TIPOS = ["Boda","Quince años","Cumpleaños","Fiesta prom","Evento empresarial","Fiesta infantil","Baby shower","Grado","Otro"];
 
+/* Ciudades donde se presta el servicio (el cotizador, el panel y el bot las leen de aquí).
+   ► Para agregar una ciudad: ponla en esta lista y, si cobra transporte, agrégala también en RECARGO_CIUDADES_AJ. */
+const CIUDADES = ["Bogotá","Zipaquirá","Cajicá","Chía","Soacha","Mosquera","Funza"];
+
 /* 3) Asesores, zonas, precios y planes (ASESORES = números de WhatsApp de respaldo) */
 /* ===== CONFIGURACIÓN: zonas y fechas sin disponibilidad ===== */
 const NO_SERVICIO = {
@@ -71,10 +75,48 @@ function precioFinal(p,h,ciudad,loc,iso){
 
 /* Recargo de transporte por ciudad fuera de Bogotá (se suma al precio del paquete).
    ► Para cambiar un valor o agregar una ciudad, edita esta lista (el nombre va en minúsculas y sin tildes). */
-const RECARGO_CIUDADES_AJ = { zipaquira:250000, cajica:200000, chia:200000, soacha:50000 };
+const RECARGO_CIUDADES_AJ = { zipaquira:250000, cajica:200000, chia:200000, soacha:50000,
+  mosquera:100000, funza:120000 };   /* ← Mosquera y Funza: valores SUGERIDOS, cámbialos por los tuyos */
 const recargoCiudadAJ = c => RECARGO_CIUDADES_AJ[n0(c)] || 0;
 /* Valor NETO que paga el cliente: paquete + zona + fecha + ciudad. Lo usa la cotización en PDF. */
 const precioTotal = (p,h,ciudad,loc,iso) => precioFinal(p,h,ciudad,loc,iso) + recargoCiudadAJ(ciudad);
+
+/* ===== Barrios sugeridos por localidad de Bogotá =====
+   Es una lista de partida con los barrios principales (no está completa): el cliente también puede escribir
+   cualquier otro barrio. Para agregar uno, ponlo en la localidad que corresponde.
+   Los barrios sin servicio (NO_SERVICIO) no se sugieren, y Usme y Sumapaz quedan vacías porque no hay servicio. */
+const BARRIOS_POR_LOCALIDAD = {
+  "Usaquén":["Cedritos","Santa Bárbara","Usaquén","Verbenal","San Cristóbal Norte","Toberín","La Uribe","Country Club","Santa Ana","Santa Paula","Los Cedros","Contador","Cantagallo","Bella Suiza","Servitá","Babilonia","Estrella del Norte","Barrancas","Orquídeas","Santa Cecilia","San Antonio Norte"],
+  "Chapinero":["El Nogal","Chicó","Chicó Norte","El Retiro","Rosales","La Cabrera","Quinta Camacho","Chapinero Central","Chapinero Alto","Marly","Antiguo Country","Pardo Rubio","Lago Gaitán","Porciúncula","Bosque Calderón","Sucre","Granada","Emaús","San Isidro","San Luis","El Refugio","Villa del Cerro"],
+  "Santa Fe":["La Macarena","Germania","San Martín","Torres del Parque","Parque Central Bavaria","La Alameda","Sagrado Corazón","Lourdes","Veracruz","Santa Fe","Los Laches","San Diego"],
+  "San Cristóbal":["20 de Julio","San Blas","La Gloria","Los Libertadores","Villa de los Alpes","Sosiego","Ciudad Londres","Guacamayas","Altamira","Moralba","Victoria","San Vicente"],
+  "Usme":[],
+  "Tunjuelito":["Venecia","San Carlos","Isla del Sol","Abraham Lincoln","Fátima","Samoré","El Tunal","Ciudad Tunal","Tunjuelito","Meandro del Say"],
+  "Bosa":["Bosa Centro","Bosa Occidental","El Porvenir","Brasilia","Antonia Santos","El Recreo","Apogeo","Piamonte","Villa Anny","La Libertad","Chicalá"],
+  "Kennedy":["Castilla","Kennedy Central","Timiza","Carvajal","Techo","Roma","Bavaria","Villa Alsacia","Marsella","Nueva Marsella","El Tintal","Calandaima","Class","Las Margaritas","Mandalay","Pastrana","Gran Britalia","Tintalito","Dindalito","Lagos de Castilla","Ciudad Techo","Hipotecho","Villa Nelly","Ciudad Kennedy"],
+  "Fontibón":["Fontibón Centro","Modelia","Hayuelos","Capellanía","Salitre Occidental","Puerta de Teja","Versalles","San Pablo","Atahualpa","Villemar","Granjas de Techo","Kasandra","Ferrocaja","Rincón Santo","Zona Franca","Pontevedra"],
+  "Engativá":["Engativá Centro","Boyacá Real","Bolivia","Santa Helenita","Las Ferias","Minuto de Dios","Garcés Navas","Villa Luz","Normandía","Quirigua","Álamos Norte","Los Álamos","La Granja","Bonanza","Ciudad Bachué","Villas de Granada","El Muelle"],
+  "Suba":["Suba Centro","Niza","La Alhambra","Prado Veraniego","Colina Campestre","Pasadena","Gilmar","Las Villas","Rincón de Suba","Lombardía","Puente Largo","La Campiña","Villa del Prado","Iberia","Cañiza","Casablanca Suba","Santa Rita","San José de Bavaria","Villa Elisa","Costa Azul","Almirante Colón"],
+  "Barrios Unidos":["7 de Agosto","Doce de Octubre","Alcázares","La Castellana","Polo Club","Concepción Norte","San Felipe","Los Andes","Entre Ríos","Santa Sofía","Baquero","Benjamín Herrera","Colombia","Rionegro","Simón Bolívar","San Fernando","Metrópolis","Quinta Mutis","Withney"],
+  "Teusaquillo":["Teusaquillo","La Soledad","Palermo","Quesada","Galerías","Park Way","La Magdalena","Armenia","Santa Teresita","Pablo VI","Ciudad Salitre Oriental","Nicolás de Federmán","Quinta Paredes","Campín","Belalcázar","Rafael Núñez","Banco Central","Salitre El Greco"],
+  "Los Mártires":["Paloquemao","San Victorino","Eduardo Santos","La Sabana","El Listón","La Pepita","El Progreso"],
+  "Antonio Nariño":["Restrepo","Santander","Ciudad Jardín","La Fraguita","Policarpa","Sevilla","Villa Mayor","Luna Park","Ciudad Berna","La Hortúa","San Antonio"],
+  "Puente Aranda":["Puente Aranda","Ciudad Montes","San Rafael","Zona Industrial","Muzú","Galán","Batallón Caldas","Trinidad Galán","Remanso","Ortezal","Cundinamarca","Alcalá","Pensilvania","Veraguas","La Camelia","Santa Matilde"],
+  "La Candelaria":["La Candelaria","La Concordia","Belén","Centro Administrativo","Las Aguas","Egipto"],
+  "Rafael Uribe Uribe":["Quiroga","Marruecos","San José","Bravo Páez","Olaya","Claret","Granjas de San Pablo","Country Sur","Gustavo Restrepo","Inglés","Lorenzo Alcantuz","Palermo Sur","Santa Lucía"],
+  "Ciudad Bolívar":["Candelaria La Nueva","San Francisco","Quiba"],
+  "Sumapaz":[]
+};
+/* Barrios sugeridos de una localidad (ordenados y sin los que no tienen servicio) */
+const barriosDe = loc => (BARRIOS_POR_LOCALIDAD[loc]||[]).filter(b=>!NO_SERVICIO.barrios.some(x=>n0(x)===n0(b))).sort((a,b)=>a.localeCompare(b,"es"));
+/* Llena un <datalist> con los barrios de la localidad elegida (solo Bogotá). Si el campo tenía un barrio sugerido
+   de otra localidad, lo borra; un barrio escrito a mano se respeta. */
+function llenarBarrios(dl,input,ciudad,loc){
+  const bog = n0(ciudad)==="bogota", lista = bog ? barriosDe(loc) : [];
+  dl.innerHTML = ""; lista.forEach(x=>dl.appendChild(new Option(x)));
+  const prev = n0(input.value);
+  if(prev && !lista.some(x=>n0(x)===prev) && Object.values(BARRIOS_POR_LOCALIDAD).some(a=>a.some(x=>n0(x)===prev))) input.value = "";
+  input.placeholder = !bog ? "Barrio o vereda" : loc ? "Escribe o elige tu barrio" : "Primero elige la localidad"; }
 /* Asesores de respaldo: se usan por WhatsApp cuando nadie está en línea en el panel.
    «n» es el nombre corto (chat y panel); «completo» sale en la cotización en PDF. */
 const ASESORES = [

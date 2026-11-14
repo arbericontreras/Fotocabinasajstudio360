@@ -35,7 +35,8 @@ nav{display:flex;align-items:center;justify-content:space-between;height:68px;ga
 .btn:hover{background:#c92a67}
 .btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--ink)}
 .btn.ghost:hover{background:var(--ink);color:#fff}
-@media(max-width:760px){.links a:not(.btn){display:none}}
+.btn.mini{padding:8px 16px;font-size:.9rem}
+@media(max-width:760px){.links a:not(.btn){display:none}.links{gap:10px}.links .btn{padding:9px 14px;font-size:.88rem}}
 .hero{padding:64px 0 72px}
 .hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
 .hero h1{font-size:clamp(2.3rem,5.5vw,4rem);margin-bottom:18px}
@@ -171,6 +172,7 @@ footer{padding:28px 0;text-align:center;color:var(--muted);font-size:.9rem;borde
         <a href="#experiencias">Experiencias</a>
         <a href="#cotizar">Cotizar</a>
         <a href="#contacto">Contacto</a>
+        <a class="btn ghost mini" href="asesor.html">Acceso asesores</a>
         <a class="btn" href="descargar.html">Descargar mis fotos</a>
       </div>
     </nav>
@@ -265,7 +267,7 @@ footer{padding:28px 0;text-align:center;color:var(--muted);font-size:.9rem;borde
             <div id="otroBox" hidden><label for="otro">¿Qué tipo de evento? *</label><input id="otro" placeholder="Ej: aniversario, despedida…" maxlength="50"></div>
             <div><label for="fecha">Fecha *</label><input type="date" id="fecha"></div>
             <div><label for="hh">Hora del evento *</label><div class="hora3"><select id="hh" aria-label="Hora"><option value="">Hora</option></select><select id="mm" aria-label="Minutos"><option value="00">:00</option><option value="30">:30</option></select><select id="ap" aria-label="a. m. o p. m."><option value="">a. m. / p. m.</option><option value="am">a. m.</option><option value="pm">p. m.</option></select></div><input type="hidden" id="hora"></div>
-            <div><label for="ciudad">Ciudad *</label><select id="ciudad"><option>Bogotá</option><option>Zipaquirá</option><option>Cajicá</option><option>Chía</option><option>Soacha</option></select></div>
+            <div><label for="ciudad">Ciudad *</label><select id="ciudad"></select></div>
             <div id="locBox"><label for="loc">Localidad *</label><select id="loc"><option value="">Selecciona...</option></select></div>
             <div><label for="barrio">Barrio *</label><input id="barrio" list="lista-barrios" placeholder="Castilla" autocomplete="off"><datalist id="lista-barrios"></datalist></div>
             <div style="grid-column:1/-1"><label for="dir">Dirección del evento *</label><input id="dir" placeholder="Ej: Calle 10 # 20-30, salón comunal"></div>
@@ -307,7 +309,7 @@ footer{padding:28px 0;text-align:center;color:var(--muted);font-size:.9rem;borde
 </section>
 </main>
 
-<footer>AJ Studio / Geek Studio · © 2026 Todos los derechos reservados · <a href="asesor.html" style="color:inherit;opacity:.7">Acceso asesores</a></footer>
+<footer>AJ Studio / Geek Studio · © 2026 Todos los derechos reservados</footer>
 
 <script src="config.js"></script>
 <script>
@@ -323,9 +325,7 @@ let sel = null, horas = 0;
 /* Modo cabina: si el nombre escrito es "cabina", el cotizador no exige los datos del evento */
 const esModoCabinaAJ = () => n0(document.getElementById("nombre").value.trim())==="cabina";
 
-/* Tarifa adicional por ciudad (se suma al precio del paquete) */
-const RECARGO_CIUDADES_AJ = { zipaquira:250000, cajica:200000, chia:200000, soacha:50000 };
-const recargoCiudadAJ = c => RECARGO_CIUDADES_AJ[n0(c)] || 0;
+/* La tarifa adicional por ciudad (RECARGO_CIUDADES_AJ) y recargoCiudadAJ ahora están en config.js */
 
 const plansEl = document.getElementById("plans");
 PLANES.forEach(p=>{
@@ -365,7 +365,7 @@ function render(){
   document.getElementById("pend").textContent = !listo ? "" :
     !verPrecio ? "El valor aparece cuando completes los datos de tu evento: fecha, hora, ciudad, barrio y dirección." :
     extra ? `Incluye recargo de transporte a ${ciudad}: ${peso(extra)}` :
-    "Los precios solo se mantienen con la reserva, estan sujetos a cambios.";
+    "Los precios solo se mantienen con la reserva, están sujetos a cambios.";
   document.getElementById("shours").textContent = horas ? horas+(horas===1?" hora":" horas")+" de servicio" : "Elige las horas de servicio";
   document.getElementById("incl").innerHTML = p ? ["2 operadores de logística",...p.incluye].map(i=>`<li>${i}</li>`).join("") : "";
   [...hoursEl.children].forEach((b,i)=>{
@@ -380,6 +380,7 @@ function render(){
     + `\n¿Tienen disponibilidad?`;
 }
 ["nombre","tipo","otro","fecha","hora","ciudad","loc","barrio","dir"].forEach(id=>document.getElementById(id).addEventListener("input",render));
+CIUDADES.forEach(c=>document.getElementById("ciudad").add(new Option(c,c)));   /* la lista de ciudades está en config.js */
 document.getElementById("fecha").min = new Date().toISOString().split("T")[0];
 render();
 
@@ -404,16 +405,11 @@ show.onmouseenter=()=>clearInterval(timer); show.onmouseleave=iniciar; iniciar()
 <script>
 const $ = id => document.getElementById(id);
 LOCALIDADES.forEach(l=>$("loc").add(new Option(l,l)));
-/* Las sugerencias de barrio son de Bogotá: solo se muestran cuando la ciudad es Bogotá */
-function actualizarBarrios(){
-  const bog = n0($("ciudad").value)==="bogota", dl = $("lista-barrios");
-  dl.innerHTML = "";
-  if(bog) BARRIOS_BOGOTA.forEach(b=>dl.appendChild(new Option(b)));
-  else if(BARRIOS_BOGOTA.some(b=>n0(b)===n0($("barrio").value))) $("barrio").value = ""; /* borra un barrio de Bogotá que quedó escrito */
-  $("barrio").placeholder = bog ? "Castilla" : "Barrio o vereda";
-}
+/* Las sugerencias de barrio dependen de la localidad elegida (solo en Bogotá); la lista está en config.js */
+const actualizarBarrios = () => llenarBarrios($("lista-barrios"),$("barrio"),$("ciudad").value,$("loc").value);
 actualizarBarrios();
 $("ciudad").addEventListener("change",()=>{ actualizarBarrios(); render(); });
+$("loc").addEventListener("change",()=>{ actualizarBarrios(); render(); });
 /* Hora: tres listas fáciles (1 a 12, :00 o :30, a. m. o p. m.) que arman la hora real en el campo oculto #hora */
 for(let h=1;h<=12;h++) $("hh").add(new Option(h,h));
 function actualizarHora(){
@@ -485,6 +481,7 @@ function usarCot(d){
 /* Botón "Enviar cotización (Reservar)": se la entrega al bot */
 $("send").onclick = e => { e.preventDefault(); if(!validar()) return;
   abrirBot(true); aBot({t:"cotizacion", msg:window.cotMsg, cruce:!!avisoCruce($("fecha").value,$("hora").value)}); };
+
 </script>
 </body>
 </html>
