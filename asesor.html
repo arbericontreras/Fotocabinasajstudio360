@@ -75,7 +75,7 @@ button{background:#e6397a;color:#fff;border:0;cursor:pointer;font-weight:600;min
 #qmsg{font-weight:600;min-height:1.4em;margin-bottom:10px}
 #qwrap{overflow:auto;padding-bottom:12px}
 #qvista{width:794px}
-#qhoja{width:794px;background:#fff;padding:34px 44px 26px;border:1px solid #dcd7f2;color:#1b1740;font-size:14px;line-height:1.45}
+#qhoja{width:794px;background:#fff;padding:28px 44px 20px;border:1px solid #dcd7f2;color:#1b1740;font-size:14px;line-height:1.45}
 #qhoja.pdf{border:0}
 #qhoja .top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;border-bottom:4px solid #e6397a;padding-bottom:14px}
 #qhoja .brand{display:flex;gap:12px;align-items:center}
@@ -85,7 +85,7 @@ button{background:#e6397a;color:#fff;border:0;cursor:pointer;font-weight:600;min
 #qhoja .meta{text-align:right}
 #qhoja .meta h1{font-size:26px;font-weight:800;color:#e6397a;letter-spacing:.04em}
 #qhoja .meta p{font-size:12px;color:#5d5a7a}
-#qhoja h2.s{font-size:12.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#12a9c9;margin:16px 0 7px}
+#qhoja h2.s{font-size:12.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#12a9c9;margin:13px 0 6px}
 #qhoja .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 24px}
 #qhoja .grid .full{grid-column:1/-1}
 #qhoja .grid span{display:block;font-size:10.5px;color:#5d5a7a;text-transform:uppercase;letter-spacing:.06em}
@@ -224,8 +224,8 @@ button{background:#e6397a;color:#fff;border:0;cursor:pointer;font-weight:600;min
       <p id="qmsg" role="status"></p>
       <div id="qwrap"><div id="qvista"><div id="qhoja">
         <div class="top">
-          <div class="brand"><img src="img/logo%20aj%20studio%20copia.png" alt="" onerror="this.remove()"><div><b>AJ Studio</b><small>Cabina 360 y fotocabina con impresión</small></div></div>
-          <div class="meta"><h1>COTIZACIÓN</h1><p id="qnum"></p><p id="qemi"></p></div>
+          <div class="brand"><img src="img/logo%20aj%20studio%20copia.png" alt="" onerror="this.remove()"><div><b>AJ Studio</b><small>Cabina 360 y fotocabina con impresión</small><small id="qnit"></small></div></div>
+          <div class="meta"><h1>COTIZACIÓN</h1><p id="qnum"></p><p id="qemi"></p><p id="qvig"></p></div>
         </div>
         <h2 class="s">Datos del evento</h2>
         <div class="grid">
@@ -476,7 +476,7 @@ $("prf").onsubmit=async e=>{ e.preventDefault();
 
 /* ===== Cotización en PDF para el cliente (solo existe en este panel) ===== */
 /* ► Datos de contacto que salen al pie del PDF: edítalos aquí. */
-const CONTACTO = { dir:"Kra 72m Bis B # 43-63 Sur, Bogotá", tels:"Cel. 310 625 0804 · Fijo (601) 548 5934", redes:"Instagram @aj_geek · Facebook FotocabinaAJGeek", web:"fotocabinasajstudio360.vercel.app" };
+const CONTACTO = { dir:"Kra 72m Bis B # 43-63 Sur, Bogotá", tels:"Cel. 310 625 0804 · Fijo (601) 548 5934", redes:"Instagram @aj_geek · Facebook FotocabinaAJGeek", web:"fotocabinasajstudio360.vercel.app", nit:"1030551314-1", validezDias:8 };
 let qNum = "";
 const hT = h => h+(h===1?" hora":" horas");
 const qLim = (v,n) => String(v==null?"":v).replace(/\s+/g," ").trim().slice(0,n||120);
@@ -515,6 +515,8 @@ function cotRender(){
   const hoy=new Date(), z=n=>String(n).padStart(2,"0");
   if(!qNum) qNum=`AJ-${String(hoy.getFullYear()).slice(2)}${z(hoy.getMonth()+1)}${z(hoy.getDate())}-${z(hoy.getHours())}${z(hoy.getMinutes())}`;
   $("qnum").textContent="No. "+qNum;
+  $("qnit").textContent="NIT "+CONTACTO.nit;
+  $("qvig").textContent="Validez: "+CONTACTO.validezDias+" días máximo";
   $("qemi").textContent="Emitida el "+hoy.toLocaleDateString("es-CO",{day:"numeric",month:"long",year:"numeric"});
 
   const cli=qLim($("ccli").value,60), ced=$("cced").value.replace(/\D/g,"").slice(0,12), tl=$("ctel").value.trim(), d=parseTel(tl);
@@ -545,7 +547,8 @@ function cotRender(){
   [`Para reservar la fecha del evento se requiere un abono de ${peso(abono)}, realizado con mínimo 2 días de anticipación a la fecha del evento. Sin el abono, la fecha no queda apartada.`,
    `El valor de esta cotización (${peso(total)}) es el neto a pagar por el cliente.`,
    `El saldo de ${peso(saldo)} se cancela una vez instalados los equipos y antes de iniciar el servicio.`,
-   "La reserva queda confirmada cuando un asesor verifica el abono y la disponibilidad de la fecha."
+   "La reserva queda confirmada cuando un asesor verifica el abono y la disponibilidad de la fecha.",
+   `Esta cotización tiene una validez máxima de ${CONTACTO.validezDias} días a partir de su fecha de emisión.`
   ].forEach(t=>{ const li=document.createElement("li"); li.textContent=t; $("qcond").appendChild(li); });
 
   const nota=qLim($("cnota").value,150); $("qnotaW").hidden=!nota; $("qnota").textContent=nota;
