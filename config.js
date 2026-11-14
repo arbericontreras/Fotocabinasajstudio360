@@ -68,10 +68,18 @@ const recargoFecha = iso => {
 function precioFinal(p,h,ciudad,loc,iso){
   return p.precios[h-1] + recargoLoc(ciudad,loc) + recargoFecha(iso);
 }
-/* Asesores de respaldo: se usan por WhatsApp cuando nadie está en línea en el panel */
+
+/* Recargo de transporte por ciudad fuera de Bogotá (se suma al precio del paquete).
+   ► Para cambiar un valor o agregar una ciudad, edita esta lista (el nombre va en minúsculas y sin tildes). */
+const RECARGO_CIUDADES_AJ = { zipaquira:250000, cajica:200000, chia:200000, soacha:50000 };
+const recargoCiudadAJ = c => RECARGO_CIUDADES_AJ[n0(c)] || 0;
+/* Valor NETO que paga el cliente: paquete + zona + fecha + ciudad. Lo usa la cotización en PDF. */
+const precioTotal = (p,h,ciudad,loc,iso) => precioFinal(p,h,ciudad,loc,iso) + recargoCiudadAJ(ciudad);
+/* Asesores de respaldo: se usan por WhatsApp cuando nadie está en línea en el panel.
+   «n» es el nombre corto (chat y panel); «completo» sale en la cotización en PDF. */
 const ASESORES = [
-  {n:"Angela",      w:"573106250804"},
-  {n:"Jose Arberi", w:"573204981495"}
+  {n:"Angela",      completo:"Angela Fonseca",        w:"573106250804"},
+  {n:"Jose Arberi", completo:"Jose Arberi Contreras", w:"573204981495"}
 ];
 const asesorAzar = () => ASESORES[Math.floor(Math.random()*ASESORES.length)];
 const wa = (n,t) => `https://wa.me/${n}?text=${encodeURIComponent(t)}`;

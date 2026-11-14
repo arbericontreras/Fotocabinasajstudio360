@@ -64,6 +64,49 @@ button{background:#e6397a;color:#fff;border:0;cursor:pointer;font-weight:600;min
 .pr label input{color:#1b1740;font-weight:400;font-size:1rem;width:100%}
 #prmsg{font-weight:600}
 
+/* ===== Cotización en PDF para el cliente ===== */
+#cf{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:14px 0;padding:14px;background:#fff;border:1px solid #dcd7f2;border-radius:14px}
+#cf label{display:grid;gap:3px;font-size:.78rem;color:#5d5a7a;font-weight:600}
+#cf label input,#cf label select{color:#1b1740;font-weight:400;font-size:1rem}
+#cf .full{grid-column:1/-1}
+#cf small{color:#b3261e;font-weight:600}
+#qbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+#qbar .sec{background:#5d5a7a}
+#qmsg{font-weight:600;min-height:1.4em;margin-bottom:10px}
+#qwrap{overflow:auto;padding-bottom:12px}
+#qvista{width:794px}
+#qhoja{width:794px;background:#fff;padding:34px 44px 26px;border:1px solid #dcd7f2;color:#1b1740;font-size:14px;line-height:1.45}
+#qhoja.pdf{border:0}
+#qhoja .top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;border-bottom:4px solid #e6397a;padding-bottom:14px}
+#qhoja .brand{display:flex;gap:12px;align-items:center}
+#qhoja .brand img{height:54px;width:auto}
+#qhoja .brand b{display:block;font-size:22px;font-weight:800;letter-spacing:-.02em}
+#qhoja .brand small{display:block;color:#5d5a7a;font-size:12px}
+#qhoja .meta{text-align:right}
+#qhoja .meta h1{font-size:26px;font-weight:800;color:#e6397a;letter-spacing:.04em}
+#qhoja .meta p{font-size:12px;color:#5d5a7a}
+#qhoja h2.s{font-size:12.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#12a9c9;margin:16px 0 7px}
+#qhoja .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 24px}
+#qhoja .grid .full{grid-column:1/-1}
+#qhoja .grid span{display:block;font-size:10.5px;color:#5d5a7a;text-transform:uppercase;letter-spacing:.06em}
+#qhoja .grid b{font-weight:600;overflow-wrap:anywhere}
+#qhoja .svc{border:1px solid #dcd7f2;border-radius:12px;padding:12px 16px}
+#qhoja .svc h3{font-size:18px;font-weight:800}
+#qhoja .svc p{color:#5d5a7a;font-size:12.5px}
+#qhoja ul,#qhoja ol{padding:0;margin:0 0 0 20px}
+#qhoja .svc ul{margin-top:8px;font-size:12.5px;color:#5d5a7a;line-height:1.5}
+#qhoja .tot{margin-top:12px;border-radius:12px;overflow:hidden;border:1px solid #dcd7f2}
+#qhoja .tot .r{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 16px;border-bottom:1px solid #dcd7f2}
+#qhoja .tot .r:last-child{border-bottom:0}
+#qhoja .tot .big{background:#1b1740;color:#fff;font-size:15px}
+#qhoja .tot .big b{font-size:22px;font-weight:800}
+#qhoja .tot .ab{background:#fff4f8}
+#qhoja .tot b{font-weight:700}
+#qhoja ol{font-size:12.5px;line-height:1.55}
+#qhoja ol li{margin-bottom:3px}
+#qhoja .obs{font-size:12.5px;white-space:pre-line;overflow-wrap:anywhere}
+#qhoja .foot{margin-top:14px;border-top:1px solid #dcd7f2;padding-top:9px;font-size:11.5px;color:#5d5a7a;text-align:center;line-height:1.6}
+
 /* ===== Celular: una pantalla a la vez (lista -> chat), botones grandes y sin zoom ===== */
 @media(max-width:760px){
   #body{display:block;position:relative}
@@ -84,6 +127,8 @@ button{background:#e6397a;color:#fff;border:0;cursor:pointer;font-weight:600;min
   #tabs button{font-size:.85rem;min-height:44px}
   .prg{grid-template-columns:1fr 1fr}
   .pr input{min-height:44px}
+  #cf{grid-template-columns:1fr;padding:12px}
+  #cf input,#cf select{min-height:44px}
 }
 </style></head><body>
 
@@ -104,6 +149,7 @@ button{background:#e6397a;color:#fff;border:0;cursor:pointer;font-weight:600;min
       <button type="button" data-v="res" onclick="tab('res')">📅 Reservas</button>
       <button type="button" data-v="pen" id="tpen" onclick="tab('pen')">🔔 Pendientes</button>
       <button type="button" data-v="pre" onclick="tab('pre')">💲 Precios</button>
+      <button type="button" data-v="cot" onclick="tab('cot')">📄 Cotización</button>
     </div>
     <details id="aj">
       <summary>⚙ Ajustes y avisos</summary>
@@ -152,6 +198,60 @@ button{background:#e6397a;color:#fff;border:0;cursor:pointer;font-weight:600;min
       </form>
     </div>
 
+    <div id="cv" class="pane" hidden>
+      <h2>Cotización para el cliente</h2>
+      <p style="color:#5d5a7a;margin:6px 0 14px">Arma la cotización, revisa la vista previa y descárgala en PDF para enviársela al cliente. El valor se calcula con los precios vigentes y puedes ajustarlo.</p>
+      <form id="cf" onsubmit="return false">
+        <label>Cliente<input id="ccli" placeholder="Nombre del cliente" maxlength="60"></label>
+        <label>Cédula (opcional)<input id="cced" inputmode="numeric" placeholder="1234567890"></label>
+        <label>Celular (opcional)<input id="ctel" type="tel" inputmode="tel" placeholder="3001234567"></label>
+        <label>Tipo de evento<select id="ctipo"></select></label>
+        <label>Fecha<input id="cfecha" type="date"><small id="canti" hidden>Menos de 2 días de anticipación.</small></label>
+        <label>Hora del evento<input id="chora" type="time"></label>
+        <label>Ciudad<select id="cciudad"></select></label>
+        <label id="clocBox">Localidad<select id="cloc"><option value="">Selecciona…</option></select></label>
+        <label>Barrio<input id="cbarrio" placeholder="Barrio" maxlength="60"></label>
+        <label class="full">Dirección del evento<input id="cdir" placeholder="Calle 10 # 20-30, salón comunal" maxlength="120"></label>
+        <label>Servicio<select id="cplan"><option value="">Elige un servicio</option></select></label>
+        <label>Horas<select id="choras"><option value="">—</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select><small id="cmin" hidden>Fuera de Bogotá: mínimo 2 horas.</small></label>
+        <label>Valor total (neto)<input id="ctotal" type="number" min="0" step="1000" placeholder="0"></label>
+        <label>Abono para reservar<select id="cabono"></select></label>
+        <label id="cabonoBox" hidden>Valor del abono<input id="cabonoV" type="number" min="0" step="1000" placeholder="Ej: 100000"></label>
+        <label>Asesor<select id="cvend"></select></label>
+        <label class="full">Observaciones (opcional)<input id="cnota" maxlength="150" placeholder="Detalles que quieras que aparezcan en la cotización"></label>
+      </form>
+      <div id="qbar"><button type="button" id="qdl">⬇ Descargar PDF</button><button type="button" class="sec" id="qlimp">Limpiar</button></div>
+      <p id="qmsg" role="status"></p>
+      <div id="qwrap"><div id="qvista"><div id="qhoja">
+        <div class="top">
+          <div class="brand"><img src="img/logo%20aj%20studio%20copia.png" alt="" onerror="this.remove()"><div><b>AJ Studio</b><small> NIT 1030551314-1 <br> Cabina 360 y fotocabina con impresión</small></div></div>
+          <div class="meta"><h1>COTIZACIÓN</h1><p id="qnum"></p><p id="qemi"></p></div>
+        </div>
+        <h2 class="s">Datos del evento</h2>
+        <div class="grid">
+          <div id="qcliW"><span>Cliente</span><b id="qcli"></b></div>
+          <div id="qcedW"><span>Cédula</span><b id="qced"></b></div>
+          <div id="qtelW"><span>Celular</span><b id="qtel"></b></div>
+          <div><span>Tipo de evento</span><b id="qtipo"></b></div>
+          <div><span>Fecha</span><b id="qfec"></b></div>
+          <div><span>Hora</span><b id="qhor"></b></div>
+          <div><span>Asesor</span><b id="qase"></b></div>
+          <div class="full"><span>Lugar del evento</span><b id="qlug"></b></div>
+        </div>
+        <h2 class="s">Servicio cotizado</h2>
+        <div class="svc"><h3 id="qpn"></h3><p id="qph"></p><ul id="qinc"></ul></div>
+        <div class="tot">
+          <div class="r big"><span>Valor total a pagar (neto)</span><b id="qtot"></b></div>
+          <div class="r ab"><span>Abono para reservar la fecha</span><b id="qabo"></b></div>
+          <div class="r"><span>Saldo a cancelar el día del evento</span><b id="qsal"></b></div>
+        </div>
+        <h2 class="s">Condiciones de pago y reserva</h2>
+        <ol id="qcond"></ol>
+        <div id="qnotaW" hidden><h2 class="s">Observaciones</h2><p class="obs" id="qnota"></p></div>
+        <div class="foot" id="qfoot"></div>
+      </div></div></div>
+    </div>
+
     <div id="rv" class="pane" hidden>
       <h2>Reservas</h2>
       <form id="rf">
@@ -182,6 +282,7 @@ button{background:#e6397a;color:#fff;border:0;cursor:pointer;font-weight:600;min
 </div>
 
 <script src="config.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script>
 const $=id=>document.getElementById(id);
 let tok="",cred=null,es=null,S={},vistos=new Set(),listo=false,sel="",unread={},R={},tokTs=0,wl=null;
@@ -214,10 +315,11 @@ async function login(email,pass){
 const latir=()=>fetch(`${DB}/presence.json?auth=${tok}`,{method:"PUT",body:JSON.stringify({ts:Date.now()})});
 
 /* --- vistas --- */
-function vista(v){ $("chatv").hidden=v!=="chat"; $("rv").hidden=v!=="res"; $("pv").hidden=v!=="pen"; $("prv").hidden=v!=="pre";
+function vista(v){ $("chatv").hidden=v!=="chat"; $("rv").hidden=v!=="res"; $("pv").hidden=v!=="pen"; $("prv").hidden=v!=="pre"; $("cv").hidden=v!=="cot";
   if(v==="res"){ const m=(sel&&S[sel]&&S[sel].meta)||{}; if(!$("rcli").value) $("rcli").value=m.nombre||""; if(!$("rtel").value) $("rtel").value=m.tel||""; cargarRes(); }
   if(v==="pen") pintarPen();
-  if(v==="pre") pintarPre(); }
+  if(v==="pre") pintarPre();
+  if(v==="cot") cotInit(); }
 
 /* --- chats --- */
 function poner(path,data,merge){
@@ -368,7 +470,126 @@ $("prf").onsubmit=async e=>{ e.preventDefault();
     if(!r.ok) throw new Error(r.status);
     aplicarTarifas({planes,recargoPar:rec});
     msg.style.color="#137333"; msg.textContent="Precios guardados ✓ Ya se ven en el cotizador.";
-  }catch(x){ msg.textContent="No se pudieron guardar los precios. Revisa tu conexión y las reglas de Firebase."; } };
+  }catch(x){ msg.textContent = String(x.message)==="401" ? "Firebase rechazó el guardado (error 401): falta la regla de escritura para «tarifas»." : "No se pudieron guardar los precios (error "+x.message+"). Revisa tu conexión y las reglas de Firebase."; } };
+
+/* ===== Cotización en PDF para el cliente (solo existe en este panel) ===== */
+/* ► Datos de contacto que salen al pie del PDF: edítalos aquí. */
+const CONTACTO = { dir:"Kra 72m Bis B # 43-63 Sur, Bogotá", tels:"Cel. 310 625 0804 · Fijo (601) 548 5934", redes:"Instagram @aj_geek · Facebook FotocabinaAJGeek", web:"fotocabinasajstudio360.vercel.app" };
+let qNum = "";
+const hT = h => h+(h===1?" hora":" horas");
+const qLim = (v,n) => String(v==null?"":v).replace(/\s+/g," ").trim().slice(0,n||120);
+
+["Bogotá","Zipaquirá","Cajicá","Chía","Soacha"].forEach(c=>$("cciudad").add(new Option(c,c)));
+TIPOS.forEach(t=>$("ctipo").add(new Option(t,t)));
+LOCALIDADES.forEach(l=>$("cloc").add(new Option(l,l)));
+PLANES.forEach(p=>$("cplan").add(new Option(p.nombre,p.id)));
+ASESORES.forEach(a=>$("cvend").add(new Option(a.completo||a.n,a.completo||a.n)));
+$("cabono").add(new Option("Abono "+peso(VALOR_APARTADO),VALOR_APARTADO)); $("cabono").add(new Option("Otro valor…","otro"));
+$("choras").value="2";   /* horas por defecto: el valor aparece apenas eliges el servicio (cámbialas si es otro tiempo) */
+const asesorCompleto = n => (ASESORES.find(a=>a.n===n)||{}).completo || n;
+$("cvend").value=asesorCompleto($("yo").value);
+$("yo").addEventListener("change",()=>{ $("cvend").value=asesorCompleto($("yo").value); cotRender(); });
+
+/* Días que faltan para el evento (hoy = 0). Las reservas requieren mínimo 2 días de anticipación. */
+function cotAnticipacion(iso){ const f=String(iso||"").split("-").map(Number); if(f.length!==3||!f[0]) return null;
+  const hoy=new Date(); hoy.setHours(0,0,0,0);
+  return Math.round((new Date(f[0],f[1]-1,f[2])-hoy)/86400000); }
+
+/* Fuera de Bogotá no hay localidad y el mínimo es 2 horas */
+function cotCiudad(){
+  const fuera = n0($("cciudad").value)!=="bogota";
+  $("clocBox").hidden = fuera; if(fuera) $("cloc").value="";
+  [...$("choras").options].forEach(o=>{ if(o.value==="1") o.disabled = fuera; });
+  if(fuera && $("choras").value==="1") $("choras").value="";
+  $("cmin").hidden = !fuera; }
+
+/* Valor sugerido: paquete + zona + fecha + ciudad (el asesor puede cambiarlo a mano) */
+function cotTotalAuto(){
+  const p=PLANES.find(x=>x.id===$("cplan").value), h=+$("choras").value, ciudad=$("cciudad").value;
+  if(p && h) $("ctotal").value = precioTotal(p,h,ciudad,n0(ciudad)==="bogota"?$("cloc").value:"",$("cfecha").value); }
+
+function cotRender(){
+  const p=PLANES.find(x=>x.id===$("cplan").value), h=+$("choras").value;
+  const hoy=new Date(), z=n=>String(n).padStart(2,"0");
+  if(!qNum) qNum=`AJ-${String(hoy.getFullYear()).slice(2)}${z(hoy.getMonth()+1)}${z(hoy.getDate())}-${z(hoy.getHours())}${z(hoy.getMinutes())}`;
+  $("qnum").textContent="No. "+qNum;
+  $("qemi").textContent="Emitida el "+hoy.toLocaleDateString("es-CO",{day:"numeric",month:"long",year:"numeric"});
+
+  const cli=qLim($("ccli").value,60), ced=$("cced").value.replace(/\D/g,"").slice(0,12), tl=$("ctel").value.trim(), d=parseTel(tl);
+  $("qcliW").hidden=!cli; $("qcli").textContent=cli;
+  $("qcedW").hidden=!ced; $("qced").textContent=ced;
+  $("qtelW").hidden=!tl;  $("qtel").textContent = d ? `${d.slice(0,3)} ${d.slice(3,6)} ${d.slice(6)}` : qLim(tl,20);
+
+  const iso=$("cfecha").value, hr=$("chora").value, ciudad=$("cciudad").value, bog=n0(ciudad)==="bogota", loc=bog?$("cloc").value:"";
+  const f=iso.split("-"), dias=cotAnticipacion(iso);
+  $("canti").hidden = !(dias!==null && dias<2);
+  $("qtipo").textContent=$("ctipo").value;
+  $("qfec").textContent = f.length===3 ? `${f[2]}/${f[1]}/${f[0]}` : "Por definir";
+  $("qhor").textContent = hr ? fmtHora(hr) : "Por definir";
+  $("qase").textContent = $("cvend").value;
+  $("qlug").textContent = [qLim($("cdir").value,120), qLim($("cbarrio").value,60), loc, ciudad].filter(Boolean).join(", ") || "Por definir";
+
+  $("qpn").textContent = p ? p.nombre : "Elige un servicio";
+  $("qph").textContent = h ? hT(h)+" de servicio" : "";
+  $("qinc").innerHTML="";
+  if(p) ["2 operadores de logística",...p.incluye].forEach(t=>{ const li=document.createElement("li"); li.textContent=t; $("qinc").appendChild(li); });
+
+  const total=Math.max(0,+$("ctotal").value||0);
+  const ab = $("cabono").value==="otro" ? Math.max(0,+$("cabonoV").value||0) : +$("cabono").value;
+  const abono=Math.min(ab,total), saldo=Math.max(total-abono,0);
+  $("qtot").textContent=peso(total); $("qabo").textContent=peso(abono); $("qsal").textContent=peso(saldo);
+
+  $("qcond").innerHTML="";
+  [`Para reservar la fecha del evento se requiere un abono de ${peso(abono)}, realizado con mínimo 2 días de anticipación a la fecha del evento. Sin el abono, la fecha no queda apartada.`,
+   `El valor de esta cotización (${peso(total)}) es el neto a pagar por el cliente.`,
+   `El saldo de ${peso(saldo)} se cancela una vez instalados los equipos y antes de iniciar el servicio.`,
+   "La reserva queda confirmada cuando un asesor verifica el abono y la disponibilidad de la fecha."
+  ].forEach(t=>{ const li=document.createElement("li"); li.textContent=t; $("qcond").appendChild(li); });
+
+  const nota=qLim($("cnota").value,150); $("qnotaW").hidden=!nota; $("qnota").textContent=nota;
+  $("qfoot").innerHTML="";
+  [CONTACTO.dir,CONTACTO.tels,"Página web: "+CONTACTO.web,CONTACTO.redes].forEach((t,i)=>{ if(i) $("qfoot").appendChild(document.createElement("br")); $("qfoot").appendChild(document.createTextNode(t)); });
+}
+
+/* En el celular la hoja se reduce para verse completa (el PDF sale siempre en tamaño A4) */
+function cotZoom(){ const w=$("cv").clientWidth-32; if(w>100) $("qvista").style.zoom=Math.min(1,w/794); }
+window.addEventListener("resize",()=>{ if(!$("cv").hidden) cotZoom(); });
+
+async function cotInit(){
+  const m=(sel&&S[sel]&&S[sel].meta)||{};   /* si hay un chat abierto, trae el nombre y el celular del cliente */
+  if(!$("ccli").value) $("ccli").value=m.nombre||"";
+  if(!$("ctel").value && m.tel) $("ctel").value=m.tel;
+  cotCiudad(); cotZoom(); cotRender();
+  try{ aplicarTarifas(await fetch(`${DB}/tarifas.json`).then(r=>r.json())); }catch(e){} }   /* precios vigentes */
+
+["cplan","choras","cciudad","cloc","cfecha"].forEach(id=>$(id).addEventListener("change",()=>{ if(id==="cciudad") cotCiudad(); cotTotalAuto(); cotRender(); }));
+["ccli","cced","ctel","ctipo","chora","cbarrio","cdir","ctotal","cabonoV","cvend","cnota"].forEach(id=>$(id).addEventListener("input",cotRender));
+$("cabono").addEventListener("change",()=>{ $("cabonoBox").hidden=$("cabono").value!=="otro"; cotRender(); });
+
+$("qlimp").onclick=()=>{ $("cf").reset(); qNum=""; $("choras").value="2"; $("cvend").value=asesorCompleto($("yo").value); $("cabonoBox").hidden=true; cotCiudad(); $("qmsg").textContent=""; cotRender(); };
+
+$("qdl").onclick=async()=>{
+  const msg=$("qmsg"); msg.style.color="#b3261e"; msg.textContent="";
+  const p=PLANES.find(x=>x.id===$("cplan").value), h=+$("choras").value, total=+$("ctotal").value||0;
+  if(!p||!h){ msg.textContent="Elige el servicio y las horas."; return; }
+  if(n0($("cciudad").value)!=="bogota" && h<2){ msg.textContent="Fuera de Bogotá el servicio es por mínimo 2 horas."; return; }
+  if(!(total>0)){ msg.textContent="El valor total debe ser mayor a 0."; return; }
+  if($("ctel").value.trim() && !parseTel($("ctel").value)){ msg.textContent="El celular debe tener 10 dígitos, por ejemplo 3001234567."; return; }
+  const dias=cotAnticipacion($("cfecha").value);
+  if(dias!==null && dias<2 && !confirm("La fecha del evento está a menos de 2 días. Las reservas requieren mínimo 2 días de anticipación.\n\n¿Generar la cotización de todas formas?")) return;
+  if(!window.html2pdf){ msg.textContent="No cargó la herramienta de PDF. Revisa tu conexión y recarga el panel."; return; }
+  cotRender();
+  const b=$("qdl"), v=$("qvista"), zm=v.style.zoom;
+  b.disabled=true; b.textContent="Generando…";
+  try{
+    v.style.zoom=1; $("qhoja").classList.add("pdf");
+    const cli=n0($("ccli").value).replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,""), f=$("cfecha").value;
+    const arch="Cotizacion-AJ-Studio"+(cli?"-"+cli:"")+(f?"-"+f:"")+".pdf";
+    await html2pdf().set({margin:0,filename:arch,image:{type:"jpeg",quality:.98},html2canvas:{scale:2,useCORS:true,backgroundColor:"#ffffff"},
+      jsPDF:{unit:"mm",format:"a4",orientation:"portrait"},pagebreak:{mode:["css","legacy"]}}).from($("qhoja")).save();
+    msg.style.color="#137333"; msg.textContent="PDF descargado ✓";
+  }catch(e){ msg.textContent="No se pudo generar el PDF. Intenta de nuevo."; }
+  v.style.zoom=zm; $("qhoja").classList.remove("pdf"); b.disabled=false; b.textContent="⬇ Descargar PDF"; };
 
 /* ===== Reservas por confirmar (las envía el cliente desde el bot) ===== */
 let P={}, esP=null, vistosP=new Set(), listoP=false;
