@@ -158,6 +158,31 @@
     body.tema .thumb b { background: var(--pink); }
     body.tema footer { border-top-color: var(--line); }
     body.tema #pie { font: italic 500 1.15rem 'Cormorant Garamond', Georgia, serif; color: var(--pink); }
+    /* ================= DISEÑO ESPECIAL: UNIANDES =================
+       Todo empieza por body.estilo-andes, así que no cambia los demás eventos. */
+    body.estilo-andes { background: #f7f7f7; }
+    body.estilo-andes .tributo { background: #f7f7f7; color: var(--ink); padding: 44px 20px 40px; border-bottom: 6px solid #fbb800; }
+    body.estilo-andes .bokeh, body.estilo-andes .chispa { display: none; }
+    body.estilo-andes .medallon { width: min(540px, 100%); margin: 40px auto; }
+    body.estilo-andes .medallon img { border: 0; border-radius: 0; box-shadow: none; }
+    body.estilo-andes .tributo-in { z-index: 1; }
+    .adorno { display: none; position: absolute; pointer-events: none; height: auto; }
+    body.estilo-andes .adorno { display: block; }
+    .adorno.a1 { width: 66px; right: 0; top: 12px; }
+    .adorno.a2 { width: 80px; left: 0; bottom: 14px; }
+    .adorno.a3 { width: 130px; right: 6%; bottom: 8px; }
+    @media (max-width: 800px) {
+      body.estilo-andes .tributo { padding: 24px 20px; }
+      body.estilo-andes .medallon { margin: 56px auto 52px; }
+      .adorno.a1 { width: 40px; top: 6px; }
+      .adorno.a2 { width: 38px; bottom: 4px; }
+      .adorno.a3 { width: 78px; right: 12px; bottom: 4px; }
+    }
+    body.estilo-andes .sec-head h2 { font: 800 clamp(1.9rem, 6vw, 2.8rem)/1.15 var(--head); letter-spacing: -.02em; color: var(--ink); }
+    body.estilo-andes .sec-head h2::after { content: ""; display: block; width: 90px; height: 6px; border-radius: 999px; background: #fbb800; margin: 12px auto 0; }
+    body.estilo-andes .bar { border-bottom-color: #fbb800; }
+    body.estilo-andes .thumb b { background: var(--ink); }
+    body.estilo-andes #pie { font: 600 1rem var(--body); color: var(--ink); }
   </style>
 </head>
 <body>
@@ -176,6 +201,10 @@
   <!-- Homenaje al evento: se llena y se muestra según el tema -->
   <div class="tributo" id="tributo" hidden>
     <div class="bokeh" aria-hidden="true"></div>
+    <!-- Adornos del diseño Uniandes (ocultos en los demás eventos) -->
+    <img class="adorno a1" data-src="img/andes-azul.png" alt="">
+    <img class="adorno a2" data-src="img/andes-amarillo.png" alt="">
+    <img class="adorno a3" data-src="img/andes-doble.png" alt="">
     <div class="tributo-in">
      
       <p class="kicker" id="tKicker"></p>
@@ -366,6 +395,27 @@ const TEMAS = [
     pestana: "Valentina XV · Nuestros momentos",
     pie: "Con cariño · Valentina XV · AJ Studio",
     color: "#b07d2a"
+  },
+  {
+    id: "Uniandes",
+    buscar: /ANDES|ORIENTADOR/i,   /* palabra que trae el código o el nombre del evento */
+    estilo: "andes",                  /* activa el diseño especial (CSS body.estilo-andes) */
+    logo: "img/uniandes.png",
+    alt: "1er encuentro de orientadores Uniandes. Acompañar en tiempos de cambio. 26 y 27 de noviembre 2026",
+    kicker: "",                       /* vacíos: el logo ya trae el nombre y la fecha */
+    nombre: "",
+    insignia: "",
+    fecha: "",
+    dedicatoria: "",
+    titulo: "Nuestros momentos",
+    texto: "Escribe el código de tu evento y descarga tus fotos y videos.",
+    pestana: "Encuentro de orientadores Uniandes · Nuestros momentos",
+    pie: "1er encuentro de orientadores Uniandes · AJ Studio",
+    color: "#2b2860",
+    /* colores fijos: azul del logo para botones y textos, amarillo como acento */
+    colores: { "--pink": "#2b2860", "--pink-dark": "#1d1b45", "--ink": "#2b2860", "--ink-hover": "#403c85",
+               "--cyan": "#fbb800", "--bg": "#f7f7f7", "--soft": "#efeee9", "--line": "#e2e0ea",
+               "--muted": "#5c5a73", "--sombra": "43,40,96" }
   }
 ];
     const BASE = { tit: $("tit").textContent, sub: $("sub").textContent, doc: document.title, pie: $("pie").textContent };
@@ -412,13 +462,19 @@ const TEMAS = [
     function aplicarTema(codigo, evento){
       const root = document.documentElement;
       root.removeAttribute("style");
-      document.body.classList.remove("tema"); $("tributo").hidden = true;
+      document.body.classList.remove("tema", "estilo-andes"); $("tributo").hidden = true;
       $("tit").textContent = BASE.tit; $("sub").textContent = BASE.sub; document.title = BASE.doc; $("pie").textContent = BASE.pie;
 
       const t = temaDe(codigo, evento);
       if(!t) return;
       Object.entries(paleta(t.color || COLOR_DEF)).forEach(([k,v]) => root.style.setProperty(k,v));
+      if(t.colores) Object.entries(t.colores).forEach(([k,v]) => root.style.setProperty(k,v));
       document.body.classList.add("tema");
+      if(t.estilo){
+        document.body.classList.add("estilo-" + t.estilo);
+        /* los adornos solo se descargan cuando se usan */
+        if(t.estilo === "andes") document.querySelectorAll(".adorno").forEach(i => i.src = i.dataset.src);
+      }
       $("tKicker").textContent = t.kicker; $("tKicker").hidden = !t.kicker;
       $("tNombre").textContent = t.nombre; $("tNombre").hidden = !t.nombre;
       $("tInsignia").textContent = t.insignia; $("tInsignia").hidden = !t.insignia;
@@ -426,7 +482,7 @@ const TEMAS = [
       $("tDedic").textContent = t.dedicatoria; $("tDedic").hidden = !t.dedicatoria;
       $("tit").textContent = t.titulo; $("sub").textContent = t.texto; document.title = t.pestana; $("pie").textContent = t.pie;
       $("evLogo").parentNode.hidden = !t.logo;   /* sin logo, no se muestra el marco vacío */
-      if(t.logo){ $("evLogo").alt = "Logo de "+t.nombre; $("evLogo").src = t.logo; }
+      if(t.logo){ $("evLogo").alt = t.alt || "Logo de "+t.nombre; $("evLogo").src = t.logo; }
       $("tributo").hidden = false; chispas();
     }
 
