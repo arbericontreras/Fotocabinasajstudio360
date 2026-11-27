@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recreación · AJ Studio</title>
+<link rel="icon" type="image/x-icon" href="img/logo aj studio copia.png">
+<meta name="description" content="Recreación para eventos en Bogotá: videojuegos personalizados, realidad virtual, simuladores, pulso eléctrico, robo futbot y carrera de arrancones con cuatrimotos.">
+<meta name="theme-color" content="#080920">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080920; --bg2:#0d0e2b; --card:#11132f; --ink:#eceeff; --muted:#a9acd9; --line:rgba(255,255,255,.14);
+  --pink:#ff2e88; --cyan:#00e5ff; --violet:#7c4dff;
+  --head:'Orbitron','Arial Black',system-ui,sans-serif; --body:'Figtree',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth;scroll-padding-top:76px;background:var(--bg)}
+body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.6;font-size:17px}
+img{max-width:100%;display:block}
+a{color:inherit}
+h1,h2,h3{font-family:var(--head);line-height:1.15;font-weight:800;letter-spacing:.01em}
+.wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+section{padding:80px 0}
+:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
+
+/* ===== Menú ===== */
+header{position:sticky;top:0;z-index:20;background:rgba(8,9,32,.9);backdrop-filter:blur(8px);border-bottom:2px solid transparent;border-image:linear-gradient(90deg,var(--cyan),var(--violet),var(--pink)) 1}
+nav{display:flex;align-items:center;justify-content:space-between;height:68px;gap:16px}
+.links{display:flex;gap:24px;align-items:center}
+.links a{text-decoration:none;font-weight:500;font-size:.95rem;color:var(--ink)}
+.links a:not(.btn):hover{color:var(--cyan)}
+.links a[aria-current=page]{color:var(--pink);font-weight:600;text-shadow:0 0 12px rgba(255,46,136,.7)}
+.btn{display:inline-block;background:linear-gradient(135deg,var(--pink),var(--violet));color:#fff;border:0;border-radius:12px;padding:13px 26px;font:600 1rem var(--body);text-decoration:none;cursor:pointer;box-shadow:0 0 18px rgba(255,46,136,.4);transition:transform .15s,box-shadow .15s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 0 28px rgba(255,46,136,.75)}
+.btn.ghost{background:transparent;color:var(--cyan);border:2px solid var(--cyan);box-shadow:0 0 14px rgba(0,229,255,.25)}
+.btn.ghost:hover{background:var(--cyan);color:#06142a;box-shadow:0 0 26px rgba(0,229,255,.6)}
+.btn.mini{padding:8px 16px;font-size:.9rem}
+.sm{display:none}
+@media(max-width:980px){.links{gap:14px}.links a{font-size:.9rem}.btn.mini{padding:7px 12px}.links .btn{padding:10px 16px}}
+@media(max-width:760px){.links a:not(.btn):not(.nav-home){display:none}.links{gap:10px}.links .btn{padding:9px 14px;font-size:.88rem}.nav-home{font-weight:600;font-size:.9rem}}
+@media(max-width:520px){.lg{display:none}.sm{display:inline}.links .btn{padding:9px 12px}}
+
+/* ===== Portada ===== */
+.rhero{position:relative;overflow:hidden;padding:84px 0 110px;
+  background:radial-gradient(circle at 82% 8%,rgba(255,46,136,.38),transparent 46%),radial-gradient(circle at 8% 95%,rgba(0,229,255,.22),transparent 46%),var(--bg)}
+.rhero::after{content:"";position:absolute;left:-25%;right:-25%;bottom:-45%;height:75%;
+  background:linear-gradient(rgba(0,229,255,.4) 1px,transparent 1px) 0 0/64px 64px,linear-gradient(90deg,rgba(0,229,255,.4) 1px,transparent 1px) 0 0/64px 64px;
+  transform:perspective(420px) rotateX(62deg);transform-origin:top;
+  -webkit-mask-image:linear-gradient(to bottom,#000,transparent);mask-image:linear-gradient(to bottom,#000,transparent);animation:rejilla 3s linear infinite;pointer-events:none}
+@keyframes rejilla{to{background-position:0 64px,0 64px}}
+.rhero .wrap{position:relative;z-index:1}
+.chip{display:inline-block;font:800 .72rem var(--head);letter-spacing:.2em;text-transform:uppercase;color:var(--cyan);border:1px solid var(--cyan);border-radius:999px;padding:6px 14px;margin-bottom:18px;box-shadow:0 0 14px rgba(0,229,255,.3)}
+.rhero h1{font-size:clamp(2rem,5.2vw,3.6rem);font-weight:900;margin-bottom:16px;text-shadow:3px 3px 0 rgba(255,46,136,.55),-2px -2px 0 rgba(0,229,255,.4)}
+.neon{background:linear-gradient(90deg,var(--cyan),var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none}
+.rhero p{color:var(--muted);max-width:56ch;font-size:1.1rem;margin-bottom:28px}
+.cta{display:flex;gap:14px;flex-wrap:wrap}
+.rhero .btn,.mas .btn{font:800 .82rem var(--head);letter-spacing:.07em;text-transform:uppercase;padding:15px 26px}
+
+/* ===== Servicios ===== */
+.band{background:var(--bg2)}
+.sec-head{margin-bottom:40px;max-width:62ch}
+.hud{font:800 .75rem var(--head);letter-spacing:.22em;text-transform:uppercase;color:var(--cyan);margin-bottom:10px}
+.sec-head h2{font-size:clamp(1.6rem,3.8vw,2.5rem);margin-bottom:12px}
+.sec-head p{color:var(--muted)}
+.rec-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:28px}
+.rec-item{filter:drop-shadow(0 8px 18px rgba(0,0,0,.5));transition:transform .2s,filter .2s}
+.rec-item:hover{transform:translateY(-4px);filter:drop-shadow(0 0 16px rgba(0,229,255,.45))}
+/* Tarjeta con esquinas cortadas y borde de neón */
+.rec-card{--cut:22px;--cin:calc(var(--cut) - 1.2px);height:100%;padding:2px;background:linear-gradient(135deg,var(--cyan),var(--violet) 55%,var(--pink));
+  clip-path:polygon(0 0,calc(100% - var(--cut)) 0,100% var(--cut),100% 100%,var(--cut) 100%,0 calc(100% - var(--cut)))}
+.rec-in{height:100%;display:flex;flex-direction:column;background:var(--card);
+  clip-path:polygon(0 0,calc(100% - var(--cin)) 0,100% var(--cin),100% 100%,var(--cin) 100%,0 calc(100% - var(--cin)))}
+/* Espacio de la foto: si no existe, se ve un ícono sobre fondo de color */
+.rec-photo{position:relative;aspect-ratio:16/10;display:grid;place-items:center;overflow:hidden;
+  background:repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 1px,transparent 1px 4px),linear-gradient(135deg,#3b1a8a,#ff2e88)}
+.rec-item:nth-child(even) .rec-photo{background:repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 1px,transparent 1px 4px),linear-gradient(135deg,#0a3d91,#00b8d4)}
+.rec-photo>svg{width:68px;height:68px;color:#fff;filter:drop-shadow(0 0 10px rgba(255,255,255,.75))}
+.rec-photo>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.rec-num{position:absolute;top:12px;left:12px;z-index:2;font:800 .75rem var(--head);letter-spacing:.1em;color:var(--cyan);background:rgba(8,9,32,.78);border:1px solid var(--cyan);border-radius:8px;padding:3px 9px}
+.rec-play{position:absolute;z-index:2;width:64px;height:64px;border-radius:50%;border:0;cursor:pointer;background:linear-gradient(135deg,var(--pink),var(--violet));
+  box-shadow:0 0 0 0 rgba(255,46,136,.6),0 0 22px rgba(255,46,136,.65);display:grid;place-items:center;animation:ping 2s infinite}
+.rec-play::before{content:"";margin-left:5px;border-style:solid;border-width:11px 0 11px 18px;border-color:transparent transparent transparent #fff}
+@keyframes ping{70%{box-shadow:0 0 0 16px rgba(255,46,136,0),0 0 22px rgba(255,46,136,.65)}100%{box-shadow:0 0 0 0 rgba(255,46,136,0),0 0 22px rgba(255,46,136,.65)}}
+.rec-photo .rec-video{position:absolute;inset:0;width:100%;height:100%;border:0;border-radius:0;z-index:3;background:#000}
+.rec-close{position:absolute;top:8px;right:8px;z-index:4;width:34px;height:34px;border-radius:50%;border:1px solid var(--cyan);background:rgba(8,9,32,.85);color:var(--cyan);font:700 1rem var(--body);cursor:pointer;line-height:1}
+.rec-body{padding:20px 24px 26px}
+.rec-body h3{font-size:1.02rem;margin-bottom:10px}
+.rec-body p{color:var(--muted);font-size:.98rem}
+.rec-aviso{margin-top:12px;font-size:.85rem;color:#ffd27a;background:rgba(255,176,32,.12);border:1px solid rgba(255,176,32,.4);border-radius:10px;padding:8px 10px}
+.rec-note{color:var(--muted);font-size:.92rem;margin-top:30px;max-width:70ch}
+
+/* ===== Invitación a cotizar ===== */
+.mas{padding:64px 0}
+.mas .box{text-align:center;border:2px solid rgba(0,229,255,.35);border-radius:24px;padding:46px 22px;
+  background:radial-gradient(circle at 50% 0,rgba(124,77,255,.28),transparent 60%),var(--card);box-shadow:0 0 34px rgba(0,229,255,.12)}
+.mas h2{font-size:clamp(1.4rem,3.2vw,2.1rem);margin-bottom:10px}
+.mas p{color:var(--muted);max-width:56ch;margin:0 auto 24px}
+.mas .cta{justify-content:center}
+
+/* ===== Contacto ===== */
+.soc{display:flex;gap:12px;margin-top:6px}
+.contact .soc a{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;border:2px solid var(--line);background:transparent;color:var(--ink);transition:background .2s,color .2s,box-shadow .2s}
+.contact .soc svg{width:22px;height:22px}
+.contact .soc a:hover{color:#fff;border-color:transparent;box-shadow:0 0 16px rgba(255,255,255,.25)}
+.contact .soc a.ig:hover{background:linear-gradient(45deg,#f9a825,#e6397a,#6228d7)}
+.contact .soc a.fb:hover{background:#1877f2}
+.contact .soc a.tt:hover{background:#000}
+.contact{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+@media(max-width:780px){.contact{grid-template-columns:1fr}}
+.contact h2{font-size:clamp(1.6rem,3.6vw,2.4rem)}
+.contact h3{margin:18px 0 4px;font-size:.95rem;color:var(--cyan);letter-spacing:.08em}
+.contact p,.contact a{color:var(--muted)}
+.contact a:hover{color:var(--cyan)}
+iframe{width:100%;height:340px;border:0;border-radius:18px}
+.contact iframe{border:2px solid rgba(0,229,255,.3)}
+footer{padding:28px 0;text-align:center;color:var(--muted);font-size:.9rem;border-top:1px solid var(--line)}
+
+/* ===== Asesor en línea ===== */
+.bot-btn{position:fixed;right:18px;bottom:18px;z-index:30;background:linear-gradient(135deg,#1b1740,#3a2a86);color:#fff;border:2px solid var(--cyan);border-radius:999px;padding:14px 22px;font:600 1rem var(--body);cursor:pointer;box-shadow:0 0 18px rgba(0,229,255,.35)}
+.bot{position:fixed;right:18px;bottom:78px;z-index:31;width:min(380px,calc(100vw - 36px));height:min(570px,75vh);background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:0 12px 40px rgba(0,0,0,.5);display:none;overflow:hidden}
+.bot.on{display:block}
+.bot iframe{width:100%;height:100%;border:0;border-radius:0}
+.bot-btn{display:flex;align-items:center;gap:10px;right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));max-width:calc(100vw - 36px)}
+.bot-btn:has(img){padding:8px 20px 8px 8px}
+.bot-btn img{width:44px;height:44px;border-radius:50%;object-fit:cover;background:#eeeafb}
+.bot-btn .dot{display:none;width:11px;height:11px;border-radius:50%;background:#4ade80;box-shadow:0 0 0 0 rgba(74,222,128,.7);animation:pulso 1.6s infinite}
+.bot-btn.online{background:#0f7a43;border-color:#4ade80}
+.bot-btn.online .dot{display:inline-block}
+@keyframes pulso{70%{box-shadow:0 0 0 10px rgba(74,222,128,0)}100%{box-shadow:0 0 0 0 rgba(74,222,128,0)}}
+.bot-aviso{display:none;position:fixed;right:18px;bottom:84px;z-index:29;max-width:240px;background:#fff;border:2px solid #16a34a;color:#0f5132;border-radius:14px;padding:10px 14px;font:600 .9rem var(--body);box-shadow:0 8px 24px rgba(0,0,0,.4);cursor:pointer}
+.bot-aviso.on{display:block}
+
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .rhero::after,.rec-play,.bot-btn .dot{animation:none}
+  .rec-item,.btn{transition:none}.rec-item:hover,.btn:hover{transform:none}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav>
+      <div class="links">
+        <a class="nav-home" href="">Inicio</a>
+      
+       
+        <a href="#servicios" aria-current="page">Recreación</a>
+      
+        <a href="#contacto">Contacto</a>
+        
+      
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section class="rhero">
+  <div class="wrap">
+    <span class="chip">🎮 Zona de juegos</span>
+    <h1><span class="neon">Recreación</span> para tu evento</h1>
+    <p>Más que fotos: juegos y experiencias para que tus invitados no dejen de participar. Súmalos a tu cabina 360 o a tu fotocabina y arma un evento que se recuerde.</p>
+    <div class="cta">
+      <button type="button" class="btn" onclick="abrirBot()">Hablar con un asesor</button>
+      <a class="btn ghost" href="#servicios">Ver juegos</a>
+    </div>
+  </div>
+</section>
+
+<section id="servicios" class="band">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="hud">// Elige tu juego</div>
+      <h2>Nuestros servicios de recreación</h2>
+      <p>Escoge los que más les gusten a tus invitados. Un asesor te cotiza y te ayuda a armar la mejor combinación para tu evento.</p>
+    </div>
+    <div class="rec-grid" id="servicios-lista"></div>
+    <p class="rec-note">Algunos servicios tienen restricciones de edad y de salud. Tu asesor te las explica antes de reservar.</p>
+  </div>
+</section>
+
+<section class="mas">
+  <div class="wrap">
+    <div class="box">
+      <h2>¿Listo para sumar recreación a tu evento?</h2>
+      <p>Cuéntale a un asesor qué celebras, cuántos invitados esperas y qué servicios te interesan.</p>
+     
+    </div>
+  </div>
+</section>
+
+<section id="contacto" class="band">
+  <div class="wrap contact">
+    <div>
+      <h2>Reserva tu fecha</h2>
+      <h3>Dirección</h3><p>Kra 72m Bis B # 43-63 Sur, Bogotá</p>
+      <h3>Línea de atención</h3>
+      <p><a href="tel:+576015485934">Fijo (601) 548 5934</a><br><a href="tel:+573106250804">Cel. 310 625 0804</a></p>
+      <h3>Redes</h3>
+      <div class="soc">
+        <a class="ig" href="https://www.instagram.com/aj_geek/" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+        <a class="fb" href="https://www.facebook.com/FotocabinaAJGeek" target="_blank" rel="noopener" aria-label="Facebook" title="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+        <a class="tt" href="https://www.tiktok.com/@arbericontreras/video/7698907159433678100?is_from_webapp=1&sender_device=pc&web_id=7697868663198500353" target="_blank" rel="noopener" aria-label="TikTok" title="TikTok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v11a3.5 3.5 0 1 1-3.5-3.5"/><path d="M14 3c.3 2.6 2.1 4.4 5 4.6"/></svg></a>
+      </div>
+    </div>
+    <iframe title="Ubicación de AJ Studio" loading="lazy" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3976.9745147575235!2d-74.1534062!3d4.6039147!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e3f9eeb557be1ab%3A0x2db48f430f81d113!2sCra.%2072m%20%2343-63%20sur%2C%20Bogot%C3%A1!5e0!3m2!1ses!2sco!4v1710000000000!5m2!1ses!2sco"></iframe>
+  </div>
+</section>
+</main>
+
+<footer>AJ Studio / Geek Studio · © 2026 Todos los derechos reservados</footer>
+
+<script src="config.js"></script>
+<script>
+/* =====================================================================
+   SERVICIOS DE RECREACIÓN
+   ► Texto: edita «nombre» y «desc».
+   ► FOTO: guárdala en la carpeta img/recreacion/ con el nombre que dice «foto» (mejor horizontal, 16:10).
+     Mientras no exista, se ve un ícono de color en su lugar.
+   ► VIDEO DE YOUTUBE: pega el enlace entre las comillas de «video». Funciona con cualquier enlace
+     (youtu.be/..., youtube.com/watch?v=..., shorts). Si lo dejas vacío (""), no sale botón de video.
+     Si el servicio no tiene foto, se usa la portada del video.
+   ► «aviso» es opcional: sale en un cuadro naranja dentro de la tarjeta.
+   ► Para agregar un servicio, copia un bloque { ... } y pégalo en la lista.
+   ===================================================================== */
+const ICO = d => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const SERVICIOS = [
+  { nombre:"Videojuegos personalizados", foto:"img/recreacion/videojuegos.jpg", video:"",
+    desc:"Videojuegos con la temática, los colores y el nombre de tu evento, para que tus invitados compitan y se diviertan juntos.",
+    icono:ICO('<path d="M6 8h12a4 4 0 0 1 4 4v1.5a3.5 3.5 0 0 1-6 2.5l-1-1h-6l-1 1a3.5 3.5 0 0 1-6-2.5V12a4 4 0 0 1 4-4z"/><path d="M8 10.5v3M6.5 12h3"/><circle cx="15.5" cy="11" r=".7" fill="currentColor"/><circle cx="17.5" cy="13" r=".7" fill="currentColor"/>') },
+  { nombre:"Realidad virtual", foto:"img/recreacion/realidad-virtual.jpg", video:"https://www.youtube.com/watch?v=6cEyo_nuveQ",
+    desc:"Entornos de realidad virtual para que tus invitados vivan experiencias inmersivas sin salir del evento.",
+    icono:ICO('<rect x="2" y="7" width="20" height="10" rx="4"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/><path d="M10.5 15c.9.8 2.1.8 3 0"/>') },
+  { nombre:"Simulador de altura", foto:"img/recreacion/simulador-altura.jpg", video:"https://www.youtube.com/watch?v=g9Uz1KCWKAQ",
+    desc:"Vive la sensación de estar en las alturas sin moverte del evento. Ideal para animarse y retar a los amigos.",
+    icono:ICO('<path d="M3 20 9 9l4 6 3-4 5 9z"/><path d="M9 9V5"/><path d="M9 5l3 1.5L9 8"/>') },
+  { nombre:"Simulador de conducción", foto:"img/recreacion/simulador-conduccion.jpg", video:"https://www.youtube.com/watch?v=3z4dKc5-X7E",
+    desc:"Pon a prueba tu manejo en un simulador de conducción: velocidad, curvas y competencia entre amigos.",
+    icono:ICO('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5"/><path d="M3 12h6.5M14.5 12H21M12 14.5V21"/>') },
+  { nombre:"Pulso eléctrico", foto:"img/recreacion/pulso-electrico.jpg", video:"",
+    desc:"Pulso firme y mirada fija: guía el aro por el recorrido de alambre sin tocarlo. Si lo rozas, se activa la alerta. ¿Quién llega hasta el final?",
+    icono:ICO('<path d="M2 12h4l3-7 4 14 3-7h6"/>') },
+  { nombre:"Máquina de toques eléctricos", foto:"img/recreacion/toques-electricos.jpg", video:"",
+    desc:"Retos de toques eléctricos para animar el evento entre amigos, familia o compañeros de trabajo.",
+    aviso:"Consulta las restricciones de edad y de salud con tu asesor.",
+    icono:ICO('<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>') },
+  { nombre:"Carrera de arrancones con cuatrimotos", foto:"img/recreacion/arrancones-cuatrimotos.jpg", video:"",
+    desc:"Carrera de arrancones con cuatrimotos, estilo videojuego: velocidad y competencia para tus invitados.",
+    icono:ICO('<path d="M5 3v18"/><path d="M5 4h13l-2.5 4 2.5 4H5"/>') },
+  { nombre:"Robot Futbot", foto:"img/recreacion/robo-futbot.jpg", video:"https://youtube.com/shorts/DZ0P81z6bL8?feature=share",
+    desc:"Fútbol de robots: Son  dos robots, tus invitados los controlan y compiten por meter más goles.",
+    icono:ICO('<rect x="5" y="8" width="14" height="11" rx="3"/><path d="M12 8V5"/><circle cx="12" cy="3.6" r="1.2"/><circle cx="9" cy="13" r="1.2" fill="currentColor"/><circle cx="15" cy="13" r="1.2" fill="currentColor"/><path d="M9 16.5h6"/>') }
+];
+
+/* Saca el código del video de cualquier enlace de YouTube (o acepta el código solo, de 11 caracteres) */
+const ytId = v => { v = String(v||"").trim(); if(!v) return "";
+  if(/^[\w-]{11}$/.test(v)) return v;
+  const m = v.match(/(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/|v\/))([\w-]{11})/);
+  return m ? m[1] : ""; };
+
+const lista = document.getElementById("servicios-lista");
+SERVICIOS.forEach((s,n)=>{
+  const vid = ytId(s.video);
+  const item = document.createElement("article"); item.className = "rec-item";
+  const card = document.createElement("div"); card.className = "rec-card";
+  const dentro = document.createElement("div"); dentro.className = "rec-in";
+
+  const foto = document.createElement("div"); foto.className = "rec-photo";
+  foto.insertAdjacentHTML("beforeend", s.icono);                       /* ícono de respaldo */
+  const img = new Image(); img.alt = s.nombre; img.loading = "lazy";
+  img.onerror = () => {                                                /* sin foto: portada del video, o el ícono */
+    if(vid && !img.dataset.yt){ img.dataset.yt = "1"; img.src = `https://i.ytimg.com/vi/${vid}/mqdefault.jpg`; }
+    else img.remove(); };
+  img.src = s.foto; foto.appendChild(img);
+  const num = document.createElement("span"); num.className = "rec-num"; num.textContent = String(n+1).padStart(2,"0"); foto.appendChild(num);
+
+  if(vid){                                                             /* botón de play: abre el video dentro de la tarjeta */
+    const play = document.createElement("button"); play.type = "button"; play.className = "rec-play"; play.setAttribute("aria-label","Ver video de "+s.nombre);
+    play.onclick = () => {
+      const fr = document.createElement("iframe"); fr.className = "rec-video"; fr.title = "Video: "+s.nombre;
+      fr.src = `https://www.youtube-nocookie.com/embed/${vid}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
+      fr.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen"; fr.allowFullscreen = true;
+      const x = document.createElement("button"); x.type = "button"; x.className = "rec-close"; x.textContent = "✕"; x.setAttribute("aria-label","Cerrar video");
+      x.onclick = () => { fr.remove(); x.remove(); };
+      foto.append(fr,x); };
+    foto.appendChild(play); }
+
+  const body = document.createElement("div"); body.className = "rec-body";
+  const h = document.createElement("h3"); h.textContent = s.nombre;
+  const p = document.createElement("p"); p.textContent = s.desc;
+  body.append(h,p);
+  if(s.aviso){ const a = document.createElement("div"); a.className = "rec-aviso"; a.textContent = s.aviso; body.appendChild(a); }
+  dentro.append(foto,body); card.appendChild(dentro); item.appendChild(card); lista.appendChild(item);
+});
+</script>
+
+<button class="bot-btn" id="botBtn" aria-expanded="false" aria-controls="bot"><img src="img/deep.png" alt="" onerror="this.remove()"><i class="dot" aria-hidden="true"></i><span id="botTxt">Asesor del evento</span></button>
+<div class="bot-aviso" id="botAviso" role="status">🟢 Hay un asesor en línea. ¡Escríbenos!</div>
+<div class="bot" id="bot" role="dialog" aria-label="Asistente de AJ Studio">
+  <iframe id="botFrame" title="Asistente AJ Studio" allow="autoplay"></iframe>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+
+/* ===== Chatbot y asesor en línea: igual que en el inicio ===== */
+const frame = $("botFrame"), box = $("bot");
+function abrirBot(){
+  ocultarAviso();
+  if(!frame.getAttribute("src")) frame.src = "chatbot.html?embed=1";
+  box.classList.add("on"); $("botBtn").setAttribute("aria-expanded","true"); }
+function cerrarBot(){ box.classList.remove("on"); $("botBtn").setAttribute("aria-expanded","false"); }
+$("botBtn").onclick = () => box.classList.contains("on") ? cerrarBot() : abrirBot();
+/* Indicador de asesor en línea: botón verde y un aviso al conectarse */
+let enLinea = false, avisoT;
+const ocultarAviso = () => $("botAviso").classList.remove("on");
+function mostrarAviso(){ $("botAviso").classList.add("on"); clearTimeout(avisoT); avisoT = setTimeout(ocultarAviso,10000); }
+$("botAviso").onclick = () => abrirBot();
+async function revisarPresencia(){
+  let on=false; try{ on = await asesorEnLinea(); }catch(e){}
+  if(on && !enLinea && !box.classList.contains("on")) mostrarAviso();
+  enLinea = on; $("botBtn").classList.toggle("online",on);
+  $("botTxt").textContent = on ? "Asesor en línea" : "Asesor del evento";
+  if(!on) ocultarAviso(); }
+revisarPresencia(); setInterval(revisarPresencia,15000);
+
+window.addEventListener("message", e => {
+  if(e.source !== frame.contentWindow) return;
+  const d = e.data || {};
+  if(d.t==="cerrar") cerrarBot();
+  else if(d.t==="cotizador") location.href = "index.html#cotizar";   /* "Ajustar en el cotizador" lleva al cotizador del inicio */
+});
+</script>
+</body>
+</html>

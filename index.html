@@ -36,7 +36,9 @@ nav{display:flex;align-items:center;justify-content:space-between;height:68px;ga
 .btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--ink)}
 .btn.ghost:hover{background:var(--ink);color:#fff}
 .btn.mini{padding:8px 16px;font-size:.9rem}
-@media(max-width:760px){.links a:not(.btn){display:none}.links{gap:10px}.links .btn{padding:9px 14px;font-size:.88rem}}
+.sm{display:none}
+@media(max-width:760px){.links a:not(.btn):not(.nav-rec){display:none}.links{gap:10px}.links .btn{padding:9px 14px;font-size:.88rem}.nav-rec{font-weight:600;font-size:.9rem}}
+@media(max-width:520px){.lg{display:none}.sm{display:inline}.links .btn{padding:9px 12px}}
 .hero{padding:64px 0 72px}
 .hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
 .hero h1{font-size:clamp(2.3rem,5.5vw,4rem);margin-bottom:18px}
@@ -170,10 +172,11 @@ footer{padding:28px 0;text-align:center;color:var(--muted);font-size:.9rem;borde
       <div class="links">
         <a href="#cabina">La cabina</a>
         <a href="#experiencias">Experiencias</a>
+        <a class="nav-rec" href="recreacion.html">Recreación</a>
         <a href="#cotizar">Cotizar</a>
         <a href="#contacto">Contacto</a>
-        <a class="btn ghost mini" href="asesor.html">Acceso asesores</a>
-        <a class="btn" href="descargar.html">Descargar mis fotos</a>
+        <a class="btn ghost mini" href="asesor.html"><span class="lg">Acceso asesores</span><span class="sm">Asesores</span></a>
+        <a class="btn" href="descargar.html"><span class="lg">Descargar mis fotos</span><span class="sm">Mis fotos</span></a>
       </div>
     </nav>
   </div>
@@ -184,7 +187,7 @@ footer{padding:28px 0;text-align:center;color:var(--muted);font-size:.9rem;borde
   <div class="wrap">
     <div>
       <h1>Tus invitados giran. El recuerdo se queda.</h1>
-      <p>Cabina 360 y fotocabina con impresión para bodas, quinces, cumpleaños y eventos corporativos en Bogotá. Dos operadores y transporte incluidos.</p>
+      <p>Cabina 360 y fotocabina con impresión para que tu evento se recuerde, en bodas, quinces, cumpleaños y eventos corporativos en Bogotá. Y si quieres más diversión adicional, también tenemos recreación.</p>
       <div class="cta"><a class="btn" href="#cotizar">Cotizar mi evento</a></div>
     </div>
     <div class="stage" aria-hidden="true">
@@ -250,16 +253,16 @@ footer{padding:28px 0;text-align:center;color:var(--muted);font-size:.9rem;borde
 <section id="cotizar" class="band">
   <div class="wrap">
     <div class="sec-head">
-      <h2>Arma tu cotización</h2>
+      <h2>Arma tu cotización con tan solo tres pasos.</h2>
       <p>Elige el servicio y las horas. El precio se calcula solo y puedes enviarlo directo a un asesor para reservar tu fecha.</p>
     </div>
     <div class="quote">
       <div>
-        <div class="panel"><h3>1. Servicio</h3><div class="plans" id="plans"></div></div>
-        <div class="panel"><h3>2. Horas de servicio</h3><div class="hours" id="hours"></div>
+        <div class="panel"><h3>1. Selecciona un Servicio para iniciar</h3><div class="plans" id="plans"></div></div>
+        <div class="panel"><h3>2. Ahora selecciona las Horas de servicio</h3><div class="hours" id="hours"></div>
           <p class="note" id="minHoras" hidden>Para eventos fuera de Bogotá el servicio se alquila por mínimo 2 horas.</p></div>
         <div class="panel">
-          <h3>3. Tu evento</h3>
+          <h3>3. Más información de tu evento</h3>
           <div class="fields">
             <div style="grid-column:1/-1"><label for="nombre" id="nombreLbl">Tu nombre (opcional)</label><input id="nombre" placeholder="Nombre y apellido" maxlength="60" autocomplete="name"></div>
             <div><label for="tipo">Tipo de evento *</label>
